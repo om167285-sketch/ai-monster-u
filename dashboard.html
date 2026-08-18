@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>AI MONSTER U | Dashboard</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -18,7 +17,7 @@
     body {
       min-height: 100vh;
       background: #050607;
-      color: white;
+      color: #fff;
       font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -33,8 +32,8 @@
     }
 
     .brand {
+      font-size: 17px;
       font-weight: 900;
-      font-size: 16px;
     }
 
     .brand span {
@@ -106,7 +105,7 @@
 
     .menu a:hover,
     .menu a.active {
-      color: white;
+      color: #fff;
       background: rgba(0,255,166,.07);
     }
 
@@ -213,8 +212,8 @@
       overflow: hidden;
       border-radius: 10px;
       background:
-        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.035) 1px, transparent 1px);
       background-size: 50px 50px;
     }
 
@@ -276,6 +275,11 @@
       font-size: 11px;
     }
 
+    .connect:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
     .positions {
       margin-top: 18px;
     }
@@ -285,6 +289,17 @@
       text-align: center;
       color: #5d666f;
       font-size: 11px;
+    }
+
+    .message {
+      margin-top: 12px;
+      color: #8a939c;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .error {
+      color: #ff8585;
     }
 
     @media(max-width:1000px) {
@@ -357,69 +372,27 @@
     <div class="section">WORKSPACE</div>
 
     <nav class="menu">
-
-      <a href="#" class="active">
-        Dashboard
-      </a>
-
-      <a href="#">
-        Markets
-      </a>
-
-      <a href="#">
-        AI Trading
-      </a>
-
-      <a href="#">
-        My Accounts
-      </a>
-
-      <a href="#">
-        Positions
-      </a>
-
-      <a href="#">
-        Trade History
-      </a>
-
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Markets</a>
+      <a href="#">AI Trading</a>
+      <a href="#">My Accounts</a>
+      <a href="#">Positions</a>
+      <a href="#">Trade History</a>
     </nav>
 
-
-    <div class="section">
-      FINANCE
-    </div>
+    <div class="section">FINANCE</div>
 
     <nav class="menu">
-
-      <a href="#">
-        Deposits
-      </a>
-
-      <a href="#">
-        Withdrawals
-      </a>
-
+      <a href="#">Deposits</a>
+      <a href="#">Withdrawals</a>
     </nav>
 
-
-    <div class="section">
-      ACCOUNT
-    </div>
+    <div class="section">ACCOUNT</div>
 
     <nav class="menu">
-
-      <a href="#">
-        Risk Management
-      </a>
-
-      <a href="#">
-        Settings
-      </a>
-
-      <a href="#">
-        Security
-      </a>
-
+      <a href="#">Risk Management</a>
+      <a href="#">Settings</a>
+      <a href="#">Security</a>
     </nav>
 
   </aside>
@@ -429,9 +402,7 @@
 
     <div class="heading">
 
-      <h1>
-        Trading Dashboard
-      </h1>
+      <h1>Trading Dashboard</h1>
 
       <p>
         AI MONSTER U automated trading terminal
@@ -447,27 +418,20 @@
     <section class="cards">
 
       <div class="card">
-
-        <div class="label">
-          Platform Balance
-        </div>
+        <div class="label">Platform Balance</div>
 
         <div id="balance" class="value">
           $0.00
         </div>
 
-        <div class="muted">
+        <div id="currencyText" class="muted">
           Wallet balance
         </div>
-
       </div>
 
 
       <div class="card">
-
-        <div class="label">
-          Trading Equity
-        </div>
+        <div class="label">Trading Equity</div>
 
         <div id="equity" class="value">
           $0.00
@@ -476,15 +440,11 @@
         <div class="muted">
           Demo account
         </div>
-
       </div>
 
 
       <div class="card">
-
-        <div class="label">
-          Today's P/L
-        </div>
+        <div class="label">Today's P/L</div>
 
         <div class="value">
           $0.00
@@ -492,16 +452,10 @@
 
         <div class="muted">
           Daily performance
-          </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <div class="label">
-          Open Positions
         </div>
+      </div>
+      <div class="card">
+        <div class="label">Open Positions</div>
 
         <div class="value">
           0
@@ -510,7 +464,6 @@
         <div class="muted">
           Currently active
         </div>
-
       </div>
 
     </section>
@@ -522,9 +475,7 @@
 
         <div class="panel-title">
 
-          <h2>
-            Market Overview
-          </h2>
+          <h2>Market Overview</h2>
 
           <span class="live">
             ● DEMO
@@ -537,24 +488,7 @@
           <svg viewBox="0 0 800 260" preserveAspectRatio="none">
 
             <polyline
-              points="
-                0,205
-                60,190
-                110,210
-                160,160
-                210,178
-                260,135
-                310,155
-                360,105
-                410,125
-                460,90
-                510,112
-                560,62
-                610,80
-                660,45
-                720,65
-                800,28
-              "
+              points="0,205 60,190 110,210 160,160 210,178 260,135 310,155 360,105 410,125 460,90 510,112 560,62 610,80 660,45 720,65 800,28"
               fill="none"
               stroke="#00ffa6"
               stroke-width="3"
@@ -571,9 +505,7 @@
 
         <div class="panel-title">
 
-          <h2>
-            AI MONSTER ENGINE
-          </h2>
+          <h2>AI MONSTER ENGINE</h2>
 
           <span class="live">
             READY
@@ -585,9 +517,7 @@
           DEMO
         </div>
 
-        <h2>
-          Trading Engine Ready
-        </h2>
+        <h2>Trading Engine Ready</h2>
 
         <p>
           Demo trading is currently inactive.
@@ -618,11 +548,11 @@
           <span>3%</span>
         </div>
 
-        <button
-          id="demoButton"
-          class="connect">
+        <button id="demoButton" class="connect">
           START DEMO ENGINE
         </button>
+
+        <div id="engineMessage" class="message"></div>
 
       </div>
 
@@ -633,9 +563,7 @@
 
       <div class="panel-title">
 
-        <h2>
-          Open Positions
-        </h2>
+        <h2>Open Positions</h2>
 
         <span class="live">
           0 ACTIVE
@@ -669,6 +597,45 @@
     );
 
 
+  async function loadWallet(userId) {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("wallets")
+      .select("balance, currency")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      document.getElementById("balance").textContent = "$0.00";
+      document.getElementById("currencyText").textContent =
+        "Wallet not created yet";
+      return;
+    }
+
+    const balance =
+      Number(data.balance || 0);
+
+    const currency =
+      data.currency || "USD";
+
+    document.getElementById("balance").textContent =
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency
+      }).format(balance);
+
+    document.getElementById("currencyText").textContent =
+      currency + " wallet balance";
+  }
+
+
   async function startDashboard() {
 
     try {
@@ -683,9 +650,7 @@
       }
 
       if (!data.session) {
-
         window.location.replace("auth.html");
-
         return;
       }
 
@@ -704,14 +669,27 @@
       ).textContent =
         email.charAt(0).toUpperCase();
 
+      await loadWallet(user.id);
+
     } catch (error) {
 
       console.error(
-        "Dashboard session error:",
+        "Dashboard error:",
         error
       );
 
-      window.location.replace("auth.html");
+      document.getElementById(
+        "balance"
+      ).textContent = "$0.00";
+
+      document.getElementById(
+        "currencyText"
+      ).textContent =
+        "Unable to load wallet";
+
+      window.setTimeout(function () {
+        window.location.replace("auth.html");
+      }, 1500);
     }
   }
 
@@ -725,20 +703,11 @@
       button.disabled = true;
       button.textContent = "LOGGING OUT...";
 
-      try {
+      const {
+        error
+      } = await supabaseClient.auth.signOut();
 
-        const {
-          error
-        } = await supabaseClient.auth.signOut();
-
-        if (error) {
-          throw error;
-        }
-
-        window.location.
-          replace("auth.html");
-
-      } catch (error) {
+      if (error) {
 
         console.error(error);
 
@@ -749,8 +718,11 @@
           error.message ||
           "Logout failed."
         );
+
+        return;
       }
 
+      window.location.replace("auth.html");
     });
 
 
@@ -758,9 +730,12 @@
     .getElementById("demoButton")
     .addEventListener("click", function () {
 
-      alert(
-        "Demo trading engine will be connected in the next phase."
-      );
+      const message =
+        document.getElementById("engineMessage");
+
+      message.className = "message";
+      message.textContent =
+        "Demo engine connection will be activated in the next phase.";
 
     });
 
