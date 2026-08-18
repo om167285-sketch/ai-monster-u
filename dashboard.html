@@ -548,10 +548,11 @@
           <span>3%</span>
         </div>
 
-        <button id="demoButton" class="connect">
-          START DEMO ENGINE
-        </button>
+       <button id="createDemoButton" class="connect">
+  CREATE $50 DEMO ACCOUNT
+</button>
 
+<div id="demoMessage" class="message"></div>
         <div id="engineMessage" class="message"></div>
 
       </div>
@@ -726,17 +727,110 @@
     });
 
 
-  document
-    .getElementById("demoButton")
-    .addEventListener("click", function () {
+ document
+  .getElementById("createDemoButton")
+  .addEventListener("click", async function () {
 
-      const message =
-        document.getElementById("engineMessage");
+    const button = this;
+    const message = document.getElementById("demoMessage");
 
-      message.className = "message";
+    button.disabled = true;
+    button.textContent = "CREATING...";
+
+    message.className = "message";
+    message.textContent = "Creating your $50 demo account...";
+
+    try {
+
+      const {
+        data: sessionData,
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!sessionData.session) {
+        window.location.replace("auth.html");
+        return;
+      }
+
+      const user = sessionData.session.user;
+
+      const {
+        data: existingAccount,
+        error: existingError
+      } = await supabaseClient
+        .from("trading_account")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("mode", "demo")
+        .maybeSingle();
+
+      if (existingError) {
+        throw existingError;
+      }
+
+      if (existingAccount) {
+
+        message.className = "message";
+        message.textContent =
+          "You already have a demo account.";
+
+        button.textContent = "DEMO ACCOUNT EXISTS";
+        return;
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("trading_account")
+        .insert({
+          user_id: user.id,
+          account_name: "AI MONSTER U Demo",
+          mode: "demo",
+          broker: "AI MONSTER U Demo",
+          broker_account_id: "DEMO-" + Date.now(),
+          currency: "USD",
+          balance: 50,
+          equity: 50,
+          available_margin: 50,
+          status: "active",
+          bot_enabled: false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      document.getElementById("equity").textContent = "$50.00";
+
+      message.className = "message green";
       message.textContent =
-        "Demo engine connection will be activated in the next phase.";
+        "Demo account created successfully with $50.00.";
 
+      button.textContent = "DEMO ACCOUNT CREATED";
+
+    } catch (error) {
+
+      console.error(
+        "Demo account error:",
+        error
+      );
+
+      message.className = "message error";
+      message.textContent =
+        error.message || "Could not create demo account.";
+
+      button.disabled = false;
+      button.textContent = "CREATE $50 DEMO ACCOUNT";
+    }
+
+  });
     });
 
 
