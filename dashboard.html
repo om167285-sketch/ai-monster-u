@@ -602,7 +602,7 @@ async function loadDemoAccount(userId) {
 
   const result =
     await supabaseClient
-      .from("trading_account")
+     .from("Trading_account")
       .select(
         "id,balance,equity,available_margin,mode,status,bot_enabled"
       )
@@ -695,7 +695,7 @@ async function createDemoAccount() {
 
     const result =
       await supabaseClient
-        .from("trading_account")
+      .from("Trading_account")
         .insert({
           user_id: user.id,
           account_name: "AI MONSTER U Demo",
