@@ -345,7 +345,7 @@ body{
   <nav class="menu">
     <a href="#" class="active">Dashboard</a>
     <a href="#">Markets</a>
-    <a href="#">AI Trading</a>
+    <a href="#ai-trading" id="aiTradingLink">AI Trading</a>
     <a href="#">My Accounts</a>
     <a href="#">Positions</a>
     <a href="#">Trade History</a>
@@ -369,6 +369,93 @@ body{
 </aside>
 
 <main class="main">
+  <section id="ai-trading" class="page-section" style="display:none;">
+  <div class="heading">
+    <h1>AI Trading</h1>
+    <p>Automated trading control center</p>
+  </div>
+
+  <div class="card">
+    <h2>AI MONSTER Engine</h2>
+
+    <div class="trading-status">
+      <div>
+        <span>Account</span>
+        <strong id="aiAccountName">Loading...</strong>
+      </div>
+
+      <div>
+        <span>Mode</span>
+        <strong id="aiAccountMode">DEMO</strong>
+      </div>
+
+      <div>
+        <span>Bot Status</span>
+        <strong id="aiBotStatus">OFF</strong>
+      </div>
+    </div>
+
+    <label>Strategy</label>
+    <select id="aiStrategy">
+      <option value="AI Scalping">AI Scalping</option>
+      <option value="EMA Trend">EMA Trend</option>
+    </select>
+
+    <label>Timeframe</label>
+    <select id="aiTimeframe">
+      <option value="1m">1 Minute</option>
+      <option value="5m">5 Minutes</option>
+      <option value="15m">15 Minutes</option>
+      <option value="30m">30 Minutes</option>
+      <option value="1h">1 Hour</option>
+      <option value="4h">4 Hours</option>
+      <option value="1d">1 Day</option>
+    </select>
+
+    <label>Allowed Symbols</label>
+    <input
+      id="aiSymbols"
+      type="text"
+      placeholder="XAUUSD, EURUSD, BTCUSDT"
+    >
+
+    <div class="trading-stats">
+      <div>
+        <span>Current Signal</span>
+        <strong id="aiSignal">WAIT</strong>
+      </div>
+
+      <div>
+        <span>Open Positions</span>
+        <strong id="aiOpenPositions">0</strong>
+      </div>
+
+      <div>
+        <span>Today's P/L</span>
+        <strong id="aiTodayPL">$0.00</strong>
+      </div>
+
+      <div>
+        <span>Risk</span>
+        <strong id="aiRisk">1.00%</strong>
+      </div>
+    </div>
+
+    <div class="ai-actions">
+      <button id="startAiBot">START AI BOT</button>
+      <button id="stopAiBot">STOP AI BOT</button>
+      <button id="emergencyClose">EMERGENCY CLOSE</button>
+    </div>
+
+    <div class="candle-status">
+      <span>Current Candle</span>
+      <strong id="currentCandle">Waiting for market data...</strong>
+
+      <span>Next Candle Close</span>
+      <strong id="nextCandleClose">--:--:--</strong>
+    </div>
+  </div>
+</section>
   <section id="deposits" class="page-section" style="display:none;">
   <div class="heading">
     <h1>Crypto Deposits</h1>
@@ -919,7 +1006,25 @@ startDashboard();
 document.addEventListener("DOMContentLoaded", function () {
   const depositsLink = document.getElementById("depositsLink");
   const withdrawalsLink = document.getElementById("withdrawalsLink");
+const aiTradingLink = document.getElementById("aiTradingLink");
+const aiTrading = document.getElementById("ai-trading");
 
+if (aiTradingLink) {
+  aiTradingLink.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    document.querySelectorAll(".page-section").forEach(function (section) {
+      section.style.display = "none";
+    });
+
+    aiTrading.style.display = "block";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+}
   const deposits = document.getElementById("deposits");
   const withdrawals = document.getElementById("withdrawals");
 
