@@ -1,341 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI MONSTER U | Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI MONSTER U | Dashboard</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
 
-    body {
-      min-height: 100vh;
-      background: #050607;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+body{
+  min-height:100vh;
+  background:#050607;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
 
-    .topbar {
-      height: 72px;
-      padding: 0 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: #080a0c;
-    }
+.topbar{
+  height:72px;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#080a0c;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
 
-    .brand {
-      font-size: 17px;
-      font-weight: 900;
-    }
+.brand{
+  font-size:17px;
+  font-weight:900;
+}
 
-    .brand span {
-      color: #00ffa6;
-    }
+.brand span{color:#00ffa6}
 
-    .user-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+.user-area{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
 
-    .email {
-      color: #89919a;
-      font-size: 12px;
-    }
+.email{
+  color:#89919a;
+  font-size:12px;
+}
 
-    .avatar {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: linear-gradient(135deg,#00ffa6,#00c8ff);
-      color: #00120c;
-      font-weight: 900;
-    }
+.avatar{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:linear-gradient(135deg,#00ffa6,#00c8ff);
+  color:#00120c;
+  font-weight:900;
+}
 
-    .logout {
-      padding: 9px 13px;
-      border: 1px solid rgba(255,80,80,.25);
-      border-radius: 8px;
-      background: rgba(255,70,70,.08);
-      color: #ff8585;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 800;
-    }
+.logout{
+  padding:9px 13px;
+  border:1px solid rgba(255,80,80,.25);
+  border-radius:8px;
+  background:rgba(255,70,70,.08);
+  color:#ff8585;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:800;
+}
 
-    .layout {
-      display: flex;
-      min-height: calc(100vh - 72px);
-    }
+.layout{
+  display:flex;
+  min-height:calc(100vh - 72px);
+}
 
-    .sidebar {
-      width: 230px;
-      padding: 25px 15px;
-      border-right: 1px solid rgba(255,255,255,.07);
-      background: #080a0c;
-    }
+.sidebar{
+  width:230px;
+  padding:25px 15px;
+  border-right:1px solid rgba(255,255,255,.07);
+  background:#080a0c;
+}
 
-    .section {
-      margin: 20px 10px 8px;
-      color: #59616a;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-    }
+.section{
+  margin:20px 10px 8px;
+  color:#59616a;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:1.5px;
+}
 
-    .menu a {
-      display: block;
-      padding: 12px;
-      margin-bottom: 3px;
-      border-radius: 8px;
-      color: #7d858e;
-      text-decoration: none;
-      font-size: 12px;
-    }
+.menu a{
+  display:block;
+  padding:12px;
+  margin-bottom:3px;
+  border-radius:8px;
+  color:#7d858e;
+  text-decoration:none;
+  font-size:12px;
+}
 
-    .menu a:hover,
-    .menu a.active {
-      color: #fff;
-      background: rgba(0,255,166,.07);
-    }
+.menu a:hover,
+.menu a.active{
+  color:#fff;
+  background:rgba(0,255,166,.07);
+}
 
-    .main {
-      flex: 1;
-      padding: 30px;
-      overflow-x: hidden;
-    }
+.main{
+  flex:1;
+  padding:30px;
+  overflow-x:hidden;
+}
 
-    .heading {
-      margin-bottom: 25px;
-    }
+.heading{
+  margin-bottom:25px;
+}
 
-    .heading h1 {
-      font-size: 24px;
-      margin-bottom: 6px;
-    }
+.heading h1{
+  font-size:24px;
+  margin-bottom:6px;
+}
 
-    .heading p {
-      color: #69717a;
-      font-size: 12px;
-    }
+.heading p{
+  color:#69717a;
+  font-size:12px;
+}
 
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-top: 15px;
-      padding: 8px 11px;
-      border-radius: 20px;
-      border: 1px solid rgba(0,255,166,.18);
-      background: rgba(0,255,166,.05);
-      color: #00ffa6;
-      font-size: 10px;
-      font-weight: 800;
-    }
+.status{
+  display:inline-flex;
+  margin-top:15px;
+  padding:8px 11px;
+  border-radius:20px;
+  border:1px solid rgba(0,255,166,.18);
+  background:rgba(0,255,166,.05);
+  color:#00ffa6;
+  font-size:10px;
+  font-weight:800;
+}
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 15px;
-    }
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
 
-    .card {
-      padding: 21px;
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 15px;
-      background: rgba(255,255,255,.025);
-    }
+.card{
+  padding:21px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;
+  background:rgba(255,255,255,.025);
+}
 
-    .label {
-      color: #707982;
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-    }
+.label{
+  color:#707982;
+  font-size:9px;
+  text-transform:uppercase;
+}
 
-    .value {
-      margin-top: 11px;
-      font-size: 24px;
-      font-weight: 900;
-    }
+.value{
+  margin-top:11px;
+  font-size:24px;
+  font-weight:900;
+}
 
-    .muted {
-      margin-top: 7px;
-      color: #555e67;
-      font-size: 10px;
-    }
+.muted{
+  margin-top:7px;
+  color:#555e67;
+  font-size:10px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 18px;
-      margin-top: 18px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:1.5fr 1fr;
+  gap:18px;
+  margin-top:18px;
+}
 
-    .panel {
-      padding: 22px;
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 16px;
-      background: rgba(255,255,255,.025);
-    }
+.panel{
+  padding:22px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:rgba(255,255,255,.025);
+}
 
-    .panel-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+.panel-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
 
-    .panel-title h2 {
-      font-size: 14px;
-    }
+.panel-title h2{
+  font-size:14px;
+}
 
-    .live {
-      color: #00ffa6;
-      font-size: 9px;
-      font-weight: 800;
-    }
+.live{
+  color:#00ffa6;
+  font-size:9px;
+  font-weight:800;
+}
 
-    .chart {
-      height: 260px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 10px;
-      background:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 50px 50px;
-    }
+.chart{
+  height:260px;
+  overflow:hidden;
+  border-radius:10px;
+  background:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:50px 50px;
+}
 
-    .chart svg {
-      width: 100%;
-      height: 100%;
-    }
+.chart svg{
+  width:100%;
+  height:100%;
+}
 
-    .engine {
-      text-align: center;
-    }
+.engine{
+  text-align:center;
+}
 
-    .engine-circle {
-      width: 105px;
-      height: 105px;
-      margin: 12px auto 18px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(0,255,166,.25);
-      border-radius: 50%;
-      background: rgba(0,255,166,.05);
-      color: #00ffa6;
-      font-size: 11px;
-      font-weight: 900;
-    }
+.engine-circle{
+  width:105px;
+  height:105px;
+  margin:12px auto 18px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(0,255,166,.25);
+  border-radius:50%;
+  background:rgba(0,255,166,.05);
+  color:#00ffa6;
+  font-size:11px;
+  font-weight:900;
+}
 
-    .engine p {
-      color: #69717a;
-      font-size: 11px;
-      margin-top: 7px;
-    }
+.engine p{
+  color:#69717a;
+  font-size:11px;
+  margin-top:7px;
+}
 
-    .setting {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,.05);
-      font-size: 11px;
-    }
+.setting{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:11px;
+}
 
-    .setting span:first-child {
-      color: #737c85;
-    }
+.setting span:first-child{
+  color:#737c85;
+}
 
-    .green {
-      color: #00ffa6;
-    }
+.green{
+  color:#00ffa6;
+}
 
-    .connect {
-      width: 100%;
-      margin-top: 18px;
-      padding: 13px;
-      border: 0;
-      border-radius: 9px;
-      background: linear-gradient(135deg,#00ffa6,#00d9ff);
-      color: #00120c;
-      cursor: pointer;
-      font-weight: 900;
-      font-size: 11px;
-    }
+.connect{
+  width:100%;
+  margin-top:18px;
+  padding:13px;
+  border:0;
+  border-radius:9px;
+  background:linear-gradient(135deg,#00ffa6,#00d9ff);
+  color:#00120c;
+  cursor:pointer;
+  font-weight:900;
+  font-size:11px;
+}
 
-    .connect:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+.connect:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
 
-    .positions {
-      margin-top: 18px;
-    }
+.positions{
+  margin-top:18px;
+}
 
-    .empty {
-      padding: 35px;
-      text-align: center;
-      color: #5d666f;
-      font-size: 11px;
-    }
+.empty{
+  padding:35px;
+  text-align:center;
+  color:#5d666f;
+  font-size:11px;
+}
 
-    .message {
-      margin-top: 12px;
-      color: #8a939c;
-      font-size: 11px;
-      text-align: center;
-    }
+.message{
+  margin-top:12px;
+  color:#8a939c;
+  font-size:11px;
+  text-align:center;
+}
 
-    .error {
-      color: #ff8585;
-    }
+.error{
+  color:#ff8585;
+}
 
-    @media(max-width:1000px) {
-      .cards {
-        grid-template-columns: repeat(2,1fr);
-      }
+@media(max-width:1000px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grid{grid-template-columns:1fr}
+}
 
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
+@media(max-width:700px){
+  .sidebar{display:none}
+  .main{padding:18px}
+  .topbar{padding:0 18px}
+  .email{display:none}
+}
 
-    @media(max-width:700px) {
-      .sidebar {
-        display: none;
-      }
-
-      .main {
-        padding: 18px;
-      }
-
-      .topbar {
-        padding: 0 18px;
-      }
-
-      .email {
-        display: none;
-      }
-    }
-
-    @media(max-width:500px) {
-      .cards {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+@media(max-width:500px){
+  .cards{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
@@ -364,435 +336,373 @@
 
 </header>
 
-
 <div class="layout">
 
-  <aside class="sidebar">
+<aside class="sidebar">
 
-    <div class="section">WORKSPACE</div>
+  <div class="section">WORKSPACE</div>
 
-    <nav class="menu">
-      <a href="#" class="active">Dashboard</a>
-      <a href="#">Markets</a>
-      <a href="#">AI Trading</a>
-      <a href="#">My Accounts</a>
-      <a href="#">Positions</a>
-      <a href="#">Trade History</a>
-    </nav>
+  <nav class="menu">
+    <a href="#" class="active">Dashboard</a>
+    <a href="#">Markets</a>
+    <a href="#">AI Trading</a>
+    <a href="#">My Accounts</a>
+    <a href="#">Positions</a>
+    <a href="#">Trade History</a>
+  </nav>
 
-    <div class="section">FINANCE</div>
+  <div class="section">FINANCE</div>
 
-    <nav class="menu">
-      <a href="#">Deposits</a>
-      <a href="#">Withdrawals</a>
-    </nav>
+  <nav class="menu">
+    <a href="#">Deposits</a>
+    <a href="#">Withdrawals</a>
+  </nav>
 
-    <div class="section">ACCOUNT</div>
+  <div class="section">ACCOUNT</div>
 
-    <nav class="menu">
-      <a href="#">Risk Management</a>
-      <a href="#">Settings</a>
-      <a href="#">Security</a>
-    </nav>
+  <nav class="menu">
+    <a href="#">Risk Management</a>
+    <a href="#">Settings</a>
+    <a href="#">Security</a>
+  </nav>
 
-  </aside>
+</aside>
 
+<main class="main">
 
-  <main class="main">
+  <div class="heading">
 
-    <div class="heading">
+    <h1>Trading Dashboard</h1>
 
-      <h1>Trading Dashboard</h1>
+    <p>
+      AI MONSTER U automated trading terminal
+    </p>
 
-      <p>
-        AI MONSTER U automated trading terminal
-      </p>
+    <div class="status">
+      ● SYSTEM ONLINE
+    </div>
 
-      <div class="status">
-        ● SYSTEM ONLINE
+  </div>
+
+  <section class="cards">
+
+    <div class="card">
+      <div class="label">Platform Balance</div>
+      <div id="balance" class="value">$0.00</div>
+      <div id="currencyText" class="muted">Wallet balance</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Trading Equity</div>
+      <div id="equity" class="value">$0.00</div>
+      <div class="muted">Demo account</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Today's P/L</div>
+      <div id="todayProfit" class="value">$0.00</div>
+      <div class="muted">Daily performance</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Open Positions</div>
+      <div id="openPositions" class="value">0</div>
+      <div class="muted">Currently active</div>
+    </div>
+
+  </section>
+
+  <section class="grid">
+
+    <div class="panel">
+
+      <div class="panel-title">
+        <h2>Market Overview</h2>
+        <span class="live">● DEMO</span>
+      </div>
+
+      <div class="chart">
+
+        <svg viewBox="0 0 800 260" preserveAspectRatio="none">
+
+          <polyline
+            points="0,205 60,190 110,210 160,160 210,178 260,135 310,155 360,105 410,125 460,90 510,112 560,62 610,80 660,45 720,65 800,28"
+            fill="none"
+            stroke="#00ffa6"
+            stroke-width="3"
+          />
+
+        </svg>
+
       </div>
 
     </div>
 
-
-    <section class="cards">
-
-      <div class="card">
-        <div class="label">Platform Balance</div>
-
-        <div id="balance" class="value">
-          $0.00
-        </div>
-
-        <div id="currencyText" class="muted">
-          Wallet balance
-        </div>
-      </div>
-
-
-      <div class="card">
-        <div class="label">Trading Equity</div>
-
-        <div id="equity" class="value">
-          $0.00
-        </div>
-
-        <div class="muted">
-          Demo account
-        </div>
-      </div>
-
-
-      <div class="card">
-        <div class="label">Today's P/L</div>
-
-        <div class="value">
-          $0.00
-        </div>
-
-        <div class="muted">
-          Daily performance
-        </div>
-      </div>
-      <div class="card">
-        <div class="label">Open Positions</div>
-
-        <div class="value">
-          0
-        </div>
-
-        <div class="muted">
-          Currently active
-        </div>
-      </div>
-
-    </section>
-
-
-    <section class="grid">
-
-      <div class="panel">
-
-        <div class="panel-title">
-
-          <h2>Market Overview</h2>
-
-          <span class="live">
-            ● DEMO
-          </span>
-
-        </div>
-
-        <div class="chart">
-
-          <svg viewBox="0 0 800 260" preserveAspectRatio="none">
-
-            <polyline
-              points="0,205 60,190 110,210 160,160 210,178 260,135 310,155 360,105 410,125 460,90 510,112 560,62 610,80 660,45 720,65 800,28"
-              fill="none"
-              stroke="#00ffa6"
-              stroke-width="3"
-            />
-
-          </svg>
-
-        </div>
-
-      </div>
-
-
-      <div class="panel engine">
-
-        <div class="panel-title">
-
-          <h2>AI MONSTER ENGINE</h2>
-
-          <span class="live">
-            READY
-          </span>
-
-        </div>
-
-        <div class="engine-circle">
-          DEMO
-        </div>
-
-        <h2>Trading Engine Ready</h2>
-
-        <p>
-          Demo trading is currently inactive.
-        </p>
-
-        <div class="setting">
-          <span>Risk Per Trade</span>
-          <span>1%</span>
-        </div>
-
-        <div class="setting">
-          <span>Automatic Lot Size</span>
-          <span class="green">ON</span>
-        </div>
-
-        <div class="setting">
-          <span>Automatic Stop Loss</span>
-          <span class="green">ON</span>
-        </div>
-
-        <div class="setting">
-          <span>Automatic Take Profit</span>
-          <span class="green">ON</span>
-        </div>
-
-        <div class="setting">
-          <span>Daily Loss Limit</span>
-          <span>3%</span>
-        </div>
-
-       <button id="createDemoButton" class="connect">
-  CREATE $50 DEMO ACCOUNT
-</button>
-
-<div id="demoMessage" class="message"></div>
-        <div id="engineMessage" class="message"></div>
-
-      </div>
-
-    </section>
-
-
-    <section class="panel positions">
+    <div class="panel engine">
 
       <div class="panel-title">
-
-        <h2>Open Positions</h2>
-
-        <span class="live">
-          0 ACTIVE
-        </span>
-
+        <h2>AI MONSTER ENGINE</h2>
+        <span class="live">READY</span>
       </div>
 
-      <div class="empty">
-        No open positions
+      <div class="engine-circle">
+        DEMO
       </div>
 
-    </section>
+      <h2>Trading Engine Ready</h2>
 
-  </main>
+      <p>
+        Demo account management
+      </p>
+
+      <div class="setting">
+        <span>Risk Per Trade</span>
+        <span>1%</span>
+      </div>
+
+      <div class="setting">
+        <span>Automatic Lot Size</span>
+        <span class="green">ON</span>
+      </div>
+
+      <div class="setting">
+        <span>Automatic Stop Loss</span>
+        <span class="green">ON</span>
+      </div>
+
+      <div class="setting">
+        <span>Automatic Take Profit</span>
+        <span class="green">ON</span>
+      </div>
+
+      <div class="setting">
+        <span>Daily Loss Limit</span>
+        <span>3%</span>
+      </div>
+
+      <button id="createDemoButton" class="connect">
+        CREATE $50 DEMO ACCOUNT
+      </button>
+      <div id="demoMessage" class="message"></div>
+
+    </div>
+
+  </section>
+
+  <section class="panel positions">
+
+    <div class="panel-title">
+
+      <h2>Open Positions</h2>
+
+      <span id="positionStatus" class="live">
+        0 ACTIVE
+      </span>
+
+    </div>
+
+    <div class="empty">
+      No open positions
+    </div>
+
+  </section>
+
+</main>
 
 </div>
 
-
 <script>
 
-  const SUPABASE_URL =
-    "https://kkjhgoodsstixqjfyvme.supabase.co";
+const SUPABASE_URL =
+  "https://kkjhgoodsstixqjfyvme.supabase.co";
 
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_jpd0pf-S7laKRnuc9dfhKg_C_WEzl1Y";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_jpd0pf-S7laKRnuc9dfhKg_C_WEzl1Y";
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
 
-  async function loadWallet(userId) {
+async function getCurrentUser() {
 
-    const {
-      data,
-      error
-    } = await supabaseClient
+  const result =
+    await supabaseClient.auth.getSession();
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (!result.data.session) {
+    window.location.replace("auth.html");
+    return null;
+  }
+
+  return result.data.session.user;
+}
+
+
+async function loadWallet(userId) {
+
+  const result =
+    await supabaseClient
       .from("wallets")
-      .select("balance, currency")
+      .select("balance,currency")
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+  if (result.error) {
+    throw result.error;
+  }
 
-    if (!data) {
-      document.getElementById("balance").textContent = "$0.00";
-      document.getElementById("currencyText").textContent =
-        "Wallet not created yet";
-      return;
-    }
+  if (!result.data) {
 
-    const balance =
-      Number(data.balance || 0);
+    document.getElementById("balance")
+      .textContent = "$0.00";
 
-    const currency =
-      data.currency || "USD";
+    document.getElementById("currencyText")
+      .textContent = "Wallet not created yet";
 
-    document.getElementById("balance").textContent =
+    return;
+  }
+
+  const balance =
+    Number(result.data.balance || 0);
+
+  const currency =
+    result.data.currency || "USD";
+
+  let formattedBalance;
+
+  try {
+
+    formattedBalance =
       new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: currency
       }).format(balance);
 
-    document.getElementById("currencyText").textContent =
-      currency + " wallet balance";
+  } catch {
+
+    formattedBalance =
+      "$" + balance.toFixed(2);
   }
 
+  document.getElementById("balance")
+    .textContent = formattedBalance;
 
-  async function startDashboard() {
+  document.getElementById("currencyText")
+    .textContent = currency + " wallet balance";
+}
 
-    try {
 
-      const {
-        data,
-        error
-      } = await supabaseClient.auth.getSession();
+async function loadDemoAccount(userId) {
 
-      if (error) {
-        throw error;
-      }
+  const result =
+    await supabaseClient
+      .from("trading_account")
+      .select(
+        "id,balance,equity,available_margin,mode,status,bot_enabled"
+      )
+      .eq("user_id", userId)
+      .eq("mode", "demo")
+      .maybeSingle();
 
-      if (!data.session) {
-        window.location.replace("auth.html");
-        return;
-      }
+  if (result.error) {
+    throw result.error;
+  }
 
-      const user =
-        data.session.user;
+  if (!result.data) {
 
-      const email =
-        user.email || "Trader";
+    document.getElementById("equity")
+      .textContent = "$0.00";
 
-      document.getElementById(
-        "userEmail"
-      ).textContent = email;
+    return;
+  }
 
-      document.getElementById(
-        "avatar"
-      ).textContent =
-        email.charAt(0).toUpperCase();
+  const equity =
+    Number(result.data.equity || 0);
 
-      await loadWallet(user.id);
+  document.getElementById("equity")
+    .textContent =
+      "$" + equity.toFixed(2);
 
-    } catch (error) {
+  const button =
+    document.getElementById("createDemoButton");
 
-      console.error(
-        "Dashboard error:",
-        error
-      );
+  button.textContent =
+    "DEMO ACCOUNT ACTIVE";
 
-      document.getElementById(
-        "balance"
-      ).textContent = "$0.00";
+  button.disabled = true;
+}
 
-      document.getElementById(
-        "currencyText"
-      ).textContent =
-        "Unable to load wallet";
 
-      window.setTimeout(function () {
-        window.location.replace("auth.html");
-      }, 1500);
+async function createDemoAccount() {
+
+  const button =
+    document.getElementById("createDemoButton");
+
+  const message =
+    document.getElementById("demoMessage");
+
+  button.disabled = true;
+
+  button.textContent =
+    "CREATING...";
+
+  message.className =
+    "message";
+
+  message.textContent =
+    "Creating your $50 demo account...";
+
+  try {
+
+    const user =
+      await getCurrentUser();
+
+    if (!user) {
+      return;
     }
-  }
 
-
-  document
-    .getElementById("logoutButton")
-    .addEventListener("click", async function () {
-
-      const button = this;
-
-      button.disabled = true;
-      button.textContent = "LOGGING OUT...";
-
-      const {
-        error
-      } = await supabaseClient.auth.signOut();
-
-      if (error) {
-
-        console.error(error);
-
-        button.disabled = false;
-        button.textContent = "LOGOUT";
-
-        alert(
-          error.message ||
-          "Logout failed."
-        );
-
-        return;
-      }
-
-      window.location.replace("auth.html");
-    });
-
-
- document
-  .getElementById("createDemoButton")
-  .addEventListener("click", async function () {
-
-    const button = this;
-    const message = document.getElementById("demoMessage");
-
-    button.disabled = true;
-    button.textContent = "CREATING...";
-
-    message.className = "message";
-    message.textContent = "Creating your $50 demo account...";
-
-    try {
-
-      const {
-        data: sessionData,
-        error: sessionError
-      } = await supabaseClient.auth.getSession();
-
-      if (sessionError) {
-        throw sessionError;
-      }
-
-      if (!sessionData.session) {
-        window.location.replace("auth.html");
-        return;
-      }
-
-      const user = sessionData.session.user;
-
-      const {
-        data: existingAccount,
-        error: existingError
-      } = await supabaseClient
+    const existing =
+      await supabaseClient
         .from("trading_account")
         .select("id")
         .eq("user_id", user.id)
         .eq("mode", "demo")
         .maybeSingle();
 
-      if (existingError) {
-        throw existingError;
-      }
+    if (existing.error) {
+      throw existing.error;
+    }
 
-      if (existingAccount) {
+    if (existing.data) {
 
-        message.className = "message";
-        message.textContent =
-          "You already have a demo account.";
+      document.getElementById("equity")
+        .textContent = "$50.00";
 
-        button.textContent = "DEMO ACCOUNT EXISTS";
-        return;
-      }
+      message.textContent =
+        "Your demo account already exists.";
 
-      const {
-        data,
-        error
-      } = await supabaseClient
+      button.textContent =
+        "DEMO ACCOUNT ACTIVE";
+
+      return;
+    }
+
+    const result =
+      await supabaseClient
         .from("trading_account")
         .insert({
           user_id: user.id,
           account_name: "AI MONSTER U Demo",
           mode: "demo",
           broker: "AI MONSTER U Demo",
-          broker_account_id: "DEMO-" + Date.now(),
+          broker_account_id:
+            "DEMO-" + Date.now(),
           currency: "USD",
           balance: 50,
           equity: 50,
@@ -803,38 +713,125 @@
         .select()
         .single();
 
-      if (error) {
-        throw error;
-      }
-
-      document.getElementById("equity").textContent = "$50.00";
-
-      message.className = "message green";
-      message.textContent =
-        "Demo account created successfully with $50.00.";
-
-      button.textContent = "DEMO ACCOUNT CREATED";
-
-    } catch (error) {
-
-      console.error(
-        "Demo account error:",
-        error
-      );
-
-      message.className = "message error";
-      message.textContent =
-        error.message || "Could not create demo account.";
-
-      button.disabled = false;
-      button.textContent = "CREATE $50 DEMO ACCOUNT";
+    if (result.error) {
+      throw result.error;
     }
 
+    document.getElementById("equity")
+      .textContent = "$50.00";
+
+    message.className =
+      "message green";
+
+    message.textContent =
+      "Demo account created successfully.";
+
+    button.textContent =
+      "DEMO ACCOUNT ACTIVE";
+
+  } catch (error) {
+
+    console.error(
+      "Demo account error:",
+      error
+    );
+
+    message.className =
+      "message error";
+
+    message.textContent =
+      error.message ||
+      "Could not create demo account.";
+
+    button.disabled = false;
+
+    button.textContent =
+      "CREATE $50 DEMO ACCOUNT";
+  }
+}
+
+
+async function startDashboard() {
+
+  try {
+
+    const user =
+      await getCurrentUser();
+
+    if (!user) {
+      return;
+    }
+
+    const email =
+      user.email || "Trader";
+
+    document.getElementById("userEmail")
+      .textContent = email;
+
+    document.getElementById("avatar")
+      .textContent =
+        email.charAt(0).toUpperCase();
+
+    await loadWallet(user.id);
+
+    await loadDemoAccount(user.id);
+
+  } catch (error) {
+
+    console.error(
+      "Dashboard error:",
+      error
+    );
+
+    document.getElementById("demoMessage")
+      .className = "message error";
+
+    document.getElementById("demoMessage")
+      .textContent =
+        "Unable to load account data.";
+  }
+}
+
+
+document
+  .getElementById("logoutButton")
+  .addEventListener("click", async function() {
+
+    const button = this;
+
+    button.disabled = true;
+
+    button.textContent =
+      "LOGGING OUT...";
+
+    const result =
+      await supabaseClient.auth.signOut();
+
+    if (result.error) {
+
+      console.error(result.error);
+
+      button.disabled = false;
+
+      button.textContent =
+        "LOGOUT";
+
+      return;
+    }
+
+    window.location.replace("auth.html");
   });
-    });
 
 
-  startDashboard();
+document
+  .getElementById("createDemoButton")
+  .addEventListener(
+    "click",
+    createDemoAccount
+  );
+
+
+startDashboard();
 
 </script>
 
