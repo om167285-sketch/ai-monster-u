@@ -344,8 +344,8 @@ body{
 
   <nav class="menu">
     <a href="#" class="active">Dashboard</a>
-    <a href="#">Markets</a>
-    <a href="#ai-trading" id="aiTradingLink">AI Trading</a>
+ <a href="#markets" data-page="markets">Markets</a>
+<a href="#ai-trading" data-page="ai-trading">AI Trading</a>
     <a href="#">My Accounts</a>
     <a href="#">Positions</a>
     <a href="#">Trade History</a>
@@ -1003,38 +1003,47 @@ startDashboard();
 
 </script>
 <script>
+<script>
 document.addEventListener("DOMContentLoaded", function () {
-  const depositsLink = document.getElementById("depositsLink");
-  const withdrawalsLink = document.getElementById("withdrawalsLink");
-const aiTradingLink = document.getElementById("aiTradingLink");
-const aiTrading = document.getElementById("ai-trading");
 
-if (aiTradingLink) {
-  aiTradingLink.addEventListener("click", function (event) {
-    event.preventDefault();
+  const pages = {
+    dashboard: document.getElementById("dashboard"),
+    markets: document.getElementById("markets"),
+    "ai-trading": document.getElementById("ai-trading"),
+    accounts: document.getElementById("accounts"),
+    positions: document.getElementById("positions"),
+    "trade-history": document.getElementById("trade-history"),
+    deposits: document.getElementById("deposits"),
+    withdrawals: document.getElementById("withdrawals"),
+    "risk-management": document.getElementById("risk-management"),
+    settings: document.getElementById("settings"),
+    security: document.getElementById("security")
+  };
 
-    document.querySelectorAll(".page-section").forEach(function (section) {
-      section.style.display = "none";
+  const links = document.querySelectorAll(".menu a");
+
+  function showPage(pageName) {
+
+    Object.keys(pages).forEach(function (key) {
+      if (pages[key]) {
+        pages[key].style.display = "none";
+      }
     });
 
-    aiTrading.style.display = "block";
+    if (pages[pageName]) {
+      pages[pageName].style.display = "block";
+    }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  });
-}
-  const deposits = document.getElementById("deposits");
-  const withdrawals = document.getElementById("withdrawals");
-
-  function showPage(page) {
-    document.querySelectorAll(".page-section").forEach(function (section) {
-      section.style.display = "none";
+    links.forEach(function (link) {
+      link.classList.remove("active");
     });
 
-    if (page) {
-      page.style.display = "block";
+    const activeLink = document.querySelector(
+      '.menu a[data-page="' + pageName + '"]'
+    );
+
+    if (activeLink) {
+      activeLink.classList.add("active");
     }
 
     window.scrollTo({
@@ -1043,19 +1052,23 @@ if (aiTradingLink) {
     });
   }
 
-  if (depositsLink) {
-    depositsLink.addEventListener("click", function (event) {
-      event.preventDefault();
-      showPage(deposits);
-    });
-  }
+  links.forEach(function (link) {
 
-  if (withdrawalsLink) {
-    withdrawalsLink.addEventListener("click", function (event) {
+    link.addEventListener("click", function (event) {
+
+      const pageName = link.getAttribute("data-page");
+
+      if (!pageName) {
+        return;
+      }
+
       event.preventDefault();
-      showPage(withdrawals);
+
+      showPage(pageName);
     });
-  }
+
+  });
+
 });
 </script>
 </body>
