@@ -915,6 +915,43 @@ document
 startDashboard();
 
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const depositsLink = document.getElementById("depositsLink");
+  const withdrawalsLink = document.getElementById("withdrawalsLink");
 
+  const deposits = document.getElementById("deposits");
+  const withdrawals = document.getElementById("withdrawals");
+
+  function showPage(page) {
+    document.querySelectorAll(".page-section").forEach(function (section) {
+      section.style.display = "none";
+    });
+
+    if (page) {
+      page.style.display = "block";
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  if (depositsLink) {
+    depositsLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      showPage(deposits);
+    });
+  }
+
+  if (withdrawalsLink) {
+    withdrawalsLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      showPage(withdrawals);
+    });
+  }
+});
+</script>
 </body>
 </html>
