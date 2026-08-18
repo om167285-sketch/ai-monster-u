@@ -353,10 +353,10 @@ body{
 
   <div class="section">FINANCE</div>
 
-  <nav class="menu">
-    <a href="#">Deposits</a>
-    <a href="#">Withdrawals</a>
-  </nav>
+ <nav class="menu">
+  <a href="#deposits" id="depositsLink">Deposits</a>
+  <a href="#withdrawals" id="withdrawalsLink">Withdrawals</a>
+</nav>
 
   <div class="section">ACCOUNT</div>
 
@@ -369,6 +369,87 @@ body{
 </aside>
 
 <main class="main">
+  <section id="deposits" class="page-section" style="display:none;">
+  <div class="heading">
+    <h1>Crypto Deposits</h1>
+    <p>Deposit funds securely into your AI MONSTER U account.</p>
+  </div>
+
+  <div class="card">
+    <h2>Deposit Funds</h2>
+
+    <label>Cryptocurrency</label>
+    <select id="depositCurrency">
+      <option value="USDT">USDT</option>
+      <option value="USDC">USDC</option>
+    </select>
+
+    <label>Network</label>
+    <select id="depositNetwork">
+      <option value="TRC20">TRC20</option>
+      <option value="ERC20">ERC20</option>
+      <option value="BEP20">BEP20</option>
+    </select>
+
+    <label>Amount</label>
+    <input id="depositAmount" type="number" min="50" placeholder="Minimum $50">
+
+    <div class="crypto-placeholder">
+      <div class="qr-placeholder">QR</div>
+      <p>Deposit address will appear here when a verified payment provider is connected.</p>
+    </div>
+
+    <button id="depositSubmit">Submit Deposit</button>
+
+    <p class="notice">
+      Minimum deposit: $50. Never send funds until the displayed network and address
+      have been verified.
+    </p>
+  </div>
+</section>
+
+<section id="withdrawals" class="page-section" style="display:none;">
+  <div class="heading">
+    <h1>Crypto Withdrawals</h1>
+    <p>Withdraw your available funds securely.</p>
+  </div>
+
+  <div class="card">
+    <h2>Withdraw Funds</h2>
+
+    <label>Cryptocurrency</label>
+    <select id="withdrawCurrency">
+      <option value="USDT">USDT</option>
+      <option value="USDC">USDC</option>
+    </select>
+
+    <label>Network</label>
+    <select id="withdrawNetwork">
+      <option value="TRC20">TRC20</option>
+      <option value="ERC20">ERC20</option>
+      <option value="BEP20">BEP20</option>
+    </select>
+
+    <label>Wallet Address</label>
+    <input id="withdrawAddress" type="text" placeholder="Enter destination wallet">
+
+    <label>Amount</label>
+    <input id="withdrawAmount" type="number" min="0" placeholder="Enter amount">
+
+    <div class="withdraw-summary">
+      <p>Available balance: <strong id="withdrawBalance">$0.00</strong></p>
+      <p>Network fee: <strong id="withdrawFee">$0.00</strong></p>
+      <p>You receive: <strong id="withdrawReceive">$0.00</strong></p>
+    </div>
+
+    <button id="withdrawSubmit">Request Withdrawal</button>
+
+    <p class="notice">
+      Withdrawals are reviewed and processed securely. Your funds are not marked
+      as withdrawn until the transaction is actually processed.
+    </p>
+  </div>
+</section>
 
   <div class="heading">
 
