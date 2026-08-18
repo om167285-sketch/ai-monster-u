@@ -1006,32 +1006,18 @@ startDashboard();
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-  const pages = {
-    dashboard: document.getElementById("dashboard"),
-    markets: document.getElementById("markets"),
-    "ai-trading": document.getElementById("ai-trading"),
-    accounts: document.getElementById("accounts"),
-    positions: document.getElementById("positions"),
-    "trade-history": document.getElementById("trade-history"),
-    deposits: document.getElementById("deposits"),
-    withdrawals: document.getElementById("withdrawals"),
-    "risk-management": document.getElementById("risk-management"),
-    settings: document.getElementById("settings"),
-    security: document.getElementById("security")
-  };
-
-  const links = document.querySelectorAll(".menu a");
+  const pages = document.querySelectorAll(".page-section");
+  const links = document.querySelectorAll(".menu a[data-page]");
 
   function showPage(pageName) {
-
-    Object.keys(pages).forEach(function (key) {
-      if (pages[key]) {
-        pages[key].style.display = "none";
-      }
+    pages.forEach(function (page) {
+      page.style.display = "none";
     });
 
-    if (pages[pageName]) {
-      pages[pageName].style.display = "block";
+    const selectedPage = document.getElementById(pageName);
+
+    if (selectedPage) {
+      selectedPage.style.display = "block";
     }
 
     links.forEach(function (link) {
@@ -1053,20 +1039,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   links.forEach(function (link) {
-
     link.addEventListener("click", function (event) {
+      event.preventDefault();
 
       const pageName = link.getAttribute("data-page");
 
-      if (!pageName) {
-        return;
+      if (pageName) {
+        showPage(pageName);
       }
-
-      event.preventDefault();
-
-      showPage(pageName);
     });
-
   });
 
 });
