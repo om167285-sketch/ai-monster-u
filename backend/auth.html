@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI MONSTER U | Secure Access</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(0,255,166,.12), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(0,200,255,.10), transparent 30%),
+        #050607;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo {
+      width: 55px;
+      height: 55px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #00ffa6, #00c8ff);
+      color: #00120c;
+      font-size: 23px;
+      font-weight: 1000;
+    }
+
+    .brand h1 {
+      font-size: 23px;
+      margin-bottom: 7px;
+    }
+
+    .brand p {
+      color: #737b85;
+      font-size: 12px;
+    }
+
+    .box {
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(12,15,17,.94);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 25px 80px rgba(0,0,0,.45);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .tab {
+      border: 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: transparent;
+      color: #737b85;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .tab.active {
+      color: #00120c;
+      background: linear-gradient(135deg,#00ffa6,#00d9ff);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #858d96;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 10px;
+      outline: none;
+      background: rgba(255,255,255,.035);
+      color: white;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: rgba(0,255,166,.5);
+    }
+
+    .submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 5px;
+      border: 0;
+      border-radius: 10px;
+      background: linear-gradient(135deg,#00ffa6,#00d9ff);
+      color: #00120c;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .submit:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .message {
+      min-height: 20px;
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .error {
+      color: #ff7777;
+    }
+
+    .success {
+      color: #00ffa6;
+    }
+
+    .info {
+      color: #9299a1;
+    }
+
+    .back {
+      display: block;
+      margin-top: 20px;
+      color: #69717a;
+      text-align: center;
+      text-decoration: none;
+      font-size: 11px;
+    }
+
+    .back:hover {
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="brand">
+    <div class="logo">M</div>
+    <h1>AI MONSTER U</h1>
+    <p>Secure trading platform access</p>
+  </div>
+
+  <div class="box">
+
+    <div class="tabs">
+      <button type="button" class="tab active" id="loginTab">
+        LOGIN
+      </button>
+
+      <button type="button" class="tab" id="registerTab">
+        CREATE ACCOUNT
+      </button>
+    </div>
+
+    <form id="authForm">
+
+      <div class="field" id="usernameField" style="display:none;">
+        <label for="username">USERNAME</label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="Choose a username"
+          autocomplete="username"
+        >
+      </div>
+
+      <div class="field">
+        <label for="email">EMAIL</label>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="password">PASSWORD</label>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Minimum 8 characters"
+          minlength="8"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="submit"
+        id="submitButton">
+        LOGIN
+      </button>
+
+    </form>
+
+    <div id="message" class="message"></div>
+
+    <a href="index.html" class="back">
+      ← Back to AI MONSTER U
+    </a>
+
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL =
+    "https://kkjhgoodsstixqjfyvme.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_jpd0pf-S7laKRnuc9dfhKg_C_WEzl1Y";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+  const loginTab =
+    document.getElementById("loginTab");
+
+  const registerTab =
+    document.getElementById("registerTab");
+
+  const usernameField =
+    document.getElementById("usernameField");
+
+  const username =
+    document.getElementById("username");
+
+  const email =
+    document.getElementById("email");
+
+  const password =
+    document.getElementById("password");
+
+  const form =
+    document.getElementById("authForm");
+
+  const submitButton =
+    document.getElementById("submitButton");
+
+  const message =
+    document.getElementById("message");
+
+  let mode = "login";
+
+  function showMessage(text, type = "info") {
+    message.textContent = text;
+    message.className = "message " + type;
+  }
+
+  function setMode(newMode) {
+    mode = newMode;
+
+    showMessage("");
+
+    if (mode === "login") {
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+
+      usernameField.style.display = "none";
+      username.required = false;
+
+      submitButton.textContent = "LOGIN";
+      password.autocomplete = "current-password";
+    } else {
+      loginTab.classList.remove("active");
+      registerTab.classList.add("active");
+
+      usernameField.style.display = "block";
+      username.required = true;
+
+      submitButton.textContent = "CREATE ACCOUNT";
+      password.autocomplete = "new-password";
+    }
+  }
+
+  loginTab.addEventListener("click", function () {
+    setMode("login");
+  });
+
+  registerTab.addEventListener("click", function () {
+    setMode("register");
+  });
+
+  async function checkExistingSession() {
+    try {
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getSession();
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (data.session) {
+        window.location.replace("dashboard.html");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const emailValue =
+      email.value.trim();
+
+    const passwordValue =
+      password.value;
+
+    if (!emailValue || !passwordValue) {
+      showMessage(
+        "Please enter your email and password.",
+        "error"
+      );
+      return;
+    }
+
+    submitButton.disabled = true;
+    showMessage("Please wait...", "info");
+
+    try {
+
+      if (mode === "login") {
+
+        const {
+          data,
+          error
+        } = await supabaseClient.auth.signInWithPassword({
+          email: emailValue,
+          password: passwordValue
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data.session) {
+          throw new Error(
+            "Login completed, but no session was created."
+          );
+        }
+
+        showMessage(
+          "Login successful. Opening dashboard...",
+          "success"
+        );
+
+        setTimeout(function () {
+          window.location.replace("dashboard.html");
+        }, 300);
+
+      } else {
+
+        const usernameValue =
+          username.value.trim();
+        if (usernameValue.length < 3) {
+          throw new Error(
+            "Username must contain at least 3 characters."
+          );
+        }
+
+        if (passwordValue.length < 8) {
+          throw new Error(
+            "Password must contain at least 8 characters."
+          );
+        }
+
+        const {
+          data,
+          error
+        } = await supabaseClient.auth.signUp({
+          email: emailValue,
+          password: passwordValue,
+          options: {
+            data: {
+              username: usernameValue
+            }
+          }
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.session) {
+
+          showMessage(
+            "Account created. Opening dashboard...",
+            "success"
+          );
+
+          setTimeout(function () {
+            window.location.replace("dashboard.html");
+          }, 500);
+
+        } else {
+
+          showMessage(
+            "Account created. Check your email to verify your account, then log in.",
+            "success"
+          );
+
+          setMode("login");
+        }
+      }
+
+    } catch (error) {
+
+      console.error("Authentication error:", error);
+
+      showMessage(
+        error.message || "Authentication failed.",
+        "error"
+      );
+
+    } finally {
+
+      submitButton.disabled = false;
+
+    }
+  });
+
+  checkExistingSession();
+</script>
+
+</body>
+</html>
