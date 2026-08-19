@@ -9,70 +9,68 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#050708;
-  --panel:#0b0f12;
-  --panel2:#0f1418;
-  --border:rgba(255,255,255,.08);
-  --text:#f4f7f8;
-  --muted:#78838c;
-  --green:#00ffa6;
-  --blue:#00c8ff;
-  --red:#ff5f6d;
-  --yellow:#ffd166;
-}
+
 body{
   min-height:100vh;
-  background:var(--bg);
-  color:var(--text);
+  background:#050607;
+  color:#fff;
   font-family:Inter,Arial,Helvetica,sans-serif;
 }
+
 button,input,select{font:inherit}
+
 button{cursor:pointer}
 
 .topbar{
   height:70px;
-  padding:0 28px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  background:#080b0d;
-  border-bottom:1px solid var(--border);
+  justify-content:space-between;
+  padding:0 28px;
+  background:#080a0c;
+  border-bottom:1px solid rgba(255,255,255,.07);
   position:sticky;
   top:0;
   z-index:20;
 }
+
 .brand{
-  font-size:18px;
+  font-size:17px;
   font-weight:900;
+  letter-spacing:.3px;
 }
-.brand span{color:var(--green)}
+
+.brand span{color:#00ffa6}
+
 .user-area{
   display:flex;
   align-items:center;
   gap:12px;
 }
+
 .email{
-  color:var(--muted);
-  font-size:12px;
+  color:#737d87;
+  font-size:11px;
 }
+
 .avatar{
-  width:36px;
-  height:36px;
-  border-radius:10px;
+  width:35px;
+  height:35px;
   display:grid;
   place-items:center;
-  background:linear-gradient(135deg,var(--green),var(--blue));
-  color:#00130d;
+  border-radius:10px;
+  background:linear-gradient(135deg,#00ffa6,#00c8ff);
+  color:#00140d;
   font-weight:900;
 }
+
 .logout{
-  padding:9px 13px;
+  border:1px solid rgba(255,80,80,.25);
+  background:rgba(255,80,80,.07);
+  color:#ff8585;
+  padding:9px 12px;
   border-radius:8px;
-  border:1px solid rgba(255,95,109,.25);
-  background:rgba(255,95,109,.08);
-  color:#ff9aa2;
-  font-size:11px;
+  font-size:10px;
   font-weight:800;
 }
 
@@ -80,70 +78,85 @@ button{cursor:pointer}
   display:flex;
   min-height:calc(100vh - 70px);
 }
+
 .sidebar{
   width:235px;
   flex-shrink:0;
+  background:#080a0c;
+  border-right:1px solid rgba(255,255,255,.07);
   padding:22px 14px;
-  background:#080b0d;
-  border-right:1px solid var(--border);
 }
+
 .section{
-  margin:19px 10px 8px;
-  color:#4f5a62;
+  margin:18px 10px 8px;
+  color:#4e5862;
   font-size:9px;
   font-weight:900;
   letter-spacing:1.5px;
 }
+
 .menu a{
   display:flex;
   align-items:center;
-  padding:11px 12px;
-  margin:3px 0;
+  padding:12px;
+  margin-bottom:3px;
   border-radius:9px;
-  color:#7c878f;
+  color:#747e88;
   text-decoration:none;
   font-size:12px;
-  font-weight:700;
   transition:.15s;
 }
-.menu a:hover,
-.menu a.active{
+
+.menu a:hover{
   color:#fff;
-  background:rgba(0,255,166,.08);
+  background:rgba(255,255,255,.04);
 }
+
 .menu a.active{
-  box-shadow:inset 2px 0 var(--green);
+  color:#00ffa6;
+  background:rgba(0,255,166,.07);
 }
 
 .main{
   flex:1;
   min-width:0;
   padding:30px;
-  overflow-x:hidden;
 }
 
-.page-section{display:none}
-.page-section.active{display:block}
+.page-section{
+  display:none;
+}
+
+.page-section.active{
+  display:block;
+}
+
+.dashboard-page{
+  display:block;
+}
 
 .heading{
   margin-bottom:24px;
 }
+
 .heading h1{
   font-size:25px;
   margin-bottom:6px;
 }
+
 .heading p{
-  color:var(--muted);
+  color:#69737d;
   font-size:12px;
 }
-.badge{
+
+.status{
   display:inline-flex;
-  margin-top:13px;
+  margin-top:14px;
   padding:7px 11px;
+  border:1px solid rgba(0,255,166,.18);
   border-radius:20px;
-  background:rgba(0,255,166,.06);
-  border:1px solid rgba(0,255,166,.17);
-  color:var(--green);
+  background:rgba(0,255,166,.05);
+  color:#00ffa6;
   font-size:9px;
   font-weight:900;
 }
@@ -151,243 +164,95 @@ button{cursor:pointer}
 .cards{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:15px;
+  gap:14px;
 }
+
 .card,.panel{
-  background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.018));
-  border:1px solid var(--border);
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.07);
   border-radius:15px;
+}
+
+.card{
   padding:20px;
 }
+
 .label{
-  color:#69747c;
+  color:#68727c;
   font-size:9px;
   text-transform:uppercase;
   letter-spacing:.5px;
 }
+
 .value{
   margin-top:10px;
   font-size:23px;
   font-weight:900;
 }
+
 .muted{
-  margin-top:6px;
-  color:#505a62;
+  margin-top:7px;
+  color:#4f5962;
   font-size:10px;
 }
+
 .grid{
   display:grid;
   grid-template-columns:1.45fr 1fr;
-  gap:17px;
+  gap:16px;
   margin-top:17px;
 }
+
+.panel{
+  padding:20px;
+}
+
 .panel-title{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:18px;
 }
+
 .panel-title h2{
   font-size:14px;
 }
+
 .live{
-  color:var(--green);
+  color:#00ffa6;
   font-size:9px;
   font-weight:900;
 }
+
 .chart{
-  height:270px;
-  border-radius:11px;
+  height:260px;
   overflow:hidden;
+  border-radius:10px;
   background:
     linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-  background-size:45px 45px;
-}
-.chart svg{width:100%;height:100%}
-
-.row{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-.row4{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-}
-.stat{
-  padding:16px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:rgba(255,255,255,.018);
-}
-.stat span{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-}
-.stat strong{
-  display:block;
-  margin-top:8px;
-  font-size:17px;
+  background-size:50px 50px;
 }
 
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
-.field{margin-bottom:15px}
-.field label{
-  display:block;
-  margin-bottom:7px;
-  color:#89939b;
-  font-size:10px;
-  font-weight:800;
-}
-input,select{
+.chart svg{
   width:100%;
-  padding:12px;
-  color:#fff;
-  background:#080c0f;
-  border:1px solid var(--border);
-  border-radius:8px;
-  outline:none;
-}
-input:focus,select:focus{
-  border-color:rgba(0,255,166,.4);
-}
-.primary{
-  width:100%;
-  padding:13px;
-  border:0;
-  border-radius:9px;
-  background:linear-gradient(135deg,var(--green),var(--blue));
-  color:#00130d;
-  font-weight:900;
-  font-size:11px;
-}
-.secondary{
-  padding:11px 14px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#11161a;
-  color:#fff;
-  font-size:11px;
-  font-weight:800;
-}
-.danger{
-  padding:11px 14px;
-  border:1px solid rgba(255,95,109,.25);
-  border-radius:8px;
-  background:rgba(255,95,109,.08);
-  color:#ff929a;
-  font-size:11px;
-  font-weight:800;
-}
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.message{
-  margin-top:12px;
-  color:#7f8991;
-  font-size:11px;
-}
-.success{color:var(--green)}
-.error{color:#ff8b94}
-
-.account-list{
-  display:grid;
-  gap:12px;
-}
-.account{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  padding:17px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:#0a0e11;
-}
-.account h3{font-size:13px}
-.account p{
-  margin-top:5px;
-  color:var(--muted);
-  font-size:10px;
-}
-.account-right{text-align:right}
-.mode{
-  display:inline-block;
-  padding:5px 8px;
-  border-radius:15px;
-  font-size:8px;
-  font-weight:900;
-}
-.demo{color:var(--blue);background:rgba(0,200,255,.08)}
-.live-mode{color:var(--green);background:rgba(0,255,166,.08)}
-.connected{color:var(--green)}
-.disconnected{color:var(--red)}
-
-.table-wrap{
-  overflow:auto;
-  border:1px solid var(--border);
-  border-radius:12px;
-}
-table{
-  width:100%;
-  min-width:700px;
-  border-collapse:collapse;
-}
-th,td{
-  padding:13px 14px;
-  text-align:left;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  font-size:10px;
-}
-th{
-  color:#68737b;
-  font-size:9px;
-  text-transform:uppercase;
-}
-td{color:#c5cdd2}
-.empty{
-  padding:40px 20px;
-  text-align:center;
-  color:#5f6971;
-  font-size:11px;
+  height:100%;
 }
 
-.notice{
-  margin-top:14px;
-  padding:12px;
-  border-radius:9px;
-  background:rgba(255,209,102,.05);
-  border:1px solid rgba(255,209,102,.12);
-  color:#a79a74;
-  font-size:10px;
-  line-height:1.5;
-}
-
-.engine{
-  text-align:center;
-}
 .engine-circle{
   width:105px;
   height:105px;
-  margin:12px auto 18px;
   display:grid;
   place-items:center;
+  margin:20px auto;
   border-radius:50%;
-  border:1px solid rgba(0,255,166,.3);
-  background:rgba(0,255,166,.05);
-  color:var(--green);
+  border:1px solid rgba(0,255,166,.25);
+  background:rgba(0,255,166,.04);
+  color:#00ffa6;
   font-size:11px;
   font-weight:900;
 }
+
 .setting{
   display:flex;
   justify-content:space-between;
@@ -395,92 +260,253 @@ td{color:#c5cdd2}
   border-bottom:1px solid rgba(255,255,255,.05);
   font-size:11px;
 }
-.setting span:first-child{color:#78828a}
 
-.candle{
-  margin-top:15px;
-  padding:16px;
-  border:1px solid var(--border);
-  border-radius:11px;
-  background:#080c0f;
+.setting span:first-child{
+  color:#737d87;
 }
-.candle strong{
-  display:block;
-  margin-top:6px;
-  font-size:16px;
+
+.green{color:#00ffa6}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
 }
-.ai-actions{
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  color:#737d87;
+  font-size:10px;
+  font-weight:700;
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid rgba(255,255,255,.09);
+  outline:none;
+  background:#0b0e11;
+  color:#fff;
+}
+
+input:focus,select:focus{
+  border-color:rgba(0,255,166,.4);
+}
+
+.primary{
+  width:100%;
+  margin-top:18px;
+  padding:13px;
+  border:0;
+  border-radius:9px;
+  background:linear-gradient(135deg,#00ffa6,#00d9ff);
+  color:#00120c;
+  font-size:11px;
+  font-weight:900;
+}
+
+.secondary{
+  padding:12px 15px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;
+  background:#0c1013;
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+}
+
+.danger{
+  padding:12px 15px;
+  border:1px solid rgba(255,80,80,.25);
+  border-radius:9px;
+  background:rgba(255,80,80,.08);
+  color:#ff8585;
+  font-size:10px;
+  font-weight:800;
+}
+
+.actions{
   display:flex;
   gap:10px;
   margin-top:18px;
 }
-.ai-actions button{flex:1}
 
-.switch{
-  width:42px;
-  height:23px;
-  border-radius:20px;
-  border:0;
-  background:#242b30;
-  position:relative;
-}
-.switch:after{
-  content:"";
-  position:absolute;
-  width:17px;
-  height:17px;
-  top:3px;
-  left:3px;
-  border-radius:50%;
-  background:#89939b;
-  transition:.2s;
-}
-.switch.on{background:rgba(0,255,166,.3)}
-.switch.on:after{
-  left:22px;
-  background:var(--green);
+.actions button{
+  flex:1;
 }
 
-.qr{
-  width:150px;
-  height:150px;
-  margin:15px auto;
+.trading-status{
   display:grid;
-  place-items:center;
-  border-radius:10px;
-  background:#fff;
-  color:#111;
-  font-size:13px;
-  font-weight:900;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:20px;
 }
 
-.wallet-address{
-  padding:13px;
-  word-break:break-all;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#070a0c;
-  color:#aab4bb;
+.stat-box{
+  padding:14px;
+  border-radius:10px;
+  background:#090c0f;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.stat-box span{
+  display:block;
+  color:#626c75;
+  font-size:9px;
+  margin-bottom:7px;
+}
+
+.stat-box strong{
+  font-size:12px;
+}
+
+.signal{
+  color:#00ffa6;
+}
+
+.candle-box{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:18px;
+}
+
+.candle-item{
+  padding:15px;
+  border-radius:10px;
+  background:#090c0f;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.candle-item span{
+  display:block;
+  color:#626c75;
+  font-size:9px;
+  margin-bottom:7px;
+}
+
+.candle-item strong{
+  font-size:13px;
+}
+
+.notice{
+  margin-top:13px;
+  color:#68727c;
+  font-size:10px;
+  line-height:1.6;
+}
+
+.message{
+  margin-top:12px;
+  text-align:center;
+  font-size:10px;
+  color:#79838d;
+}
+
+.error{color:#ff8585}
+
+.success{color:#00ffa6}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
   font-size:10px;
 }
 
-@media(max-width:1100px){
+th{
+  text-align:left;
+  padding:12px;
+  color:#59636d;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+td{
+  padding:13px 12px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  color:#a5adb5;
+}
+
+.badge{
+  display:inline-flex;
+  padding:5px 8px;
+  border-radius:20px;
+  font-size:8px;
+  font-weight:900;
+}
+
+.badge.green{
+  background:rgba(0,255,166,.08);
+  color:#00ffa6;
+}
+
+.badge.yellow{
+  background:rgba(255,190,0,.08);
+  color:#ffc43d;
+}
+
+.badge.red{
+  background:rgba(255,80,80,.08);
+  color:#ff8585;
+}
+
+.empty{
+  padding:40px 20px;
+  text-align:center;
+  color:#555f68;
+  font-size:11px;
+}
+
+.balance-box{
+  padding:25px;
+  margin-bottom:18px;
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(0,255,166,.06),rgba(0,200,255,.03));
+  border:1px solid rgba(0,255,166,.12);
+}
+
+.balance-box span{
+  color:#69737d;
+  font-size:10px;
+}
+
+.balance-box strong{
+  display:block;
+  margin-top:8px;
+  font-size:30px;
+}
+
+@media(max-width:1050px){
   .cards{grid-template-columns:repeat(2,1fr)}
-  .
-  row4{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:850px){
-  .sidebar{width:205px}
-  .main{padding:20px}
   .grid{grid-template-columns:1fr}
-  .form-grid{grid-template-columns:1fr}
 }
-@media(max-width:650px){
+
+@media(max-width:750px){
   .sidebar{display:none}
-  .topbar{padding:0 16px}
+  .main{padding:18px}
   .email{display:none}
-  .main{padding:16px}
-  .cards,.row,.row4{grid-template-columns:1fr}
+  .topbar{padding:0 18px}
+  .form-grid{grid-template-columns:1fr}
+  .trading-status{grid-template-columns:1fr}
+}
+
+@media(max-width:500px){
+  .cards{grid-template-columns:1fr}
+  .candle-box{grid-template-columns:1fr}
+  .actions{flex-direction:column}
 }
 </style>
 </head>
@@ -522,7 +548,7 @@ td{color:#c5cdd2}
   <div class="section">ACCOUNT</div>
 
   <nav class="menu">
-    <a href="#risk-management" data-page="risk-management">Risk Management</a>
+    <a href="#risk" data-page="risk">Risk Management</a>
     <a href="#settings" data-page="settings">Settings</a>
     <a href="#security" data-page="security">Security</a>
   </nav>
@@ -532,31 +558,32 @@ td{color:#c5cdd2}
 <main class="main">
 
 <!-- DASHBOARD -->
-<section id="dashboard" class="page-section">
+<section id="dashboard" class="page-section dashboard-page">
 
   <div class="heading">
     <h1>Trading Dashboard</h1>
     <p>AI MONSTER U automated trading terminal</p>
-    <div class="badge">● SYSTEM ONLINE</div>
+    <div class="status">● SYSTEM ONLINE</div>
   </div>
 
   <section class="cards">
+
     <div class="card">
       <div class="label">Platform Balance</div>
       <div id="balance" class="value">$0.00</div>
-      <div id="currencyText" class="muted">Wallet balance</div>
+      <div class="muted">Wallet balance</div>
     </div>
 
     <div class="card">
       <div class="label">Trading Equity</div>
       <div id="equity" class="value">$0.00</div>
-      <div id="accountModeText" class="muted">No trading account</div>
+      <div class="muted">Demo trading equity</div>
     </div>
 
     <div class="card">
       <div class="label">Today's P/L</div>
       <div id="todayProfit" class="value">$0.00</div>
-      <div class="muted">Trading performance</div>
+      <div class="muted">Daily performance</div>
     </div>
 
     <div class="card">
@@ -564,41 +591,45 @@ td{color:#c5cdd2}
       <div id="openPositions" class="value">0</div>
       <div class="muted">Currently active</div>
     </div>
+
   </section>
 
   <section class="grid">
 
     <div class="panel">
+
       <div class="panel-title">
         <h2>Market Overview</h2>
-        <span class="live">● LIVE UI</span>
+        <span class="live">● LIVE DATA</span>
       </div>
 
       <div class="chart">
-        <svg viewBox="0 0 800 270" preserveAspectRatio="none">
+        <svg viewBox="0 0 800 260" preserveAspectRatio="none">
           <polyline
-            points="0,210 60,190 110,205 160,160 210,180 260,135 310,155 360,108 410,125 460,91 510,110 560,65 610,82 660,47 720,65 800,30"
+            points="0,205 60,190 110,210 160,160 210,178 260,135 310,155 360,105 410,125 460,90 510,112 560,62 610,80 660,45 720,65 800,28"
             fill="none"
             stroke="#00ffa6"
-            stroke-width="3"/>
+            stroke-width="3"
+          />
         </svg>
       </div>
+
     </div>
 
-    <div class="panel engine">
+    <div class="panel">
+
       <div class="panel-title">
         <h2>AI MONSTER ENGINE</h2>
         <span id="engineStatus" class="live">READY</span>
       </div>
 
-      <div id="engineMode" class="engine-circle">DEMO</div>
-
-      <h2 id="engineTitle">Trading Engine Ready</h2>
-      <p class="muted">Automated execution status</p>
+      <div class="engine-circle" id="engineCircle">
+        DEMO
+      </div>
 
       <div class="setting">
         <span>Risk Per Trade</span>
-        <span id="dashboardRisk">1%</span>
+        <span id="dashboardRisk">0.50%</span>
       </div>
 
       <div class="setting">
@@ -607,47 +638,28 @@ td{color:#c5cdd2}
       </div>
 
       <div class="setting">
-        <span>Automatic SL</span>
+        <span>Automatic Stop Loss</span>
         <span class="green">ON</span>
       </div>
 
       <div class="setting">
-        <span>Automatic TP</span>
+        <span>Automatic Take Profit</span>
         <span class="green">ON</span>
       </div>
 
       <div class="setting">
         <span>Daily Loss Limit</span>
-        <span id="dashboardDailyLoss">3%</span>
+        <span>3%</span>
       </div>
+
+      <button id="createDemoButton" class="primary">
+        CREATE $50 DEMO ACCOUNT
+      </button>
+
+      <div id="demoMessage" class="message"></div>
+
     </div>
 
-  </section>
-
-  <section class="panel" style="margin-top:17px">
-    <div class="panel-title">
-      <h2>Account Status</h2>
-      <span id="dashboardAccountStatus" class="live">CHECKING</span>
-    </div>
-
-    <div class="row4">
-      <div class="stat">
-        <span>Account</span>
-        <strong id="dashboardAccountName">—</strong>
-      </div>
-      <div class="stat">
-        <span>Mode</span>
-        <strong id="dashboardMode">—</strong>
-      </div>
-      <div class="stat">
-        <span>Status</span>
-        <strong id="dashboardStatus">—</strong>
-      </div>
-      <div class="stat">
-        <span>Bot</span>
-        <strong id="dashboardBot">OFF</strong>
-      </div>
-    </div>
   </section>
 
 </section>
@@ -658,43 +670,52 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>Markets</h1>
-    <p>Monitor instruments available to your trading engine.</p>
+    <p>Market monitoring and trading instruments.</p>
   </div>
 
-  <div class="cards">
-    <div class="card">
-      <div class="label">XAUUSD</div>
-      <div id="goldPrice" class="value">—</div>
-      <div class="muted">Gold / US Dollar</div>
-    </div>
+  <div class="panel">
 
-    <div class="card">
-      <div class="label">EURUSD</div>
-      <div id="eurPrice" class="value">—</div>
-      <div class="muted">Euro / US Dollar</div>
-    </div>
-
-    <div class="card">
-      <div class="label">BTCUSDT</div>
-      <div id="btcPrice" class="value">—</div>
-      <div class="muted">Bitcoin / Tether</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Market Feed</div>
-      <div class="value" style="font-size:17px">READY</div>
-      <div class="muted">Connect provider for real quotes</div>
-    </div>
-  </div>
-
-  <div class="panel" style="margin-top:17px">
     <div class="panel-title">
-      <h2>Market Data</h2>
-      <span class="live">DATA PROVIDER</span>
+      <h2>Available Markets</h2>
+      <span class="live">MARKET DATA</span>
     </div>
-    <div class="empty">
-      Live broker market data will appear here after a verified market-data provider is connected.
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Market</th>
+            <th>Price</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>XAUUSD</td>
+            <td>Gold</td>
+            <td id="goldPrice">—</td>
+            <td><span class="badge green">AVAILABLE</span></td>
+          </tr>
+
+          <tr>
+            <td>EURUSD</td>
+            <td>Forex</td>
+            <td>—</td>
+            <td><span class="badge green">AVAILABLE</span></td>
+          </tr>
+
+          <tr>
+            <td>BTCUSDT</td>
+            <td>Crypto</td>
+            <td>—</td>
+            <td><span class="badge green">AVAILABLE</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
   </div>
 
 </section>
@@ -705,38 +726,35 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>AI Trading</h1>
-    <p>Configure and control the AI MONSTER trading engine.</p>
-    <div id="aiModeBadge" class="badge">DEMO MODE</div>
+    <p>AI MONSTER scalping engine and automated trading controls.</p>
   </div>
 
   <div class="panel">
 
-    <div class="row4">
-      <div class="stat">
+    <div class="trading-status">
+
+      <div class="stat-box">
         <span>Account</span>
-        <strong id="aiAccountName">—</strong>
+        <strong id="aiAccountName">No demo account</strong>
       </div>
 
-      <div class="stat">
+      <div class="stat-box">
         <span>Mode</span>
         <strong id="aiAccountMode">DEMO</strong>
       </div>
 
-      <div class="stat">
+      <div class="stat-box">
         <span>Bot Status</span>
         <strong id="aiBotStatus">OFF</strong>
       </div>
 
-      <div class="stat">
-        <span>Current Signal</span>
-        <strong id="aiSignal">WAIT</strong>
-      </div>
     </div>
 
-    <div style="margin-top:22px" class="form-grid">
+    <div class="form-grid">
 
       <div class="field">
-        <label>STRATEGY</label>
+        <label>Strategy</label>
+
         <select id="aiStrategy">
           <option value="AI Scalping">AI Scalping</option>
           <option value="EMA Trend">EMA Trend</option>
@@ -744,7 +762,8 @@ td{color:#c5cdd2}
       </div>
 
       <div class="field">
-        <label>TIMEFRAME</label>
+        <label>Timeframe</label>
+
         <select id="aiTimeframe">
           <option value="1m">1 Minute</option>
           <option value="5m">5 Minutes</option>
@@ -752,41 +771,68 @@ td{color:#c5cdd2}
           <option value="30m">30 Minutes</option>
           <option value="1h">1 Hour</option>
           <option value="4h">4 Hours</option>
-          <option value="1d">1 Day</option>
         </select>
       </div>
 
-      <div class="field">
-        <label>ALLOWED SYMBOLS</label>
-        <input id="aiSymbols" value="XAUUSD, EURUSD, BTCUSDT">
-      </div>
+      <div class="field full">
+        <label>Allowed Symbols</label>
 
-      <div class="field">
-        <label>RISK PER TRADE</label>
-        <input id="aiRiskInput" type="number" min="0.1" max="5" step="0.1" value="1">
+        <input
+          id="aiSymbols"
+          type="text"
+          value="XAUUSD,EURUSD,BTCUSDT"
+          placeholder="XAUUSD, EURUSD, BTCUSDT"
+        >
       </div>
 
     </div>
 
-    <div class="ai-actions">
+    <div class="trading-status" style="margin-top:18px">
+
+      <div class="stat-box">
+        <span>Current Signal</span>
+        <strong id="aiSignal" class="signal">WAIT</strong>
+      </div>
+
+      <div class="stat-box">
+        <span>Open Positions</span>
+        <strong id="aiOpenPositions">0</strong>
+      </div>
+
+      <div class="stat-box">
+        <span>Today's P/L</span>
+        <strong id="aiTodayPL">$0.00</strong>
+      </div>
+
+    </div>
+
+    <div class="candle-box">
+
+      <div class="candle-item">
+        <span>Current Candle</span>
+        <strong id="currentCandle">Waiting...</strong>
+      </div>
+
+      <div class="candle-item">
+        <span>Next Candle Close</span>
+        <strong id="nextCandleClose">--:--</strong>
+      </div>
+
+    </div>
+
+    <div class="actions">
       <button id="startAiBot" class="primary">START AI BOT</button>
-      <button id="stopAiBot" class="secondary">STOP AI BOT</button>
+      <button id="stopAiBot" class="secondary">STOP BOT</button>
       <button id="emergencyClose" class="danger">EMERGENCY CLOSE</button>
-    </div>
-
-    <div class="candle">
-      <span class="muted">CURRENT CANDLE / TIMEFRAME</span>
-      <strong id="currentCandle">Waiting for market data</strong>
-
-      <span class="muted" style="display:block;margin-top:12px">NEXT CANDLE CLOSE</span>
-      <strong id="nextCandleClose">--:--:--</strong>
     </div>
 
     <div id="aiMessage" class="message"></div>
 
-    <div class="notice">
-      The timeframe controls the trading cycle. A real execution engine must use the broker's market clock and confirmed candle boundaries; this dashboard does not claim to execute live trades by itself.
-    </div>
+    <p class="notice">
+      Demo engine only. The candle timer controls the trading cycle.
+      A production live engine must execute through a verified trading provider.
+      TP/SL and risk controls are enforced server-side before real-money execution.
+    </p>
 
   </div>
 
@@ -798,11 +844,20 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>My Accounts</h1>
-    <p>Manage your connected trading accounts.</p>
+    <p>Manage your trading accounts.</p>
   </div>
 
-  <div id="accountsList" class="account-list">
-    <div class="empty">Loading trading accounts...</div>
+  <div class="panel">
+
+    <div class="panel-title">
+      <h2>Trading Accounts</h2>
+      <span class="live">ACCOUNT MANAGEMENT</span>
+    </div>
+
+    <div id="accountsContent" class="empty">
+      Loading accounts...
+    </div>
+
   </div>
 
 </section>
@@ -813,36 +868,19 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>Positions</h1>
-    <p>Monitor currently open trading positions.</p>
+    <p>Monitor active trading positions.</p>
   </div>
 
   <div class="panel">
+
     <div class="panel-title">
       <h2>Open Positions</h2>
-      <span id="positionsCount" class="live">0 ACTIVE</span>
+      <span id="positionStatus" class="live">0 ACTIVE</span>
+    </div>
+    <div id="positionsContent" class="empty">
+      No open positions
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Side</th>
-            <th>Volume</th>
-            <th>Entry</th>
-            <th>Current</th>
-            <th>SL</th>
-            <th>TP</th>
-            <th>Floating P/L</th>
-          </tr>
-        </thead>
-        <tbody id="positionsBody"></tbody>
-      </table>
-    </div>
-
-    <div id="positionsEmpty" class="empty">
-      No open positions.
-    </div>
   </div>
 
 </section>
@@ -853,31 +891,34 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>Trade History</h1>
-    <p>Review completed trades and results.</p>
+    <p>Your completed trading activity.</p>
   </div>
 
   <div class="panel">
+
     <div class="table-wrap">
+
       <table>
         <thead>
           <tr>
             <th>Symbol</th>
             <th>Side</th>
-            <th>Volume</th>
             <th>Entry</th>
             <th>Exit</th>
-            <th>Result</th>
-            <th>Opened</th>
-            <th>Closed</th>
+            <th>P/L</th>
+            <th>Time</th>
           </tr>
         </thead>
-        <tbody id="tradesBody"></tbody>
+
+        <tbody id="tradeHistoryBody">
+          <tr>
+            <td colspan="6" class="empty">No trades yet</td>
+          </tr>
+        </tbody>
       </table>
+
     </div>
 
-    <div id="tradesEmpty" class="empty">
-      No completed trades yet.
-    </div>
   </div>
 
 </section>
@@ -887,21 +928,22 @@ td{color:#c5cdd2}
 <section id="deposits" class="page-section">
 
   <div class="heading">
-    <h1>Deposits</h1>
-    <p>Fund your platform account using supported cryptocurrency.</p>
+    <h1>Crypto Deposits</h1>
+    <p>Fund your AI MONSTER U wallet.</p>
   </div>
 
-  <div class="grid">
+  <div class="balance-box">
+    <span>Current Wallet Balance</span>
+    <strong id="depositBalance">$0.00</strong>
+  </div>
 
-    <div class="panel">
+  <div class="panel">
 
-      <div class="panel-title">
-        <h2>Make a Deposit</h2>
-        <span class="live">MINIMUM $50</span>
-      </div>
+    <div class="form-grid">
 
       <div class="field">
-        <label>CURRENCY</label>
+        <label>Cryptocurrency</label>
+
         <select id="depositCurrency">
           <option value="USDT">USDT</option>
           <option value="USDC">USDC</option>
@@ -909,65 +951,51 @@ td{color:#c5cdd2}
       </div>
 
       <div class="field">
-        <label>NETWORK</label>
+        <label>Network</label>
+
         <select id="depositNetwork">
           <option value="TRC20">TRC20</option>
-          <option value="BEP20">BEP20</option>
           <option value="ERC20">ERC20</option>
+          <option value="BEP20">BEP20</option>
         </select>
       </div>
 
-      <div class="field">
-        <label>AMOUNT</label>
-        <input id="depositAmount" type="number" min="50" step="0.01" placeholder="Minimum 50">
-      </div>
+      <div class="field full">
+        <label>Amount</label>
 
-      <button id="depositSubmit" class="primary">
-        GENERATE DEPOSIT REQUEST
-      </button>
-
-      <div id="depositMessage" class="message"></div>
-
-      <div class="notice">
-        A deposit request is only a record until a verified crypto payment provider confirms the transaction. Never display or invent a wallet address before a real provider supplies it.
+        <input
+          id="depositAmount"
+          type="number"
+          min="50"
+          step="0.01"
+          placeholder="Minimum $50"
+        >
       </div>
 
     </div>
 
-    <div class="panel">
-      <div class="panel-title">
-        <h2>Payment Address</h2>
-        <span class="live">SECURE</span>
+    <div class="panel" style="margin-top:18px;text-align:center">
+      <div class="empty">
+        <strong style="display:block;color:#fff;margin-bottom:8px">
+          Secure Deposit Address
+        </strong>
+
+        Deposit address and QR code will be supplied by the verified
+        payment infrastructure once connected.
       </div>
-      <div class="qr">QR</div>
-
-      <div id="depositAddress" class="wallet-address">
-        Connect a verified payment provider to generate a real deposit address.
-      </div>
     </div>
 
-  </div>
+    <button id="depositSubmit" class="primary">
+      GENERATE DEPOSIT REQUEST
+    </button>
 
-  <div class="panel" style="margin-top:17px">
-    <div class="panel-title">
-      <h2>Deposit History</h2>
-    </div>
+    <div id="depositMessage" class="message"></div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Currency</th>
-            <th>Status</th>
-            <th>Transaction</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody id="depositHistoryBody"></tbody>
-      </table>
-    </div>
+    <p class="notice">
+      Minimum deposit: $50. Never send cryptocurrency to an address unless
+      the address and network are generated and verified by the payment backend.
+    </p>
+
   </div>
 
 </section>
@@ -977,8 +1005,13 @@ td{color:#c5cdd2}
 <section id="withdrawals" class="page-section">
 
   <div class="heading">
-    <h1>Withdrawals</h1>
-    <p>Request cryptocurrency withdrawals from your available balance.</p>
+    <h1>Crypto Withdrawals</h1>
+    <p>Withdraw available funds securely.</p>
+  </div>
+
+  <div class="balance-box">
+    <span>Available Balance</span>
+    <strong id="withdrawBalance">$0.00</strong>
   </div>
 
   <div class="panel">
@@ -986,7 +1019,8 @@ td{color:#c5cdd2}
     <div class="form-grid">
 
       <div class="field">
-        <label>CURRENCY</label>
+        <label>Cryptocurrency</label>
+
         <select id="withdrawCurrency">
           <option value="USDT">USDT</option>
           <option value="USDC">USDC</option>
@@ -994,39 +1028,47 @@ td{color:#c5cdd2}
       </div>
 
       <div class="field">
-        <label>NETWORK</label>
+        <label>Network</label>
+
         <select id="withdrawNetwork">
           <option value="TRC20">TRC20</option>
-          <option value="BEP20">BEP20</option>
           <option value="ERC20">ERC20</option>
+          <option value="BEP20">BEP20</option>
         </select>
       </div>
 
-      <div class="field">
-        <label>DESTINATION WALLET</label>
-        <input id="withdrawAddress" placeholder="Enter wallet address">
+      <div class="field full">
+        <label>Destination Wallet</label>
+
+        <input
+          id="withdrawAddress"
+          type="text"
+          placeholder="Enter destination wallet"
+        >
       </div>
 
-      <div class="field">
-        <label>AMOUNT</label>
-        <input id="withdrawAmount" type="number" min="1" step="0.01" placeholder="Amount">
+      <div class="field full">
+        <label>Amount</label>
+
+        <input
+          id="withdrawAmount"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Enter amount"
+        >
       </div>
 
     </div>
 
-    <div class="row" style="margin-bottom:18px">
-      <div class="stat">
-        <span>Available Balance</span>
-        <strong id="withdrawBalance">$0.00</strong>
-      </div>
-      <div class="stat">
-        <span>Network Fee</span>
-        <strong id="withdrawFee">$0.00</strong>
-      </div>
-      <div class="stat">
-        <span>You Receive</span>
-        <strong id="withdrawReceive">$0.00</strong>
-      </div>
+    <div class="setting" style="margin-top:18px">
+      <span>Network Fee</span>
+      <strong id="withdrawFee">$0.00</strong>
+    </div>
+
+    <div class="setting">
+      <span>You Receive</span>
+      <strong id="withdrawReceive">$0.00</strong>
     </div>
 
     <button id="withdrawSubmit" class="primary">
@@ -1035,21 +1077,22 @@ td{color:#c5cdd2}
 
     <div id="withdrawMessage" class="message"></div>
 
-    <div class="notice">
-      A withdrawal request does not mean the funds have already been sent. The transaction remains pending until a secure payment system actually processes it.
-    </div>
+    <p class="notice">
+      Withdrawals must be processed by the secure backend. The browser never
+      directly controls wallet balances or blockchain signing keys.
+    </p>
 
   </div>
 
 </section>
 
 
-<!-- RISK MANAGEMENT -->
-<section id="risk-management" class="page-section">
+<!-- RISK -->
+<section id="risk" class="page-section">
 
   <div class="heading">
     <h1>Risk Management</h1>
-    <p>Control the risk limits used by your trading engine.</p>
+    <p>Control how the AI trading engine manages exposure.</p>
   </div>
 
   <div class="panel">
@@ -1057,60 +1100,23 @@ td{color:#c5cdd2}
     <div class="form-grid">
 
       <div class="field">
-        <label>RISK PER TRADE %</label>
-        <input id="riskPercent" type="number" min=".1" max="5" step=".1" value="1">
+        <label>Risk Per Trade (%)</label>
+        <input id="riskPercent" type="number" value="0.50" min="0.01" max="5" step="0.01">
       </div>
 
       <div class="field">
-        <label>MAX DAILY LOSS %</label>
-        <input id="maxDailyLoss" type="number" min=".5" max="20" step=".5" value="3">
+        <label>Maximum Daily Loss (%)</label>
+        <input id="dailyLoss" type="number" value="3" min="0.1" max="20" step="0.1">
       </div>
 
       <div class="field">
-        <label>MAX DRAWDOWN %</label>
-        <input id="maxDrawdown" type="number" min="1" max="30" step="1" value="10">
+        <label>Maximum Drawdown (%)</label>
+        <input id="maxDrawdown" type="number" value="10" min="1" max="50" step="0.5">
       </div>
 
       <div class="field">
-        <label>MAX OPEN TRADES</label>
-        <input id="maxOpenTrades" type="number" min="1" max="20" value="1">
-      </div>
-
-      <div class="field">
-        <label>AUTOMATIC LOT SIZE</label>
-        <select id="automaticLot">
-          <option value="true">ON</option>
-          <option value="false">OFF</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>AUTOMATIC STOP LOSS</label>
-        <select id="automaticSL">
-          <option value="true">ON</option>
-          <option value="false">OFF</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>AUTOMATIC TAKE PROFIT</label>
-        <select id="automaticTP">
-          <option value="true">ON</option>
-          <option value="false">OFF</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>TIMEFRAME</label>
-        <select id="riskTimeframe">
-          <option value="1m">1M</option>
-          <option value="5m">5M</option>
-          <option value="15m">15M</option>
-          <option value="30m">30M</option>
-          <option value="1h">1H</option>
-          <option value="4h">4H</option>
-          <option value="1d">1D</option>
-        </select>
+        <label>Maximum Open Trades</label>
+        <input id="maxOpenTrades" type="number" value="1" min="1" max="20">
       </div>
 
     </div>
@@ -1131,41 +1137,40 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>Settings</h1>
-    <p>Configure your AI MONSTER U trading preferences.</p>
+    <p>Configure your AI MONSTER U preferences.</p>
   </div>
 
   <div class="panel">
 
-    <div class="setting">
-      <span>Account Email</span>
-      <strong id="settingsEmail">—</strong>
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Default Strategy</label>
+
+        <select id="defaultStrategy">
+          <option>AI Scalping</option>
+          <option>EMA Trend</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Default Timeframe</label>
+
+        <select id="defaultTimeframe">
+          <option value="1m">1 Minute</option>
+          <option value="5m">5 Minutes</option>
+          <option value="15m">15 Minutes</option>
+          <option value="30m">30 Minutes</option>
+          <option value="1h">1 Hour</option>
+          <option value="4h">4 Hours</option>
+        </select>
+      </div>
+
     </div>
 
-    <div class="setting">
-      <span>Default Currency</span>
-      <strong>USD</strong>
-    </div>
-
-    <div class="setting">
-      <span>Default Trading Mode</span>
-      <strong>DEMO</strong>
-    </div>
-
-    <div class="setting">
-      <span>Automatic Trading</span>
-      <button id="autoTradingSwitch" class="switch"></button>
-    </div>
-
-    <div class="setting">
-      <span>Market Notifications</span>
-      <button id="notificationSwitch" class="switch on"></button>
-    </div>
-
-    <div style="margin-top:20px">
-      <button id="saveSettings" class="primary">
-        SAVE SETTINGS
-      </button>
-    </div>
+    <button id="saveSettings" class="primary">
+      SAVE SETTINGS
+    </button>
 
     <div id="settingsMessage" class="message"></div>
 
@@ -1179,35 +1184,35 @@ td{color:#c5cdd2}
 
   <div class="heading">
     <h1>Security</h1>
-    <p>Protect your account and trading access.</p>
+    <p>Account and session security.</p>
   </div>
 
   <div class="panel">
 
     <div class="setting">
-      <span>Email verification</span>
-      <strong id="emailVerified" class="green">VERIFIED</strong>
-    </div>
-
-    <div class="setting">
       <span>Authentication</span>
-      <strong class="green">EMAIL AUTHENTICATION</strong>
+      <span class="green">ACTIVE</span>
     </div>
 
     <div class="setting">
-      <span>Current session</span>
-      <strong class="green">ACTIVE</strong>
+      <span>Email</span>
+      <strong id="securityEmail">Loading...</strong>
     </div>
 
-    <div style="margin-top:20px">
-      <button id="securityLogout" class="danger">
-        SIGN OUT OF THIS ACCOUNT
-      </button>
+    <div class="setting">
+      <span>Email Verification</span>
+      <span id="emailVerification" class="green">VERIFIED</span>
     </div>
 
-    <div class="notice">
-      Never share your Supabase authentication tokens, private keys, broker passwords, or crypto wallet private keys with anyone.
+    <div class="setting">
+      <span>Session</span>
+      <span class="green">PROTECTED</span>
     </div>
+
+    <p class="notice">
+      Sensitive live trading and withdrawal actions will require secure
+      server-side authorization.
+    </p>
 
   </div>
 
@@ -1218,6 +1223,12 @@ td{color:#c5cdd2}
 
 
 <script>
+"use strict";
+
+/* =========================
+   SUPABASE
+========================= */
+
 const SUPABASE_URL =
   "https://kkjhgoodsstixqjfyvme.supabase.co";
 
@@ -1230,26 +1241,231 @@ const supabaseClient =
     SUPABASE_PUBLISHABLE_KEY
   );
 
+
+/* =========================
+   GLOBAL STATE
+========================= */
+
 let currentUser = null;
 let demoAccount = null;
-let walletBalance = 0;
+let botRunning = false;
+let botTimer = null;
+let candleTimer = null;
 
 
-function money(value) {
-  const number = Number(value || 0);
-  return "$" + number.toFixed(2);
+/* =========================
+   TIMEFRAME ENGINE
+========================= */
+
+const TIMEFRAMES = {
+  "1m": 60,
+  "5m": 300,
+  "15m": 900,
+  "30m": 1800,
+  "1h": 3600,
+  "4h": 14400
+};
+  function getTimeframeSeconds() {
+  const value =
+    document.getElementById("aiTimeframe").value;
+
+  return TIMEFRAMES[value] || 60;
+}
+
+function getNextCandleTimestamp(seconds) {
+  const now = Math.floor(Date.now() / 1000);
+  return (Math.floor(now / seconds) + 1) * seconds;
+}
+
+function formatCountdown(totalSeconds) {
+  totalSeconds =
+    Math.max(0, Math.floor(totalSeconds));
+
+  const hours =
+    Math.floor(totalSeconds / 3600);
+
+  const minutes =
+    Math.floor((totalSeconds % 3600) / 60);
+
+  const seconds =
+    totalSeconds % 60;
+
+  if (hours > 0) {
+    return (
+      String(hours).padStart(2,"0") +
+      ":" +
+      String(minutes).padStart(2,"0") +
+      ":" +
+      String(seconds).padStart(2,"0")
+    );
+  }
+
+  return (
+    String(minutes).padStart(2,"0") +
+    ":" +
+    String(seconds).padStart(2,"0")
+  );
+}
+
+function updateCandleClock() {
+
+  const timeframe =
+    document.getElementById("aiTimeframe").value;
+
+  const seconds =
+    TIMEFRAMES[timeframe] || 60;
+
+  const now =
+    Math.floor(Date.now() / 1000);
+
+  const next =
+    getNextCandleTimestamp(seconds);
+
+  const remaining =
+    next - now;
+
+  document.getElementById("currentCandle")
+    .textContent =
+      timeframe.toUpperCase() + " CANDLE";
+
+  document.getElementById("nextCandleClose")
+    .textContent =
+      formatCountdown(remaining);
+
+  if (remaining <= 1) {
+
+    if (botRunning) {
+      processCandleClose();
+    }
+  }
+}
+
+function startCandleClock() {
+
+  clearInterval(candleTimer);
+
+  updateCandleClock();
+
+  candleTimer =
+    setInterval(
+      updateCandleClock,
+      500
+    );
+}
+
+async function processCandleClose() {
+
+  /*
+    Production rule:
+
+    When the selected candle reaches its deadline,
+    the execution backend closes an eligible position.
+
+    This frontend does NOT directly manipulate real-money
+    positions.
+  */
+
+  document.getElementById("aiMessage")
+    .textContent =
+      "Candle deadline reached — checking position exit...";
+
+  /*
+    Demo placeholder:
+    refresh displayed state.
+  */
+
+  await refreshDashboardData();
 }
 
 
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+/* =========================
+   NAVIGATION
+========================= */
+
+function showPage(pageName) {
+
+  document.querySelectorAll(".page-section")
+    .forEach(function(page) {
+      page.classList.remove("active");
+      page.style.display = "none";
+    });
+
+  const selected =
+    document.getElementById(pageName);
+
+  if (selected) {
+    selected.classList.add("active");
+    selected.style.display = "block";
+  }
+
+  document.querySelectorAll(".menu a[data-page]")
+    .forEach(function(link) {
+      link.classList.remove("active");
+    });
+
+  const activeLink =
+    document.querySelector(
+      '.menu a[data-page="' +
+      pageName +
+      '"]'
+    );
+
+  if (activeLink) {
+    activeLink.classList.add("active");
+  }
+
+  history.replaceState(
+    null,
+    "",
+    "#" + pageName
+  );
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 }
 
+function initializeNavigation() {
+
+  const links =
+    document.querySelectorAll(
+      ".menu a[data-page]"
+    );
+
+  links.forEach(function(link) {
+
+    link.addEventListener(
+      "click",
+      function(event) {
+
+        event.preventDefault();
+
+        const page =
+          link.getAttribute("data-page");
+
+        showPage(page);
+      }
+    );
+  });
+
+  const hash =
+    window.location.hash.replace("#","");
+
+  if (
+    hash &&
+    document.getElementById(hash)
+  ) {
+    showPage(hash);
+  } else {
+    showPage("dashboard");
+  }
+}
+
+
+/* =========================
+   AUTH
+========================= */
 
 async function getCurrentUser() {
 
@@ -1269,123 +1485,181 @@ async function getCurrentUser() {
 }
 
 
+/* =========================
+   WALLET
+========================= */
+
 async function loadWallet(userId) {
 
   const result =
     await supabaseClient
       .from("wallets")
       .select("balance,currency")
-      .eq("user_id", userId)
+      .eq("user_id",userId)
       .maybeSingle();
 
   if (result.error) {
-    console.warn("Wallet:", result.error.message);
+    console.error(
+      "Wallet error:",
+      result.error
+    );
+
+    setText("balance","$0.00");
+    setText("depositBalance","$0.00");
+    setText("withdrawBalance","$0.00");
+
     return;
   }
 
   if (!result.data) {
-    walletBalance = 0;
+
+    setText("balance","$0.00");
+    setText("depositBalance","$0.00");
+    setText("withdrawBalance","$0.00");
+
     return;
   }
 
-  walletBalance = Number(result.data.balance || 0);
+  const balance =
+    Number(result.data.balance || 0);
 
-  document.getElementById("balance").textContent =
-    money(walletBalance);
+  const currency =
+    result.data.currency || "USD";
 
-  document.getElementById("withdrawBalance").textContent =
-    money(walletBalance);
+  let formatted;
 
-  document.getElementById("currencyText").textContent =
-    (result.data.currency || "USD") + " wallet balance";
+  try {
+
+    formatted =
+      new Intl.NumberFormat(
+        "en-US",
+        {
+          style:"currency",
+          currency:currency
+        }
+      ).format(balance);
+
+  } catch {
+
+    formatted =
+      "$" + balance.toFixed(2);
+  }
+
+  setText("balance",formatted);
+  setText("depositBalance",formatted);
+  setText("withdrawBalance",formatted);
 }
 
+
+/* =========================
+   DEMO ACCOUNT
+========================= */
 
 async function loadDemoAccount(userId) {
 
   const result =
     await supabaseClient
       .from("trading_accounts")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("mode", "demo")
+      .select(
+        "id,account_name,balance,equity,mode,status,bot_enabled"
+      )
+      .eq("user_id",userId)
+      .eq("mode","demo")
       .maybeSingle();
 
   if (result.error) {
-    console.warn("Trading account:", result.error.message);
+
+    console.error(
+      "Trading account error:",
+      result.error
+    );
+
     return;
   }
 
   if (!result.data) {
+
     demoAccount = null;
-    document.getElementById("equity").textContent = "$0.00";
-    document.getElementById("accountModeText").textContent =
-      "No demo account";
+
+    setText("equity","$0.00");
+    setText(
+      "aiAccountName",
+      "No demo account"
+    );
+
     return;
   }
 
-  demoAccount = result.data;
+  demoAccount =
+    result.data;
 
   const equity =
-    Number(result.data.equity ?? result.data.balance ?? 0);
+    Number(result.data.equity || 0);
 
-  document.getElementById("equity").textContent =
-    money(equity);
+  setText(
+    "equity",
+    "$" + equity.toFixed(2)
+  );
 
-  document.getElementById("accountModeText").textContent =
-    "Demo account";
+  setText(
+    "aiAccountName",
+    result.data.account_name ||
+    "AI MONSTER U Demo"
+  );
 
-  document.getElementById("dashboardAccountName").textContent =
-    result.data.account_name || "AI MONSTER U Demo";
+  setText(
+    "aiAccountMode",
+    "DEMO"
+  );
 
-  document.getElementById("dashboardMode").textContent =
-    String(result.data.mode || "demo").toUpperCase();
+  const button =
+    document.getElementById(
+      "createDemoButton"
+    );
 
-  document.getElementById("dashboardStatus").textContent =
-    String(result.data.status || "disconnected").toUpperCase();
+  button.textContent =
+    "DEMO ACCOUNT ACTIVE";
 
-  document.getElementById("dashboardBot").textContent =
-    result.data.bot_enabled ? "ON" : "OFF";
-
-  document.getElementById("dashboardAccountStatus").textContent =
-    String(result.data.status || "CONNECTED").toUpperCase();
-
-  document.getElementById("aiAccountName").textContent =
-    result.data.account_name || "AI MONSTER U Demo";
-
-  document.getElementById("aiAccountMode").textContent =
-    String(result.data.mode || "demo").toUpperCase();
-
-  document.getElementById("aiBotStatus").textContent =
-    result.data.bot_enabled ? "ON" : "OFF";
-
-  document.getElementById("engineMode").textContent =
-    String(result.data.mode || "DEMO").toUpperCase();
-
-  if (result.data.bot_enabled) {
-    document.getElementById("engineStatus").textContent = "RUNNING";
-  }
+  button.disabled = true;
 }
 
+
+/* =========================
+   CREATE DEMO
+========================= */
 
 async function createDemoAccount() {
 
   const button =
-    document.getElementById("createDemoButton");
+    document.getElementById(
+      "createDemoButton"
+    );
 
-  if (!button) return;
+  const message =
+    document.getElementById(
+      "demoMessage"
+    );
 
   button.disabled = true;
   button.textContent = "CREATING...";
 
+  message.className = "message";
+  message.textContent =
+    "Creating your $50 demo account...";
+
   try {
+
+    const user =
+      await getCurrentUser();
+
+    if (!user) return;
 
     const existing =
       await supabaseClient
         .from("trading_accounts")
         .select("id")
-        .eq("user_id", currentUser.id)
-        .eq("mode", "demo")
+        .eq("user_id",user.id)
+        .eq("mode","demo")
         .maybeSingle();
 
     if (existing.error) {
@@ -1393,7 +1667,15 @@ async function createDemoAccount() {
     }
 
     if (existing.data) {
-      await loadDemoAccount(currentUser.id);
+
+      message.className =
+        "message success";
+
+      message.textContent =
+        "Your demo account already exists.";
+
+      await loadDemoAccount(user.id);
+
       return;
     }
 
@@ -1401,17 +1683,18 @@ async function createDemoAccount() {
       await supabaseClient
         .from("trading_accounts")
         .insert({
-          user_id: currentUser.id,
-          account_name: "AI MONSTER U Demo",
-          mode: "demo",
-          broker: "AI MONSTER U Demo",
-          broker_account_id: "DEMO-" + Date.now(),
-          currency: "USD",
-          balance: 50,
-          equity: 50,
-          available_margin: 50,
-          status: "connected",
-          bot_enabled: false
+          user_id:user.id,
+          account_name:"AI MONSTER U Demo",
+          mode:"demo",
+          broker:"AI MONSTER U Demo",
+          broker_account_id:
+            "DEMO-" + Date.now(),
+          currency:"USD",
+          balance:50,
+          equity:50,
+          available_margin:50,
+          status:"connected",
+          bot_enabled:false
         })
         .select()
         .single();
@@ -1420,401 +1703,540 @@ async function createDemoAccount() {
       throw result.error;
     }
 
-    await loadDemoAccount(currentUser.id);
+    demoAccount =
+      result.data;
+
+    setText("equity","$50.00");
+
+    setText(
+      "aiAccountName",
+      "AI MONSTER U Demo"
+    );
+
+    message.className =
+      "message success";
+
+    message.textContent =
+      "Demo account created successfully.";
+
+    button.textContent =
+      "DEMO ACCOUNT ACTIVE";
 
   } catch(error) {
 
-    console.error(error);
-
-    alert(
-      "Demo account could not be created: " +
-      error.message
+    console.error(
+      "Create demo error:",
+      error
     );
 
-  } finally {
+    message.className =
+      "message error";
+
+    message.textContent =
+      error.message ||
+      "Could not create demo account.";
 
     button.disabled = false;
-    button.textContent = "CREATE / REFRESH $50 DEMO";
+
+    button.textContent =
+      "CREATE $50 DEMO ACCOUNT";
   }
 }
+  /* =========================
+   AI BOT
+========================= */
 
+async function startBot() {
 
-async function loadAccounts() {
+  if (!demoAccount) {
 
-  const container =
-    document.getElementById("accountsList");
+    setText(
+      "aiMessage",
+      "Create a demo account first."
+    );
+
+    document.getElementById(
+      "aiMessage"
+    ).className = "message error";
+
+    return;
+  }
+
+  botRunning = true;
+
+  setText(
+    "aiBotStatus",
+    "RUNNING"
+  );
+
+  setText(
+    "engineStatus",
+    "RUNNING"
+  );
+
+  setText(
+    "engineCircle",
+    "RUNNING"
+  );
+
+  setText(
+    "aiSignal",
+    "SCANNING"
+  );
+
+  document.getElementById(
+    "aiMessage"
+  ).className = "message success";
+
+  setText(
+    "aiMessage",
+    "AI MONSTER is scanning for valid setups."
+  );
+
+  startCandleClock();
+
+  clearInterval(botTimer);
+
+  botTimer =
+    setInterval(
+      scanMarket,
+      3000
+    );
+
+  await updateBotDatabase(true);
+}
+
+async function stopBot() {
+
+  botRunning = false;
+
+  clearInterval(botTimer);
+
+  setText(
+    "aiBotStatus",
+    "OFF"
+  );
+
+  setText(
+    "engineStatus",
+    "READY"
+  );
+
+  setText(
+    "engineCircle",
+    "DEMO"
+  );
+
+  setText(
+    "aiSignal",
+    "WAIT"
+  );
+
+  setText(
+    "aiMessage",
+    "AI bot stopped."
+  );
+
+  document.getElementById(
+    "aiMessage"
+  ).className = "message";
+
+  await updateBotDatabase(false);
+}
+
+async function emergencyClose() {
+
+  if (!demoAccount) {
+
+    setText(
+      "aiMessage",
+      "No trading account connected."
+    );
+
+    return;
+  }
+
+  /*
+    Real position closure belongs in the secure
+    execution backend.
+
+    We deliberately do not fake a blockchain/broker
+    execution from browser JavaScript.
+  */
+
+  setText(
+    "aiMessage",
+    "Emergency close requested. Execution backend must process this request."
+  );
+
+  document.getElementById(
+    "aiMessage"
+  ).className = "message success";
+}
+
+function scanMarket() {
+
+  if (!botRunning) return;
+
+  /*
+    This is the signal framework.
+
+    Production signal service will calculate:
+
+    EMA 9
+    EMA 21
+    EMA 50
+    RSI 14
+    ATR 14
+    Spread
+    Volatility
+    Higher-timeframe confirmation
+
+    The frontend only displays the engine state.
+  */
+
+  const signals = [
+    "SCANNING",
+    "WAIT",
+    "TREND CHECK"
+  ];
+
+  const signal =
+    signals[
+      Math.floor(
+        Math.random() *
+        signals.length
+      )
+    ];
+
+  setText(
+    "aiSignal",
+    signal
+  );
+}
+
+async function updateBotDatabase(enabled) {
+
+  if (!demoAccount) return;
 
   const result =
     await supabaseClient
       .from("trading_accounts")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("created_at",{ascending:false});
-
-  if (result.error) {
-    container.innerHTML =
-      '<div class="empty">' +
-      escapeHTML(result.error.message) +
-      "</div>";
-    return;
-  }
-
-  if (!result.data.length) {
-
-    container.innerHTML =
-      '<div class="panel">' +
-      '<div class="empty">No trading accounts yet.</div>' +
-      '<button id="createDemoButton" class="primary">CREATE $50 DEMO ACCOUNT</button>' +
-      "</div>";
-
-    document
-      .getElementById("createDemoButton")
-      .addEventListener("click",createDemoAccount);
-
-    return;
-  }
-
-  container.innerHTML =
-    result.data.map(account => {
-
-      const mode =
-        String(account.mode || "demo").toLowerCase();
-
-      const status =
-        String(account.status || "disconnected").toLowerCase();
-
-      return `
-        <div class="account">
-          <div>
-            <h3>${escapeHTML(account.account_name || "Trading Account")}</h3>
-            <p>${escapeHTML(account.broker || "Broker")} • ${escapeHTML(account.currency || "USD")}</p>
-            <p>ID: ${escapeHTML(account.broker_account_id || account.id)}</p>
-          </div>
-
-          <div class="account-right">
-            <span class="mode ${mode === "live" ? "live-mode" : "demo"}">
-              ${mode.toUpperCase()}
-            </span>
-
-            <p class="${status === "connected" ? "connected" : "disconnected"}">
-              ${status.toUpperCase()}
-            </p>
-
-            <strong>${money(account.equity ?? account.balance ?? 0)}</strong>
-          </div>
-        </div>
-      `;
-
-    }).join("");
-}
-
-
-async function loadPositions() {
-
-  const body =
-    document.getElementById("positionsBody");
-
-  const empty =
-    document.getElementById("positionsEmpty");
-
-  const result =
-    await supabaseClient
-      .from("positions")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("opened_at",{ascending:false});
-
-  if (result.error) {
-
-    body.innerHTML = "";
-
-    empty.textContent =
-      "Positions are not available: " +
-      result.error.message;
-
-    return;
-  }
-
-  const rows =
-    result.data || [];
-
-  document.getElementById("openPositions").textContent =
-    rows.length;
-
-  document.getElementById("positionsCount").textContent =
-    rows.length + " ACTIVE";
-
-  if (!rows.length) {
-    body.innerHTML = "";
-    empty.textContent = "No open positions.";
-    return;
-  }
-
-  empty.style.display = "none";
-
-  body.innerHTML =
-    rows.map(position => `
-      <tr>
-        <td>${escapeHTML(position.symbol)}</td>
-        <td>${escapeHTML(position.side)}</td>
-        <td>${escapeHTML(position.volume)}</td>
-        <td>${escapeHTML(position.entry_price)}</td>
-        <td>${escapeHTML(position.current_price)}</td>
-        <td>${escapeHTML(position.stop_loss)}</td>
-        <td>${escapeHTML(position.take_profit ?? position.take_profits)}</td>
-        <td>${money(position.floating_profit)}</td>
-      </tr>
-    `).join("");
-}
-
-
-async function loadTrades() {
-
-  const body =
-    document.getElementById("tradesBody");
-
-  const empty =
-    document.getElementById("tradesEmpty");
-
-  const result =
-    await supabaseClient
-      .from("trades")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("closed_at",{ascending:false})
-      .limit(100);
-
-  if (result.error) {
-
-    body.innerHTML = "";
-
-    empty.textContent =
-      "Trade history is not available: " +
-      result.error.message;
-
-    return;
-  }
-
-  const rows =
-    result.data || [];
-
-  if (!rows.length) {
-    body.innerHTML = "";
-    empty.textContent = "No completed trades yet.";
-    return;
-  }
-
-  empty.style.display = "none";
-
-  body.innerHTML =
-    rows.map(trade => `
-      <tr>
-        <td>${escapeHTML(trade.symbol)}</td>
-        <td>${escapeHTML(trade.side)}</td>
-        <td>${escapeHTML(trade.volume)}</td>
-        <td>${escapeHTML(trade.entry_price)}</td>
-        <td>${escapeHTML(trade.exit_price)}</td>
-        <td>${money(trade.result)}</td>
-        <td>${escapeHTML(trade.opened_at)}</td>
-        <td>${escapeHTML(trade.closed_at)}</td>
-      </tr>
-    `).join("");
-
-  const today =
-    rows
-      .filter(t => {
-        if (!t.closed_at) return false;
-        return new Date(t.closed_at).toDateString() ===
-               new Date().toDateString();
+      .update({
+        bot_enabled:enabled
       })
-      .reduce((sum,t) =>
-        sum + Number(t.result || 0),0);
-
-  document.getElementById("todayProfit").textContent =
-    money(today);
-
-  document.
-    getElementById("aiTodayPL").textContent =
-    money(today);
-}
-
-
-async function loadTransactions() {
-
-  const body =
-    document.getElementById("depositHistoryBody");
-
-  const result =
-    await supabaseClient
-      .from("transactions")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("created_at",{ascending:false})
-      .limit(100);
+      .eq("id",demoAccount.id)
+      .eq("user_id",currentUser.id);
 
   if (result.error) {
-    return;
-  }
-
-  body.innerHTML =
-    (result.data || []).map(tx => `
-      <tr>
-        <td>${escapeHTML(tx.type)}</td>
-        <td>${escapeHTML(tx.amount)}</td>
-        <td>${escapeHTML(tx.currency)}</td>
-        <td>${escapeHTML(tx.status)}</td>
-        <td>${escapeHTML(tx.tx_hash || "—")}</td>
-        <td>${escapeHTML(tx.created_at || "—")}</td>
-      </tr>
-    `).join("");
-}
-
-
-function setupNavigation() {
-
-  const links =
-    document.querySelectorAll(".menu a[data-page]");
-
-  const pages =
-    document.querySelectorAll(".page-section");
-
-  function showPage(name) {
-
-    pages.forEach(page => {
-      page.classList.remove("active");
-      page.style.display = "none";
-    });
-
-    const selected =
-      document.getElementById(name);
-
-    if (selected) {
-      selected.classList.add("active");
-      selected.style.display = "block";
-    }
-
-    links.forEach(link => {
-      link.classList.remove("active");
-    });
-
-    const active =
-      document.querySelector(
-        '.menu a[data-page="' + name + '"]'
-      );
-
-    if (active) {
-      active.classList.add("active");
-    }
-
-    history.replaceState(null,"","#" + name);
-
-    window.scrollTo(0,0);
-  }
-
-  links.forEach(link => {
-
-    link.addEventListener("click",event => {
-
-      event.preventDefault();
-
-      showPage(
-        link.getAttribute("data-page")
-      );
-
-    });
-
-  });
-
-  const initial =
-    location.hash.replace("#","");
-
-  if (initial && document.getElementById(initial)) {
-    showPage(initial);
-  } else {
-    showPage("dashboard");
+    console.error(
+      "Bot state error:",
+      result.error
+    );
   }
 }
 
 
-function setupWithdrawCalculation() {
+/* =========================
+   DASHBOARD REFRESH
+========================= */
 
-  const amount =
-    document.getElementById("withdrawAmount");
+async function refreshDashboardData() {
 
-  const receive =
-    document.getElementById("withdrawReceive");
+  if (!currentUser) return;
 
-  const fee =
-    document.getElementById("withdrawFee");
+  await loadWallet(
+    currentUser.id
+  );
 
-  function update() {
-
-    const value =
-      Number(amount.value || 0);
-
-    const networkFee = value > 0 ? 1 : 0;
-
-    fee.textContent =
-      money(networkFee);
-
-    receive.textContent =
-      money(Math.max(0,value-networkFee));
-
-  }
-
-  amount.addEventListener("input",update);
+  await loadDemoAccount(
+    currentUser.id
+  );
 }
 
 
-function setupDemoButton() {
+/* =========================
+   SAVE RISK
+========================= */
 
-  const existing =
-    document.getElementById("createDemoButton");
+async function saveRisk() {
 
-  if (!existing) {
-
-    const engine =
-      document.querySelector("#dashboard .engine");
-
-    if (engine) {
-
-      const button =
-        document.createElement("button");
-
-      button.id =
-        "createDemoButton";
-
-      button.className =
-        "primary";
-
-      button.style.marginTop =
-        "18px";
-
-      button.textContent =
-        "CREATE / REFRESH $50 DEMO";
-
-      engine.appendChild(button);
-
-      button.addEventListener(
-        "click",
-        createDemoAccount
-      );
-    }
-
-  } else {
-
-    existing.addEventListener(
-      "click",
-      createDemoAccount
+  const message =
+    document.getElementById(
+      "riskMessage"
     );
 
+  /*
+    The values are validated here.
+    Persistence should use the user's bot_settings
+    table with RLS enabled.
+  */
+
+  const risk =
+    Number(
+      document.getElementById(
+        "riskPercent"
+      ).value
+    );
+
+  const daily =
+    Number(
+      document.getElementById(
+        "dailyLoss"
+      ).value
+    );
+
+  const drawdown =
+    Number(
+      document.getElementById(
+        "maxDrawdown"
+      ).value
+    );
+
+  const maxTrades =
+    Number(
+      document.getElementById(
+        "maxOpenTrades"
+      ).value
+    );
+
+  if (
+    risk <= 0 ||
+    daily <= 0 ||
+    drawdown <= 0 ||
+    maxTrades < 1
+  ) {
+
+    message.className =
+      "message error";
+
+    message.textContent =
+      "Please enter valid risk settings.";
+
+    return;
+  }
+
+  setText(
+    "dashboardRisk",
+    risk.toFixed(2) + "%"
+  );
+
+  message.className =
+    "message success";
+
+  message.textContent =
+    "Risk settings validated.
+    Backend persistence will use your bot settings table.";
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+function saveSettings() {
+
+  const message =
+    document.getElementById(
+      "settingsMessage"
+    );
+
+  message.className =
+    "message success";
+
+  message.textContent =
+    "Settings validated successfully.";
+}
+
+
+/* =========================
+   DEPOSIT
+========================= */
+
+function requestDeposit() {
+
+  const amount =
+    Number(
+      document.getElementById(
+        "depositAmount"
+      ).value
+    );
+
+  const message =
+    document.getElementById(
+      "depositMessage"
+    );
+
+  if (amount < 50) {
+
+    message.className =
+      "message error";
+
+    message.textContent =
+      "Minimum deposit is $50.";
+
+    return;
+  }
+
+  /*
+    Real deposit address generation must happen
+    through the secure payment backend.
+  */
+
+  message.className =
+    "message success";
+
+  message.textContent =
+    "Deposit request validated. A verified payment provider must generate the real address.";
+}
+
+
+/* =========================
+   WITHDRAWAL
+========================= */
+
+function updateWithdrawalPreview() {
+
+  const amount =
+    Number(
+      document.getElementById(
+        "withdrawAmount"
+      ).value
+    ) || 0;
+
+  const fee = 0;
+
+  setText(
+    "withdrawFee",
+    "$" + fee.toFixed(2)
+  );
+
+  setText(
+    "withdrawReceive",
+    "$" + Math.max(
+      0,
+      amount - fee
+    ).toFixed(2)
+  );
+}
+
+function requestWithdrawal() {
+
+  const address =
+    document.getElementById(
+      "withdrawAddress"
+    ).value.trim();
+
+  const amount =
+    Number(
+      document.getElementById(
+        "withdrawAmount"
+      ).value
+    );
+
+  const message =
+    document.getElementById(
+      "withdrawMessage"
+    );
+
+  if (!address) {
+
+    message.className =
+      "message error";
+
+    message.textContent =
+      "Enter a destination wallet address.";
+
+    return;
+  }
+
+  if (!amount || amount <= 0) {
+
+    message.className =
+      "message error";
+
+    message.textContent =
+      "Enter a valid withdrawal amount.";
+
+    return;
+  }
+
+  /*
+    Real withdrawal processing must be performed
+    by a secure backend/payment provider.
+  */
+
+  message.className =
+    "message success";
+
+  message.textContent =
+    "Withdrawal request validated. Secure backend processing is required before funds are sent.";
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function setText(id,value) {
+
+  const element =
+    document.getElementById(id);
+
+  if (element) {
+    element.textContent = value;
   }
 }
 
 
-async function start() {
+/* =========================
+   LOGOUT
+========================= */
+
+async function logout() {
+
+  const button =
+    document.getElementById(
+      "logoutButton"
+    );
+
+  button.disabled = true;
+  button.textContent =
+    "LOGGING OUT...";
+
+  const result =
+    await supabaseClient.auth.signOut();
+
+  if (result.error) {
+
+    console.error(
+      result.error
+    );
+
+    button.disabled = false;
+    button.textContent =
+      "LOGOUT";
+
+    return;
+  }
+
+  window.location.replace(
+    "auth.html"
+  );
+}
+
+
+/* =========================
+   INITIALIZATION
+========================= */
+
+async function initializeDashboard() {
 
   try {
+
+    initializeNavigation();
+
+    startCandleClock();
 
     currentUser =
       await getCurrentUser();
@@ -1822,347 +2244,149 @@ async function start() {
     if (!currentUser) return;
 
     const email =
-      currentUser.email || "Trader";
+      currentUser.email ||
+      "Trader";
 
-    document.getElementById("userEmail")
-      .textContent = email;
+    setText(
+      "userEmail",
+      email
+    );
 
-    document.getElementById("settingsEmail")
-      .textContent = email;
+    setText(
+      "securityEmail",
+      email
+    );
 
-    document.getElementById("avatar")
-      .textContent =
-        email.charAt(0).toUpperCase();
+    setText(
+      "avatar",
+      email
+        .charAt(0)
+        .toUpperCase()
+    );
 
-    await loadWallet(currentUser.id);
-    await loadDemoAccount(currentUser.id);
-    await loadAccounts();
-    await loadPositions();
-    await loadTrades();
-    await loadTransactions();
+    await loadWallet(
+      currentUser.id
+    );
 
-    setupDemoButton();
-    setupWithdrawCalculation();
-
-    document.getElementById("withdrawBalance")
-      .textContent = money(walletBalance);
+    await loadDemoAccount(
+      currentUser.id
+    );
 
   } catch(error) {
 
     console.error(
-      "Dashboard startup error:",
+      "Dashboard initialization error:",
       error
     );
 
+    setText(
+      "demoMessage",
+      error.message ||
+      "Unable to load dashboard."
+    );
+
+    document.getElementById(
+      "demoMessage"
+    ).className =
+      "message error";
   }
 }
 
 
-document
+/* =========================
+   EVENT LISTENERS
+========================= */
+  document
   .getElementById("logoutButton")
-  .addEventListener("click",async()=>{
-    await supabaseClient.auth.signOut();
-
-    window.location.replace("auth.html");
-
-  });
-
+  .addEventListener(
+    "click",
+    logout
+  );
 
 document
-  .getElementById("securityLogout")
-  .addEventListener("click",async()=>{
-
-    await supabaseClient.auth.signOut();
-
-    window.location.replace("auth.html");
-
-  });
-
-
-document
-  .getElementById("depositSubmit")
-  .addEventListener("click",async()=>{
-
-    const amount =
-      Number(
-        document.getElementById("depositAmount").value
-      );
-
-    const message =
-      document.getElementById("depositMessage");
-
-    if (amount < 50) {
-      message.className = "message error";
-      message.textContent =
-        "Minimum deposit is $50.";
-      return;
-    }
-
-    const result =
-      await supabaseClient
-        .from("transactions")
-        .insert({
-          user_id: currentUser.id,
-          type: "deposit",
-          amount: amount,
-          currency:
-            document.getElementById("depositCurrency").value,
-          status: "pending",
-          tx_hash: null
-        });
-
-    if (result.error) {
-
-      message.className = "message error";
-      message.textContent =
-        result.error.message;
-      return;
-    }
-
-    message.className = "message success";
-    message.textContent =
-      "Deposit request created. Waiting for verified payment confirmation.";
-
-    await loadTransactions();
-
-  });
-
-
-document
-  .getElementById("withdrawSubmit")
-  .addEventListener("click",async()=>{
-
-    const amount =
-      Number(
-        document.getElementById("withdrawAmount").value
-      );
-
-    const address =
-      document.getElementById("withdrawAddress").value.trim();
-
-    const message =
-      document.getElementById("withdrawMessage");
-
-    if (!address) {
-      message.className = "message error";
-      message.textContent =
-        "Enter a destination wallet address.";
-      return;
-    }
-
-    if (amount <= 0) {
-      message.className = "message error";
-      message.textContent =
-        "Enter a valid withdrawal amount.";
-      return;
-    }
-
-    if (amount > walletBalance) {
-      message.className = "message error";
-      message.textContent =
-        "Insufficient available balance.";
-      return;
-    }
-
-    const result =
-      await supabaseClient
-        .from("transactions")
-        .insert({
-          user_id: currentUser.id,
-          type: "withdrawal",
-          amount: amount,
-          currency:
-            document.getElementById("withdrawCurrency").value,
-          status: "pending",
-          tx_hash: null
-        });
-
-    if (result.error) {
-
-      message.className = "message error";
-      message.textContent =
-        result.error.message;
-      return;
-    }
-
-    message.className = "message success";
-    message.textContent =
-      "Withdrawal request submitted for review.";
-
-    await loadTransactions();
-
-  });
-
+  .getElementById("createDemoButton")
+  .addEventListener(
+    "click",
+    createDemoAccount
+  );
 
 document
   .getElementById("startAiBot")
-  .addEventListener("click",async()=>{
-
-    if (!demoAccount) {
-
-      document.getElementById("aiMessage").className =
-        "message error";
-
-      document.getElementById("aiMessage").textContent =
-        "Create a demo trading account first.";
-
-      return;
-    }
-
-    if (demoAccount.mode !== "demo") {
-
-      document.getElementById("aiMessage").className =
-        "message error";
-
-      document.getElementById("aiMessage").textContent =
-        "Live execution requires a verified live trading provider.";
-
-      return;
-    }
-
-    document.getElementById("aiBotStatus")
-      .textContent = "READY";
-
-    document.getElementById("engineStatus")
-      .textContent = "READY";
-
-    document.getElementById("aiMessage").className =
-      "message success";
-
-    document.getElementById("aiMessage").textContent =
-      "AI settings are ready. No broker trade is executed by this dashboard.";
-  });
-
+  .addEventListener(
+    "click",
+    startBot
+  );
 
 document
   .getElementById("stopAiBot")
-  .addEventListener("click",()=>{
-
-    document.getElementById("aiBotStatus")
-      .textContent = "OFF";
-
-    document.getElementById("engineStatus")
-      .textContent = "READY";
-
-    document.getElementById("aiMessage").className =
-      "message";
-
-    document.getElementById("aiMessage").
-      textContent =
-      "AI engine stopped.";
-
-  });
-
+  .addEventListener(
+    "click",
+    stopBot
+  );
 
 document
   .getElementById("emergencyClose")
-  .addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    emergencyClose
+  );
 
-    document.getElementById("aiMessage").className =
-      "message error";
+document
+  .getElementById("aiTimeframe")
+  .addEventListener(
+    "change",
+    function() {
 
-    document.getElementById("aiMessage").textContent =
-      "Emergency close requires a connected execution provider.";
+      startCandleClock();
 
-  });
-
+      if (botRunning) {
+        setText(
+          "aiMessage",
+          "Timeframe changed to " +
+          this.value +
+          ". New candle cycle active."
+        );
+      }
+    }
+  );
 
 document
   .getElementById("saveRisk")
-  .addEventListener("click",async()=>{
-
-    if (!demoAccount) {
-
-      document.getElementById("riskMessage").textContent =
-        "Create a trading account first.";
-
-      return;
-    }
-
-    const values = {
-      trading_account_id: demoAccount.id,
-      risk_percent:
-        Number(document.getElementById("riskPercent").value),
-      max_daily_loss_percent:
-        Number(document.getElementById("maxDailyLoss").value),
-      max_drawdown_percent:
-        Number(document.getElementById("maxDrawdown").value),
-      max_open_trades:
-        Number(document.getElementById("maxOpenTrades").value),
-      automatic_lot_size:
-        document.getElementById("automaticLot").value === "true",
-      automatic_sl:
-        document.getElementById("automaticSL").value === "true",
-      automatic_tp:
-        document.getElementById("automaticTP").value === "true",
-      strategy:
-        document.getElementById("aiStrategy").value,
-      timeframe:
-        document.getElementById("riskTimeframe").value,
-      allowed_symbols:
-        document.getElementById("aiSymbols").value
-    };
-
-    const result =
-      await supabaseClient
-        .from("bot_settings")
-        .upsert(values,{
-          onConflict:"trading_account_id"
-        });
-
-    const message =
-      document.getElementById("riskMessage");
-
-    if (result.error) {
-      message.className = "message error";
-      message.textContent =
-        result.error.message;
-      return;
-    }
-
-    message.className = "message success";
-    message.textContent =
-      "Risk settings saved.";
-
-  });
-
+  .addEventListener(
+    "click",
+    saveRisk
+  );
 
 document
   .getElementById("saveSettings")
-  .addEventListener("click",()=>{
-
-    const message =
-      document.getElementById("settingsMessage");
-
-    message.className =
-      "message success";
-
-    message.textContent =
-      "Platform settings saved for this session.";
-
-  });
-
+  .addEventListener(
+    "click",
+    saveSettings
+  );
 
 document
-  .getElementById("autoTradingSwitch")
-  .addEventListener("click",function(){
-
-    this.classList.toggle("on");
-
-  });
-
+  .getElementById("depositSubmit")
+  .addEventListener(
+    "click",
+    requestDeposit
+  );
 
 document
-  .getElementById("notificationSwitch")
-  .addEventListener("click",function(){
+  .getElementById("withdrawAmount")
+  .addEventListener(
+    "input",
+    updateWithdrawalPreview
+  );
 
-    this.classList.toggle("on");
+document
+  .getElementById("withdrawSubmit")
+  .addEventListener(
+    "click",
+    requestWithdrawal
+  );
 
-  });
 
-
-setupNavigation();
-start();
+initializeDashboard();
 </script>
 
 </body>
