@@ -378,7 +378,7 @@ class TradingEngine {
         : price - takeProfitDistance;
 
     this.position = {
-      id: AMU-${Date.now()},
+     id: "AMU-" + Date.now(),
       side: signal,
       entry: price,
       stopLoss,
