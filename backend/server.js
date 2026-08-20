@@ -31,18 +31,14 @@ async function bridgeRequest(endpoint) {
     headers: {
       "X-Bridge-Token": MT5_BRIDGE_TOKEN,
       "Accept": "application/json"
-    },
-    redirect: "manual"
+    }
   });
 
   const text = await response.text();
 
-  const contentType =
-    response.headers.get("content-type") || "";
-
-  if (!contentType.includes("application/json")) {
+  if (!response.ok) {
     throw new Error(
-      Bridge returned HTTP ${response.status} instead of JSON
+      Bridge returned HTTP ${response.status}
     );
   }
 
@@ -50,14 +46,8 @@ async function bridgeRequest(endpoint) {
 
   try {
     data = JSON.parse(text);
-  } catch {
+  } catch (error) {
     throw new Error("Bridge returned invalid JSON");
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      data.error || Bridge returned HTTP ${response.status}
-    );
   }
 
   return data;
@@ -101,7 +91,7 @@ app.get("/api/trading/status", async (req, res) => {
       ok: true,
       connected: bridge.mt5_connected === true,
       mode: TRADING_MODE,
-      botRunning: botRunning,
+      botRunning,
       broker: {
         name: "Exness",
         server: "Exness-MT5Trial9"
@@ -113,7 +103,7 @@ app.get("/api/trading/status", async (req, res) => {
       ok: false,
       connected: false,
       mode: TRADING_MODE,
-      botRunning: botRunning,
+      botRunning,
       broker: null,
       message: "MT5 bridge unavailable.",
       error: error.message
@@ -189,8 +179,7 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("AI MONSTER U backend running");
   console.log("Port:", PORT);
   console.log("Trading mode:", TRADING_MODE);
-  console.
-    log(
+  console.log(
     "MT5 bridge configured:",
     Boolean(MT5_BRIDGE_URL)
   );
