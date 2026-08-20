@@ -12,6 +12,7 @@ app.use(express.json());
 const engine = new TradingEngine();
 const market = new MarketData();
 
+market.connect("BTCUSDT", "1m");
 /*
 |--------------------------------------------------------------------------
 | MAIN
