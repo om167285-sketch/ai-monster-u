@@ -8,11 +8,36 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-
 const engine = new TradingEngine();
 const market = new MarketData();
 
-market.connect("BTCUSDT", "1m");
+market.setCandleCloseHandler(
+  (candle, candles) => {
+    try {
+      const result =
+        engine.processCompletedCandle(
+          candle,
+          candles
+        );
+
+      console.log(
+        "AI MONSTER U candle processed:",
+        JSON.stringify(result)
+      );
+    } catch (error) {
+      console.error(
+        "Trading engine error:",
+        error.message
+      );
+    }
+  }
+);
+
+market.connect(
+  "BTCUSDT",
+  "1m"
+);
+
 /*
 |--------------------------------------------------------------------------
 | MAIN
