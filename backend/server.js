@@ -102,7 +102,7 @@ app.post("/api/trading/timeframe", (req, res) => {
     res.json({
       ok: true,
       timeframe: engine.timeframe,
-      message: Timeframe changed to ${timeframe}
+    message: Timeframe changed to ${timeframe}
     });
   } catch (error) {
     res.status(400).json({
