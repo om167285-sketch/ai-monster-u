@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import TradingEngine from "./tradingEngine.js";
+import MarketData from "./marketData.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -9,10 +10,23 @@ app.use(cors());
 app.use(express.json());
 
 const engine = new TradingEngine();
+const market = new MarketData();
+
+/*
+|--------------------------------------------------------------------------
+| MAIN
+|--------------------------------------------------------------------------
+*/
 
 app.get("/", (req, res) => {
   res.send("AI MONSTER U is LIVE");
 });
+
+/*
+|--------------------------------------------------------------------------
+| HEALTH
+|--------------------------------------------------------------------------
+*/
 
 app.get("/api/health", (req, res) => {
   res.json({
@@ -20,9 +34,16 @@ app.get("/api/health", (req, res) => {
     service: "AI MONSTER U",
     mode: "demo",
     tradingEngine: true,
+    marketData: market.getStatus(),
     time: new Date().toISOString()
   });
 });
+
+/*
+|--------------------------------------------------------------------------
+| TRADING STATUS
+|--------------------------------------------------------------------------
+*/
 
 app.get("/api/trading/status", (req, res) => {
   res.json({
@@ -31,6 +52,12 @@ app.get("/api/trading/status", (req, res) => {
     ...engine.getStatus()
   });
 });
+
+/*
+|--------------------------------------------------------------------------
+| START
+|--------------------------------------------------------------------------
+*/
 
 app.post("/api/trading/start", (req, res) => {
   try {
@@ -43,6 +70,12 @@ app.post("/api/trading/start", (req, res) => {
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| STOP
+|--------------------------------------------------------------------------
+*/
+
 app.post("/api/trading/stop", (req, res) => {
   try {
     res.json(engine.stop());
@@ -53,6 +86,12 @@ app.post("/api/trading/stop", (req, res) => {
     });
   }
 });
+
+/*
+|--------------------------------------------------------------------------
+| TIMEFRAME
+|--------------------------------------------------------------------------
+*/
 
 app.post("/api/trading/timeframe", (req, res) => {
   try {
@@ -73,9 +112,63 @@ app.post("/api/trading/timeframe", (req, res) => {
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| MARKET CONNECT
+|--------------------------------------------------------------------------
+*/
+
+app.post("/api/market/connect", (req, res) => {
+  try {
+    const symbol = req.body.symbol || "BTCUSDT";
+    const timeframe = req.body.timeframe || "1m";
+
+    market.disconnect();
+
+    market.connect(
+      symbol,
+      timeframe
+    );
+
+    engine.setTimeframe(timeframe);
+
+    res.json({
+      ok: true,
+      message: "Market data connection started",
+      symbol: symbol.toUpperCase(),
+      timeframe: timeframe
+    });
+  } catch (error) {
+    res.status(400).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
+/*
+|--------------------------------------------------------------------------
+| MARKET STATUS
+|--------------------------------------------------------------------------
+*/
+
+app.get("/api/market/status", (req, res) => {
+  res.json({
+    ok: true,
+    ...market.getStatus()
+  });
+});
+
+/*
+|--------------------------------------------------------------------------
+| ANALYSIS
+|--------------------------------------------------------------------------
+*/
+
 app.post("/api/trading/analyze", (req, res) => {
   try {
-    const analysis = engine.analyzeMarket(req.body);
+    const analysis =
+      engine.analyzeMarket(req.body);
 
     res.json({
       ok: true,
@@ -90,13 +183,20 @@ app.post("/api/trading/analyze", (req, res) => {
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| DEMO OPEN
+|--------------------------------------------------------------------------
+*/
+
 app.post("/api/trading/open", (req, res) => {
   try {
-    const result = engine.openDemoPosition(
-      req.body.signal,
-      Number(req.body.price),
-      req.body.candleTime || Date.now()
-    );
+    const result =
+      engine.openDemoPosition(
+        req.body.signal,
+        Number(req.body.price),
+        req.body.candleTime || Date.now()
+      );
 
     if (!result.ok) {
       return res.status(400).json(result);
@@ -111,12 +211,19 @@ app.post("/api/trading/open", (req, res) => {
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| DEMO CLOSE
+|--------------------------------------------------------------------------
+*/
+
 app.post("/api/trading/close", (req, res) => {
   try {
-    const result = engine.closeAtCandleBoundary(
-      Number(req.body.price),
-      req.body.reason || "CANDLE_CLOSE"
-    );
+    const result =
+      engine.closeAtCandleBoundary(
+        Number(req.body.price),
+        req.body.reason || "CANDLE_CLOSE"
+      );
 
     res.json(result);
   } catch (error) {
@@ -127,6 +234,12 @@ app.post("/api/trading/close", (req, res) => {
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| TRADES
+|--------------------------------------------------------------------------
+*/
+
 app.get("/api/trading/trades", (req, res) => {
   res.json({
     ok: true,
@@ -134,11 +247,42 @@ app.get("/api/trading/trades", (req, res) => {
   });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("================================");
-  console.log("AI MONSTER U");
-  console.log("Trading Engine");
-  console.log("Mode: DEMO");
-  console.log("Server running on port " + PORT);
-  console.log("================================");
-});
+/*
+|--------------------------------------------------------------------------
+| SERVER
+|--------------------------------------------------------------------------
+*/
+
+app.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
+    console.log(
+      "================================"
+    );
+
+    console.log(
+      "AI MONSTER U"
+    );
+
+    console.log(
+      "Trading Engine"
+    );
+
+    console.log(
+      "Market Data"
+    );
+
+    console.log(
+      "Mode: DEMO"
+    );
+
+    console.log(
+      "Server running on port " + PORT
+    );
+
+    console.log(
+      "================================"
+    );
+  }
+);
