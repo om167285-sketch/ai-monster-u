@@ -24,18 +24,6 @@ async function bridgeRequest(endpoint) {
     throw new Error("MT5_BRIDGE_TOKEN is missing");
   }
 
-  const url =
-    MT5_BRIDGE_URL.replace(/\/$/, "") + endpoint;
-
- async function bridgeRequest(endpoint) {
-  if (!MT5_BRIDGE_URL) {
-    throw new Error("MT5_BRIDGE_URL is missing");
-  }
-
-  if (!MT5_BRIDGE_TOKEN) {
-    throw new Error("MT5_BRIDGE_TOKEN is missing");
-  }
-
   const url = MT5_BRIDGE_URL.replace(/\/$/, "") + endpoint;
 
   const response = await fetch(url, {
@@ -47,33 +35,28 @@ async function bridgeRequest(endpoint) {
     redirect: "manual"
   });
 
-  const contentType = response.headers.get("content-type") || "";
   const text = await response.text();
+
+  const contentType =
+    response.headers.get("content-type") || "";
 
   if (!contentType.includes("application/json")) {
     throw new Error(
-      Bridge returned HTTP ${response.status} ${response.statusText} instead of JSON. Response: ${text.slice(0, 100)}
+      Bridge returned HTTP ${response.status} instead of JSON
     );
   }
 
-  const data = JSON.parse(text);
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Bridge returned invalid JSON");
+  }
 
   if (!response.ok) {
     throw new Error(
       data.error || Bridge returned HTTP ${response.status}
-    );
-  }
-
-  return data;
-}
-    }
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      data.error || "MT5 bridge request failed"
     );
   }
 
@@ -112,13 +95,13 @@ app.get("/api/health", async (req, res) => {
 
 app.get("/api/trading/status", async (req, res) => {
   try {
-    const health = await bridgeRequest("/health");
+    const bridge = await bridgeRequest("/health");
 
     res.json({
       ok: true,
-      connected: health.mt5_connected === true,
+      connected: bridge.mt5_connected === true,
       mode: TRADING_MODE,
-      botRunning,
+      botRunning: botRunning,
       broker: {
         name: "Exness",
         server: "Exness-MT5Trial9"
@@ -130,7 +113,7 @@ app.get("/api/trading/status", async (req, res) => {
       ok: false,
       connected: false,
       mode: TRADING_MODE,
-      botRunning,
+      botRunning: botRunning,
       broker: null,
       message: "MT5 bridge unavailable.",
       error: error.message
@@ -138,17 +121,13 @@ app.get("/api/trading/status", async (req, res) => {
   }
 });
 
-app.get("/api/market", async (req, res) => {
-  try {
-    const market = await bridgeRequest("/market");
-
-    res.json(market);
-  } catch (error) {
-    res.status(503).json({
-      ok: false,
-      error: error.message
-    });
-  }
+app.get("/api/bridge/config", (req, res) => {
+  res.json({
+    ok: true,
+    bridgeUrlConfigured: Boolean(MT5_BRIDGE_URL),
+    bridgeTokenConfigured: Boolean(MT5_BRIDGE_TOKEN),
+    tradingMode: TRADING_MODE
+  });
 });
 
 app.post("/api/trading/start", async (req, res) => {
@@ -160,9 +139,9 @@ app.post("/api/trading/start", async (req, res) => {
   }
 
   try {
-    const health = await bridgeRequest("/health");
+    const bridge = await bridgeRequest("/health");
 
-    if (!health.mt5_connected) {
+    if (bridge.mt5_connected !== true) {
       return res.status(503).json({
         ok: false,
         message: "MT5 is not connected."
@@ -175,11 +154,12 @@ app.post("/api/trading/start", async (req, res) => {
       ok: true,
       botRunning: true,
       mode: "demo",
-      message: "Demo trading engine started. No real order placed."
+      message: "Demo trading engine started."
     });
   } catch (error) {
     res.status(503).json({
       ok: false,
+      botRunning: false,
       message: "MT5 bridge unavailable.",
       error: error.message
     });
@@ -205,20 +185,17 @@ app.post("/api/trading/emergency-close", (req, res) => {
   });
 });
 
-app.get("/api/bridge/config", (req, res) => {
-  res.json({
-    ok: true,
-    bridgeUrlConfigured: Boolean(MT5_BRIDGE_URL),
-    bridgeTokenConfigured: Boolean(MT5_BRIDGE_TOKEN),
-    tradingMode: TRADING_MODE
-  });
-});
-
 app.listen(PORT, "0.0.0.0", () => {
   console.log("AI MONSTER U backend running");
   console.log("Port:", PORT);
+  console.log("Trading mode:", TRADING_MODE);
   console.
-    log("Mode:", TRADING_MODE);
-  console.log("Bridge URL configured:", Boolean(MT5_BRIDGE_URL));
-  console.log("Bridge token configured:", Boolean(MT5_BRIDGE_TOKEN));
+    log(
+    "MT5 bridge configured:",
+    Boolean(MT5_BRIDGE_URL)
+  );
+  console.log(
+    "MT5 token configured:",
+    Boolean(MT5_BRIDGE_TOKEN)
+  );
 });
