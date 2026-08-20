@@ -500,4 +500,4 @@ class TradingEngine {
   }
 }
 
-module.exports = TradingEngine;
+export default TradingEngine;
