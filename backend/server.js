@@ -7,8 +7,8 @@ import TradingEngine from "./tradingEngine.js";
 
 const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 const PORT = Number(process.env.PORT || 3001);
 
@@ -17,13 +17,7 @@ app.use(express.json());
 
 const engine = new TradingEngine();
 
-/*
-|--------------------------------------------------------------------------
-| HEALTH
-|--------------------------------------------------------------------------
-*/
-
-app.get("/api/health", (req, res) => {
+app.get("/api/health", function (req, res) {
   res.json({
     ok: true,
     service: "AI MONSTER U Trading Engine",
@@ -32,13 +26,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-/*
-|--------------------------------------------------------------------------
-| BOT STATUS
-|--------------------------------------------------------------------------
-*/
-
-app.get("/api/trading/status", (req, res) => {
+app.get("/api/trading/status", function (req, res) {
   res.json({
     ok: true,
     mode: "demo",
@@ -46,20 +34,9 @@ app.get("/api/trading/status", (req, res) => {
   });
 });
 
-/*
-|--------------------------------------------------------------------------
-| START BOT
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/start", (req, res) => {
+app.post("/api/trading/start", function (req, res) {
   try {
-    const result = engine.start();
-
-    res.json({
-      ...result,
-      mode: "demo"
-    });
+    res.json(engine.start());
   } catch (error) {
     res.status(500).json({
       ok: false,
@@ -68,17 +45,9 @@ app.post("/api/trading/start", (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| STOP BOT
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/stop", (req, res) => {
+app.post("/api/trading/stop", function (req, res) {
   try {
-    const result = engine.stop();
-
-    res.json(result);
+    res.json(engine.stop());
   } catch (error) {
     res.status(500).json({
       ok: false,
@@ -87,22 +56,16 @@ app.post("/api/trading/stop", (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| SET TIMEFRAME
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/timeframe", (req, res) => {
+app.post("/api/trading/timeframe", function (req, res) {
   try {
-    const { timeframe } = req.body;
+    const timeframe = req.body.timeframe;
 
     engine.setTimeframe(timeframe);
 
     res.json({
       ok: true,
       timeframe: engine.timeframe,
-    message: "Timeframe changed to " + timeframe
+      message: "Timeframe changed to " + timeframe
     });
   } catch (error) {
     res.status(400).json({
@@ -112,20 +75,14 @@ app.post("/api/trading/timeframe", (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| MARKET ANALYSIS
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/analyze", (req, res) => {
+app.post("/api/trading/analyze", function (req, res) {
   try {
     const analysis = engine.analyzeMarket(req.body);
 
     res.json({
       ok: true,
       timeframe: engine.timeframe,
-      analysis
+      analysis: analysis
     });
   } catch (error) {
     res.status(400).json({
@@ -135,52 +92,21 @@ app.post("/api/trading/analyze", (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| OPEN DEMO POSITION
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/open", (req, res) => {
+app.post("/api/trading/open", function (req, res) {
   try {
-    const { signal, price, candleTime } = req.body;
+    const signal = req.body.signal;
+    const price = Number(req.body.price);
+    const candleTime = req.body.candleTime || Date.now();
 
     const result = engine.openDemoPosition(
       signal,
-      Number(price),
-      candleTime || Date.now()
+      price,
+      candleTime
     );
 
     if (!result.ok) {
       return res.status(400).json(result);
     }
-
-    res.json({
-      ...result,
-      mode: "demo"
-    });
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
-    });
-  }
-});
-
-/*
-|--------------------------------------------------------------------------
-| CLOSE POSITION
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/close", (req, res) => {
-  try {
-    const { price, reason } = req.body;
-
-    const result = engine.closeAtCandleBoundary(
-      Number(price),
-      reason || "CANDLE_CLOSE"
-    );
 
     res.json(result);
   } catch (error) {
@@ -191,47 +117,48 @@ app.post("/api/trading/close", (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| TRADES
-|--------------------------------------------------------------------------
-*/
+app.post("/api/trading/close", function (req, res) {
+  try {
+    const price = Number(req.body.price);
+    const reason = req.body.reason || "CANDLE_CLOSE";
 
-app.get("/api/trading/trades", (req, res) => {
+    res.json(
+      engine.closeAtCandleBoundary(
+        price,
+        reason
+      )
+    );
+  } catch (error) {
+    res.status(400).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
+app.get("/api/trading/trades", function (req, res) {
   res.json({
     ok: true,
     trades: engine.getTrades()
   });
 });
 
-/*
-|--------------------------------------------------------------------------
-| FRONTEND
-|--------------------------------------------------------------------------
-*/
+app.use(express.static(dirname));
 
-app.use(express.static(path.join(__dirname, "../public")));
-
-app.get("*", (req, res) => {
+app.get("/", function (req, res) {
   res.sendFile(
-    path.join(__dirname, "../public/index.html")
+    path.join(dirname, "dashboard.html")
   );
 });
 
-/*
-|--------------------------------------------------------------------------
-| SERVER
-|--------------------------------------------------------------------------
-*/
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("");
+app.listen(PORT, "0.0.0.0", function () {
   console.log("====================================");
-  console.log("       AI MONSTER U");
-  console.log("       Trading Engine");
+  console.log("AI MONSTER U");
+  console.log("Trading Engine");
   console.log("====================================");
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server started");
   console.log("Mode: DEMO");
   console.log("MT5 Bridge: NOT REQUIRED");
+  console.log("Port: " + PORT);
   console.log("====================================");
 });
