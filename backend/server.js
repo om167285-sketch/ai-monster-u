@@ -1,3 +1,8 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -169,7 +174,9 @@ app.post("/api/trading/emergency-close", function (req, res) {
     message: "Emergency close is not enabled yet."
   });
 });
-
+app.get("/dashboard.html", function (req, res) {
+  res.sendFile(path.join(__dirname, "dashboard.html"));
+});
 app.listen(PORT, "0.0.0.0", function () {
   console.log("AI MONSTER U backend running");
   console.log("Port: " + PORT);
