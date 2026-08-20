@@ -113,29 +113,24 @@ app.get("/api/health", async (req, res) => {
 app.get("/api/trading/status", async (req, res) => {
   try {
     const health = await bridgeRequest("/health");
-    const account = await bridgeRequest("/account");
 
     res.json({
       ok: true,
       connected: health.mt5_connected === true,
       mode: TRADING_MODE,
-      botRunning: botRunning,
+      botRunning,
       broker: {
         name: "Exness",
-        server: account.server,
-        currency: account.currency,
-        balance: account.balance,
-        equity: account.equity,
-        tradeAllowed: account.trade_allowed
+        server: "Exness-MT5Trial9"
       },
-      message: "MT5 demo account connected."
+      message: "MT5 bridge connected."
     });
   } catch (error) {
     res.status(503).json({
       ok: false,
       connected: false,
       mode: TRADING_MODE,
-      botRunning: botRunning,
+      botRunning,
       broker: null,
       message: "MT5 bridge unavailable.",
       error: error.message
