@@ -18,9 +18,9 @@ class MarketData {
       "@kline_" +
       this.timeframe;
 
-    const url =
-      "wss://stream.binance.com:9443/ws/" +
-      stream;
+   const url =
+  "wss://data-stream.binance.vision/ws/" +
+  stream;
 
     this.socket = new WebSocket(url);
 
