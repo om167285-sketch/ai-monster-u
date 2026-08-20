@@ -27,10 +27,45 @@ async function bridgeRequest(endpoint) {
   const url =
     MT5_BRIDGE_URL.replace(/\/$/, "") + endpoint;
 
+ async function bridgeRequest(endpoint) {
+  if (!MT5_BRIDGE_URL) {
+    throw new Error("MT5_BRIDGE_URL is missing");
+  }
+
+  if (!MT5_BRIDGE_TOKEN) {
+    throw new Error("MT5_BRIDGE_TOKEN is missing");
+  }
+
+  const url = MT5_BRIDGE_URL.replace(/\/$/, "") + endpoint;
+
   const response = await fetch(url, {
+    method: "GET",
     headers: {
       "X-Bridge-Token": MT5_BRIDGE_TOKEN,
       "Accept": "application/json"
+    },
+    redirect: "manual"
+  });
+
+  const contentType = response.headers.get("content-type") || "";
+  const text = await response.text();
+
+  if (!contentType.includes("application/json")) {
+    throw new Error(
+      Bridge returned HTTP ${response.status} ${response.statusText} instead of JSON. Response: ${text.slice(0, 100)}
+    );
+  }
+
+  const data = JSON.parse(text);
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || Bridge returned HTTP ${response.status}
+    );
+  }
+
+  return data;
+}
     }
   });
 
