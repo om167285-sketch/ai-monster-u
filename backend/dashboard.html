@@ -6951,9 +6951,95 @@ async function start() {
 setupNavigation();
 
 start();
+/* =========================================================
+   LOGOUT
+========================================================= */
 
-</script>
-  
+const securityLogout =
+  document.getElementById("securityLogout");
+
+if (securityLogout) {
+  securityLogout.addEventListener("click", async () => {
+    securityLogout.disabled = true;
+    securityLogout.textContent = "SIGNING OUT...";
+
+    try {
+      const { error } =
+        await supabaseClient.auth.signOut();
+
+      if (error) {
+        throw error;
+      }
+
+      window.location.href = "/auth.html";
+
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      securityLogout.disabled = false;
+      securityLogout.textContent =
+        "SIGN OUT OF THIS ACCOUNT";
+
+      const message =
+        document.getElementById("settingsMessage");
+
+      if (message) {
+        message.textContent =
+          "Unable to sign out. Please try again.";
+      }
+    }
+  });
+}
+
+  function renderSymbolGrid() {
+  const grid =
+    document.getElementById("aiSymbolGrid");
+
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  AVAILABLE_SYMBOLS.forEach((symbol) => {
+
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+    button.className = "symbol-option";
+
+    if (selectedSymbols.includes(symbol.value)) {
+      button.classList.add("selected");
+    }
+
+    button.innerHTML = `
+      <strong>${symbol.label}</strong>
+      <span>${symbol.description}</span>
+    `;
+
+    button.addEventListener("click", () => {
+
+      if (selectedSymbols.includes(symbol.value)) {
+
+        selectedSymbols =
+          selectedSymbols.filter(
+            item => item !== symbol.value
+          );
+
+      } else {
+
+        selectedSymbols.push(symbol.value);
+
+      }
+
+      renderSymbolGrid();
+    });
+
+    grid.appendChild(button);
+  });
+}
+
+renderSymbolGrid();
+</script> 
 
 </body>
 </html>
