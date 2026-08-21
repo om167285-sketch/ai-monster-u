@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>AI MONSTER U</title>
 
   <style>
@@ -13,149 +18,1119 @@
     }
 
     body {
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background: #070b12;
+      color: #ffffff;
       min-height: 100vh;
-      background: #050607;
-      color: white;
-      font-family: Arial, sans-serif;
     }
 
-    nav {
-      height: 70px;
-      padding: 0 7%;
+    button {
+      font: inherit;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #222;
+
+      padding: 0 16px;
+
+      background: #0c111b;
+      border-bottom: 1px solid #1b2535;
+
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .menu-button {
+      width: 44px;
+      height: 44px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background: #141c29;
+      color: white;
+
+      font-size: 24px;
+      cursor: pointer;
     }
 
     .logo {
-      font-size: 20px;
-      font-weight: 900;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
     }
 
-    .logo span {
-      color: #00ffa6;
+    .mode {
+      padding: 7px 10px;
+
+      border-radius: 20px;
+
+      background: #10291e;
+      color: #42e58b;
+
+      font-size: 11px;
+      font-weight: bold;
     }
 
-    nav a {
-      color: #00120c;
-      background: #00ffa6;
-      padding: 11px 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 900;
-      font-size: 12px;
+    /* SIDE MENU */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+
+      background: rgba(0, 0, 0, 0.65);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition: 0.25s;
+
+      z-index: 200;
     }
 
-    main {
-      min-height: calc(100vh - 70px);
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+
+      width: 285px;
+      max-width: 85%;
+
+      height: 100vh;
+
+      background: #0b1018;
+
+      transform: translateX(-100%);
+
+      transition: 0.25s;
+
+      z-index: 300;
+
+      overflow-y: auto;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      height: 72px;
+
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+
+      padding: 0 18px;
+
+      border-bottom: 1px solid #1b2535;
+    }
+
+    .sidebar-title {
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .close-button {
+      border: 0;
+      background: transparent;
+
+      color: #ffffff;
+
+      font-size: 25px;
+
+      cursor: pointer;
+    }
+
+    .nav {
+      padding: 14px;
+    }
+
+    .nav-button {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+
+      gap: 13px;
+
+      padding: 14px;
+
+      margin-bottom: 6px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background: transparent;
+
+      color: #c9d1dd;
+
+      text-align: left;
+
+      cursor: pointer;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      background: #162131;
+      color: #ffffff;
+    }
+
+    .nav-icon {
+      width: 24px;
       text-align: center;
-      padding: 30px;
+      font-size: 18px;
     }
 
-    .hero {
-      max-width: 800px;
+    .nav-label {
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .badge {
-      color: #00ffa6;
+    .menu-mode {
+      margin: 20px 14px;
+
+      padding: 15px;
+
+      border-radius: 12px;
+
+      background: #101824;
+
+      border: 1px solid #1b2a3d;
+    }
+
+    .menu-mode-title {
       font-size: 11px;
-      margin-bottom: 20px;
+      color: #7f8da1;
+      margin-bottom: 6px;
     }
 
-    h1 {
-      font-size: clamp(42px,8vw,75px);
-      margin-bottom: 20px;
+    .menu-mode-value {
+      color: #42e58b;
+      font-weight: 700;
     }
 
-    h1 span {
-      color: #00ffa6;
-    }
+    /* MAIN */
 
-    p {
-      color: #858585;
-      line-height: 1.7;
-      max-width: 620px;
+    main {
+      padding: 16px;
+      max-width: 900px;
       margin: auto;
     }
 
-    .buttons {
-      margin-top: 30px;
+    .welcome {
+      margin: 8px 0 18px;
     }
 
-    .button {
-      display: inline-block;
-      padding: 14px 25px;
-      margin: 5px;
-      border-radius: 9px;
-      text-decoration: none;
-      font-weight: 900;
+    .welcome h1 {
+      font-size: 25px;
+      margin-bottom: 5px;
+    }
+
+    .welcome p {
+      color: #7f8da1;
+      font-size: 13px;
+    }
+
+    /* CARDS */
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      gap: 10px;
+
+      margin-bottom: 14px;
+    }
+
+    .card {
+      background: #0d141f;
+
+      border: 1px solid #1b2637;
+
+      border-radius: 14px;
+
+      padding: 15px;
+    }
+
+    .card-title {
+      color: #7f8da1;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .profit {
+      color: #42e58b;
+    }
+
+    /* MARKET */
+
+    .panel {
+      background: #0d141f;
+      border: 1px solid #1b2637;
+
+      border-radius: 14px;
+
+      padding: 15px;
+
+      margin-bottom: 14px;
+    }
+
+    .panel-header {
+      display: flex;
+
+      justify-content: space-between;
+      align-items: center;
+
+      margin-bottom: 15px;
+    }
+
+    .panel-title {
+      font-weight: 800;
+    }
+
+    .connection {
+      font-size: 11px;
+      color: #42e58b;
+    }
+
+    .price {
+      font-size: 30px;
+      font-weight: 800;
+
+      margin-bottom: 15px;
+    }
+
+    .chart {
+      height: 220px;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          rgba(255,255,255,0.03) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.03) 1px,
+          transparent 1px
+        );
+
+      background-size: 30px 30px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      color: #526174;
+
+      font-size: 13px;
+    }
+
+    /* TIMEFRAME */
+
+    .timeframes {
+      display: grid;
+
+      grid-template-columns:
+        repeat(6, 1fr);
+
+      gap: 6px;
+    }
+
+    .timeframe {
+      border: 1px solid #263449;
+
+      background: #111a27;
+
+      color: #aeb8c7;
+
+      padding: 10px 4px;
+
+      border-radius: 8px;
+
+      font-size: 11px;
+
+      cursor: pointer;
+    }
+
+    .timeframe.active {
+      background: #ffffff;
+      color: #05080d;
+      border-color: #ffffff;
+    }
+
+    /* AI */
+
+    .signal {
+      display: flex;
+
+      justify-content: space-between;
+      align-items: center;
+
+      padding: 14px;
+
+      border-radius: 10px;
+
+      background: #101824;
+
+      margin-bottom: 12px;
+    }
+
+    .signal-name {
+      color: #7f8da1;
       font-size: 12px;
     }
 
-    .primary {
-      background: #00ffa6;
-      color: #00120c;
+    .signal-value {
+      font-size: 18px;
+      font-weight: 800;
     }
 
-    .secondary {
-      border: 1px solid #333;
+    .start-button {
+      width: 100%;
+
+      border: 0;
+
+      border-radius: 10px;
+
+      padding: 15px;
+
+      background: #42e58b;
+
+      color: #041109;
+
+      font-weight: 900;
+
+      cursor: pointer;
+    }
+
+    .start-button.running {
+      background: #e54b5d;
       color: white;
+    }
+
+    /* RESPONSIVE */
+
+    @media (min-width: 700px) {
+      main {
+        padding: 30px;
+      }
+
+      .cards {
+        grid-template-columns:
+          repeat(4, 1fr);
+      }
+
+      .chart {
+        height: 350px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<nav>
-  <div class="logo">
-    AI <span>MONSTER U</span>
-  </div>
+  <!-- OVERLAY -->
 
-  <a href="auth.html">
-    LOGIN
-  </a>
-</nav>
+  <div
+    class="overlay"
+    id="overlay"
+    onclick="closeMenu()"
+  ></div>
 
-<main>
+  <!-- SIDEBAR -->
 
-  <div class="hero">
+  <aside
+    class="sidebar"
+    id="sidebar"
+  >
 
-    <div class="badge">
-      ● AI TRADING PLATFORM
-    </div>
+    <div class="sidebar-header">
 
-    <h1>
-      AI <span>MONSTER U</span>
-    </h1>
+      <div class="sidebar-title">
+        AI MONSTER U
+      </div>
 
-    <p>
-      A modern trading platform for automated strategies,
-      market analysis, account management and risk control.
-    </p>
-
-    <div class="buttons">
-
-      <a
-        class="button primary"
-        href="auth.html">
-        GET STARTED
-      </a>
-
-      <a
-        class="button secondary"
-        href="auth.html">
-        LOGIN
-      </a>
+      <button
+        class="close-button"
+        onclick="closeMenu()"
+      >
+        ×
+      </button>
 
     </div>
 
-  </div>
+    <nav class="nav">
 
-</main>
+      <button class="nav-button active">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">
+          Dashboard
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">
+          Market
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">
+          AI Trading
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">
+          Positions
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">📜</span>
+        <span class="nav-label">
+          Trade History
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">💰</span>
+        <span class="nav-label">
+          Deposit
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">💸</span>
+        <span class="nav-label">
+          Withdraw
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">
+          Account
+        </span>
+      </button>
+
+      <button class="nav-button">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">
+          Settings
+        </span>
+      </button>
+
+    </nav>
+
+    <div class="menu-mode">
+
+      <div class="menu-mode-title">
+        ACCOUNT MODE
+      </div>
+
+      <div class="menu-mode-value">
+        ● DEMO
+      </div>
+
+    </div>
+
+  </aside>
+
+  <!-- HEADER -->
+
+  <header class="topbar">
+
+    <button
+      class="menu-button"
+      onclick="openMenu()"
+      aria-label="Open menu"
+    >
+      ☰
+    </button>
+
+    <div class="logo">
+      AI MONSTER U
+    </div>
+
+    <div class="mode">
+      DEMO
+    </div>
+
+  </header>
+
+  <!-- MAIN -->
+
+  <main>
+
+    <section class="welcome">
+
+      <h1>
+        AI Trading Dashboard
+      </h1>
+
+      <p>
+        Automated crypto scalping
+      </p>
+
+    </section>
+
+    <!-- ACCOUNT CARDS -->
+
+    <section class="cards">
+
+      <div class="card">
+
+        <div class="card-title">
+          BALANCE
+        </div>
+
+        <div
+          class="card-value"
+          id="balance"
+        >
+          $50.00
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <div class="card-title">
+          PROFIT
+        </div>
+
+        <div
+          class="card-value profit"
+          id="profit"
+        >
+          $0.00
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <div class="card-title">
+          SYMBOL
+        </div>
+
+        <div class="card-value">
+          BTCUSDT
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <div class="card-title">
+          TIMEFRAME
+        </div>
+
+        <div
+          class="card-value"
+          id="currentTimeframe"
+        >
+          1M
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- MARKET -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div class="panel-title">
+          BTCUSDT
+        </div>
+
+        <div
+          class="connection"
+          id="connection"
+        >
+          ● CONNECTING
+        </div>
+
+      </div>
+
+      <div
+        class="price"
+        id="price"
+      >
+        $--
+      </div>
+
+      <div class="chart">
+        LIVE MARKET CHART
+      </div>
+
+    </section>
+
+    <!-- TIMEFRAME -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div class="panel-title">
+          Scalping Timeframe
+        </div>
+
+      </div>
+
+      <div class="timeframes">
+
+        <button
+          class="timeframe active"
+          onclick="selectTimeframe('1m', this)"
+        >
+          1M
+        </button>
+
+        <button
+          class="timeframe"
+          onclick="selectTimeframe('5m', this)"
+        >
+          5M
+        </button>
+
+        <button
+          class="timeframe"
+          onclick="selectTimeframe('15m', this)"
+        >
+          15M
+        </button>
+
+        <button
+          class="timeframe"
+          onclick="selectTimeframe('30m', this)"
+        >
+          30M
+        </button>
+
+        <button
+          class="timeframe"
+          onclick="selectTimeframe('1h', this)"
+        >
+          1H
+        </button>
+
+        <button
+          class="timeframe"
+          onclick="selectTimeframe('4h', this)"
+        >
+          4H
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- AI TRADING -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div class="panel-title">
+          🤖 AI MONSTER U
+        </div>
+
+        <div
+          id="botStatus"
+          class="connection"
+        >
+          ● STOPPED
+        </div>
+
+      </div>
+
+      <div class="signal">
+
+        <div>
+          <div class="signal-name">
+            AI SIGNAL
+          </div>
+
+          <div
+            class="signal-value"
+            id="signal"
+          >
+            WAIT
+          </div>
+        </div>
+
+        <div>
+          <div class="signal-name">
+            RISK
+          </div>
+
+          <div class="signal-value">
+            1%
+          </div>
+        </div>
+
+      </div>
+
+      <button
+        class="start-button"
+        id="startButton"
+        onclick="toggleBot()"
+      >
+        START DEMO BOT
+      </button>
+
+    </section>
+    </main>
+
+  <script>
+
+    const API =
+      window.location.origin;
+
+    let botRunning = false;
+
+    let selectedTimeframe =
+      "1m";
+
+    function openMenu() {
+
+      document
+        .getElementById("sidebar")
+        .classList.add("open");
+
+      document
+        .getElementById("overlay")
+        .classList.add("open");
+
+    }
+
+    function closeMenu() {
+
+      document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+      document
+        .getElementById("overlay")
+        .classList.remove("open");
+
+    }
+
+    async function loadStatus() {
+
+      try {
+
+        const response =
+          await fetch(
+            API +
+            "/api/trading/status"
+          );
+
+        const data =
+          await response.json();
+
+        if (!data.ok) {
+          return;
+        }
+
+        document
+          .getElementById("balance")
+          .textContent =
+          "$" +
+          Number(
+            data.balance
+          ).toFixed(2);
+
+        document
+          .getElementById("profit")
+          .textContent =
+          "$" +
+          Number(
+            data.dailyProfit
+          ).toFixed(2);
+
+        botRunning =
+          Boolean(data.running);
+
+        updateBotButton();
+
+      } catch (error) {
+
+        console.log(
+          "Status error:",
+          error
+        );
+
+      }
+
+    }
+
+    async function loadMarket() {
+
+      try {
+
+        const response =
+          await fetch(
+            API +
+            "/api/market/status"
+          );
+
+        const data =
+          await response.json();
+
+        if (!data.ok) {
+          return;
+        }
+
+        const candle =
+          data.lastCandle;
+
+        if (candle) {
+
+          document
+            .getElementById("price")
+            .textContent =
+            "$" +
+            Number(
+              candle.close
+            ).toLocaleString(
+              undefined,
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              }
+            );
+
+        }
+
+        const connection =
+          document
+            .getElementById(
+              "connection"
+            );
+
+        if (data.connected) {
+
+          connection.textContent =
+            "● LIVE";
+
+        } else {
+
+          connection.textContent =
+            "● DISCONNECTED";
+
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Market error:",
+          error
+        );
+
+      }
+
+    }
+
+    async function toggleBot() {
+
+      try {
+
+        const endpoint =
+          botRunning
+            ? "/api/trading/stop"
+            : "/api/trading/start";
+
+        const response =
+          await fetch(
+            API + endpoint,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              }
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (data.ok) {
+
+          botRunning =
+            Boolean(
+              data.running
+            );
+
+          updateBotButton();
+
+        }
+
+      } catch (error) {
+
+        alert(
+          "Unable to contact AI MONSTER U."
+        );
+
+      }
+
+    }
+
+    function updateBotButton() {
+
+      const button =
+        document
+          .getElementById(
+            "startButton"
+          );
+
+      const status =
+        document
+          .getElementById(
+            "botStatus"
+          );
+
+      if (botRunning) {
+
+        button.textContent =
+          "STOP DEMO BOT";
+
+        button.classList.add(
+          "running"
+        );
+
+        status.textContent =
+          "● RUNNING";
+
+      } else {
+
+        button.textContent =
+          "START DEMO BOT";
+
+        button.classList.remove(
+          "running"
+        );
+
+        status.textContent =
+          "● STOPPED";
+
+      }
+
+    }
+
+    async function selectTimeframe(
+      timeframe,
+      button
+    ) {
+
+      selectedTimeframe =
+        timeframe;
+
+      document
+        .querySelectorAll(
+          ".timeframe"
+        )
+        .forEach(
+          item =>
+            item.
+            classList.remove(
+              "active"
+            )
+        );
+
+      button.classList.add(
+        "active"
+      );
+
+      document
+        .getElementById(
+          "currentTimeframe"
+        )
+        .textContent =
+        timeframe.toUpperCase();
+
+      try {
+
+        await fetch(
+          API +
+          "/api/trading/timeframe",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+                timeframe:
+                  timeframe
+              })
+          }
+        );
+
+        await loadMarket();
+
+      } catch (error) {
+
+        console.log(
+          "Timeframe error:",
+          error
+        );
+
+      }
+
+    }
+
+    loadStatus();
+
+    loadMarket();
+
+    setInterval(
+      loadStatus,
+      3000
+    );
+
+    setInterval(
+      loadMarket,
+      2000
+    );
+
+  </script>
 
 </body>
 </html>
