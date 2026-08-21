@@ -1,7 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-font-weight: 900;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI MONSTER U</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #05080d;
+      --panel: #0c121b;
+      --panel2: #111a26;
+      --border: #1d2a3a;
+      --text: #ffffff;
+      --muted: #7f8da0;
+      --green: #39e58a;
+      --red: #ff5364;
+      --blue: #4c8dff;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* TOP BAR */
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 64px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 14px;
+
+      background: rgba(5, 8, 13, 0.97);
+      border-bottom: 1px solid var(--border);
+
+      z-index: 1000;
+    }
+
+    .menu-btn {
+      width: 43px;
+      height: 43px;
+
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      background: var(--panel2);
+      color: white;
+
+      font-size: 23px;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 1.4px;
+    }
+
+    .demo-badge {
+      padding: 7px 10px;
+
+      border-radius: 20px;
+
+      background: rgba(57, 229, 138, 0.12);
+      color: var(--green);
+
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    /* SIDEBAR */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+
+      background: rgba(0, 0, 0, 0.72);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition: 0.2s;
+
+      z-index: 1100;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+
+      width: 285px;
+      max-width: 86vw;
+      height: 100vh;
+
+      background: #090f17;
+
+      transform: translateX(-100%);
+      transition: transform 0.25s;
+
+      z-index: 1200;
+
+      overflow-y: auto;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      height: 72px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 17px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .close-btn {
+      width: 40px;
+      height: 40px;
+
+      border: 0;
+      background: transparent;
+
+      color: white;
+      font-size: 27px;
+    }
+
+    .nav {
+      padding: 14px;
+    }
+
+    .nav-btn {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      gap: 13px;
+
+      padding: 14px;
+
+      margin-bottom: 5px;
+
+      border: 0;
+      border-radius: 11px;
+
+      background: transparent;
+      color: #aeb8c7;
+
+      text-align: left;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #162131;
+      color: white;
+    }
+
+    .nav-icon {
+      width: 25px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .nav-text {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sidebar-account {
+      margin: 10px 14px 25px;
+
+      padding: 14px;
+
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .sidebar-label {
+      color: var(--muted);
+      font-size: 9px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-mode {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    /* MAIN */
+
+    .main {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+
+      width: 100%;
+      max-width: 1100px;
+
+      margin: 0 auto;
+
+      padding: 18px 15px 40px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-heading {
+      margin: 7px 0 18px;
+    }
+
+    .page-heading h1 {
+      font-size: 25px;
+          font-weight: 900;
       margin-bottom: 5px;
     }
 
@@ -266,7 +530,7 @@ font-weight: 900;
       width: 100%;
 
       padding: 13px;
-      border: 1px solid var(--border);
+          border: 1px solid var(--border);
       border-radius: 9px;
 
       outline: none;
@@ -1527,274 +1791,7 @@ font-weight: 900;
     /*
     TRADING STATUS
     */
-        <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>AI MONSTER U</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #05080d;
-      --panel: #0c121b;
-      --panel2: #111a26;
-      --border: #1d2a3a;
-      --text: #ffffff;
-      --muted: #7f8da0;
-      --green: #39e58a;
-      --red: #ff5364;
-      --blue: #4c8dff;
-    }
-
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      overflow-x: hidden;
-    }
-
-    button,
-    input,
-    select {
-      font-family: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* TOP BAR */
-
-    .topbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-
-      height: 64px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 14px;
-
-      background: rgba(5, 8, 13, 0.97);
-      border-bottom: 1px solid var(--border);
-
-      z-index: 1000;
-    }
-
-    .menu-btn {
-      width: 43px;
-      height: 43px;
-
-      border: 1px solid var(--border);
-      border-radius: 10px;
-
-      background: var(--panel2);
-      color: white;
-
-      font-size: 23px;
-    }
-
-    .logo {
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: 1.4px;
-    }
-
-    .demo-badge {
-      padding: 7px 10px;
-
-      border-radius: 20px;
-
-      background: rgba(57, 229, 138, 0.12);
-      color: var(--green);
-
-      font-size: 10px;
-      font-weight: 900;
-    }
-
-    /* SIDEBAR */
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-
-      background: rgba(0, 0, 0, 0.72);
-
-      opacity: 0;
-      visibility: hidden;
-
-      transition: 0.2s;
-
-      z-index: 1100;
-    }
-
-    .overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .sidebar {
-      position: fixed;
-
-      top: 0;
-      left: 0;
-
-      width: 285px;
-      max-width: 86vw;
-      height: 100vh;
-
-      background: #090f17;
-
-      transform: translateX(-100%);
-      transition: transform 0.25s;
-
-      z-index: 1200;
-
-      overflow-y: auto;
-    }
-
-    .sidebar.show {
-      transform: translateX(0);
-    }
-
-    .sidebar-header {
-      height: 72px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 17px;
-
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sidebar-logo {
-      font-weight: 900;
-      letter-spacing: 1px;
-    }
-
-    .close-btn {
-      width: 40px;
-      height: 40px;
-
-      border: 0;
-      background: transparent;
-
-      color: white;
-      font-size: 27px;
-    }
-
-    .nav {
-      padding: 14px;
-    }
-
-    .nav-btn {
-      width: 100%;
-
-      display: flex;
-      align-items: center;
-      gap: 13px;
-
-      padding: 14px;
-
-      margin-bottom: 5px;
-
-      border: 0;
-      border-radius: 11px;
-
-      background: transparent;
-      color: #aeb8c7;
-
-      text-align: left;
-    }
-
-    .nav-btn:hover,
-    .nav-btn.active {
-      background: #162131;
-      color: white;
-    }
-
-    .nav-icon {
-      width: 25px;
-      text-align: center;
-      font-size: 18px;
-    }
-
-    .nav-text {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .sidebar-account {
-      margin: 10px 14px 25px;
-
-      padding: 14px;
-
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .sidebar-label {
-      color: var(--muted);
-      font-size: 9px;
-      margin-bottom: 6px;
-    }
-
-    .sidebar-mode {
-      color: var(--green);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    /* MAIN */
-
-    .main {
-      padding-top: 64px;
-      min-height: 100vh;
-    }
-
-    .page {
-      display: none;
-
-      width: 100%;
-      max-width: 1100px;
-
-      margin: 0 auto;
-
-      padding: 18px 15px 40px;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .page-heading {
-      margin: 7px 0 18px;
-    }
-
-    .page-heading h1 {
-      font-size: 25px;
-          async function loadTradingStatus() {
+        async function loadTradingStatus() {
 
       try {
 
