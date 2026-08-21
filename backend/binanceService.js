@@ -14,16 +14,13 @@ class BinanceService {
   }
 
   isConfigured() {
-    return Boolean(
-      this.apiKey &&
-      this.apiSecret
+    return (
+      this.apiKey.length > 0 &&
+      this.apiSecret.length > 0
     );
   }
 
-  async request(
-    endpoint,
-    params = {}
-  ) {
+  async request(endpoint, params = {}) {
     if (!this.isConfigured()) {
       throw new Error(
         "Binance API credentials are not configured"
@@ -32,11 +29,27 @@ class BinanceService {
 
     const timestamp = Date.now();
 
-    const query = new URLSearchParams({
-      ...params,
-      timestamp: String(timestamp),
-      recvWindow: "10000"
-    }).toString();
+    const searchParams = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(params)) {
+      searchParams.append(
+        key,
+        String(value)
+      );
+    }
+
+    searchParams.append(
+      "timestamp",
+      String(timestamp)
+    );
+
+    searchParams.append(
+      "recvWindow",
+      "10000"
+    );
+
+    const query =
+      searchParams.toString();
 
     const signature =
       crypto
@@ -48,8 +61,12 @@ class BinanceService {
         .digest("hex");
 
     const url =
-      ${BINANCE_BASE_URL}${endpoint} +
-      ?${query}&signature=${signature};
+      BINANCE_BASE_URL +
+      endpoint +
+      "?" +
+      query +
+      "&signature=" +
+      signature;
 
     const response =
       await fetch(url, {
@@ -66,7 +83,7 @@ class BinanceService {
     if (!response.ok) {
       throw new Error(
         data?.msg ||
-        Binance API error ${response.status}
+        "Binance API request failed"
       );
     }
 
@@ -85,7 +102,7 @@ class BinanceService {
 
     const asset =
       account.balances?.find(
-        item =>
+        (item) =>
           item.asset === "USDT"
       );
 
@@ -108,7 +125,8 @@ class BinanceService {
       asset: "USDT",
       free,
       locked,
-      total: free + locked
+      total:
+        free + locked
     };
   }
 
@@ -130,9 +148,12 @@ class BinanceService {
         configured: true,
         connected: true,
         asset: "USDT",
-        balance: balance.total,
-        free: balance.free,
-        locked: balance.locked,
+        balance:
+          balance.total,
+        free:
+          balance.free,
+        locked:
+          balance.locked,
         message:
           "Binance account connected"
       };
