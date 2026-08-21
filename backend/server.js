@@ -1,15 +1,59 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import TradingEngine from "./tradingEngine.js";
 import MarketData from "./marketData.js";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 10000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(express.json());
+
+/*
+|--------------------------------------------------------------------------
+| WEBSITE
+|--------------------------------------------------------------------------
+*/
+
+app.get("/", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "index.html")
+  );
+});
+
+app.get("/auth.html", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "auth.html")
+  );
+});
+
+app.get("/dashboard.html", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "dashboard.html")
+  );
+});
+
+/*
+|--------------------------------------------------------------------------
+| TRADING ENGINE
+|--------------------------------------------------------------------------
+*/
+
 const engine = new TradingEngine();
+
 const market = new MarketData();
+
+/*
+|--------------------------------------------------------------------------
+| CONNECT COMPLETED CANDLES TO ENGINE
+|--------------------------------------------------------------------------
+*/
 
 market.setCandleCloseHandler(
   (candle, candles) => {
@@ -21,7 +65,7 @@ market.setCandleCloseHandler(
         );
 
       console.log(
-        "AI MONSTER U candle processed:",
+        "Candle processed:",
         JSON.stringify(result)
       );
     } catch (error) {
@@ -33,20 +77,16 @@ market.setCandleCloseHandler(
   }
 );
 
+/*
+|--------------------------------------------------------------------------
+| START MARKET DATA
+|--------------------------------------------------------------------------
+*/
+
 market.connect(
   "BTCUSDT",
   "1m"
 );
-
-/*
-|--------------------------------------------------------------------------
-| MAIN
-|--------------------------------------------------------------------------
-*/
-
-app.get("/", (req, res) => {
-  res.send("AI MONSTER U is LIVE");
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -60,116 +100,11 @@ app.get("/api/health", (req, res) => {
     service: "AI MONSTER U",
     mode: "demo",
     tradingEngine: true,
-    marketData: market.getStatus(),
-    time: new Date().toISOString()
+    marketData:
+      market.getStatus(),
+    time:
+      new Date().toISOString()
   });
-});
-
-/*
-|--------------------------------------------------------------------------
-| TRADING STATUS
-|--------------------------------------------------------------------------
-*/
-
-app.get("/api/trading/status", (req, res) => {
-  res.json({
-    ok: true,
-    mode: "demo",
-    ...engine.getStatus()
-  });
-});
-
-/*
-|--------------------------------------------------------------------------
-| START
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/start", (req, res) => {
-  try {
-    res.json(engine.start());
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
-  }
-});
-
-/*
-|--------------------------------------------------------------------------
-| STOP
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/stop", (req, res) => {
-  try {
-    res.json(engine.stop());
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
-  }
-});
-
-/*
-|--------------------------------------------------------------------------
-| TIMEFRAME
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/timeframe", (req, res) => {
-  try {
-    const timeframe = req.body.timeframe;
-
-    engine.setTimeframe(timeframe);
-
-    res.json({
-      ok: true,
-      timeframe: engine.timeframe,
-      message: "Timeframe changed to " + timeframe
-    });
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
-    });
-  }
-});
-
-/*
-|--------------------------------------------------------------------------
-| MARKET CONNECT
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/market/connect", (req, res) => {
-  try {
-    const symbol = req.body.symbol || "BTCUSDT";
-    const timeframe = req.body.timeframe || "1m";
-
-    market.disconnect();
-
-    market.connect(
-      symbol,
-      timeframe
-    );
-
-    engine.setTimeframe(timeframe);
-
-    res.json({
-      ok: true,
-      message: "Market data connection started",
-      symbol: symbol.toUpperCase(),
-      timeframe: timeframe
-    });
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
-    });
-  }
 });
 
 /*
@@ -178,104 +113,297 @@ app.post("/api/market/connect", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.get("/api/market/status", (req, res) => {
-  res.json({
-    ok: true,
-    ...market.getStatus()
-  });
-});
-
-/*
-|--------------------------------------------------------------------------
-| ANALYSIS
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/trading/analyze", (req, res) => {
-  try {
-    const analysis =
-      engine.analyzeMarket(req.body);
-
+app.get(
+  "/api/market/status",
+  (req, res) => {
     res.json({
       ok: true,
-      timeframe: engine.timeframe,
-      analysis: analysis
-    });
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
+      ...market.getStatus()
     });
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
-| DEMO OPEN
+| MARKET CONNECT
 |--------------------------------------------------------------------------
 */
 
-app.post("/api/trading/open", (req, res) => {
-  try {
-    const result =
-      engine.openDemoPosition(
-        req.body.signal,
-        Number(req.body.price),
-        req.body.candleTime || Date.now()
+app.post(
+  "/api/market/connect",
+  (req, res) => {
+    try {
+      const symbol =
+        req.body.symbol ||
+        "BTCUSDT";
+
+      const timeframe =
+        req.body.timeframe ||
+        "1m";
+
+      market.connect(
+        symbol,
+        timeframe
       );
 
-    if (!result.ok) {
-      return res.status(400).json(result);
+      engine.setSymbol(symbol);
+      engine.setTimeframe(
+        timeframe
+      );
+
+      res.json({
+        ok: true,
+        message:
+          "Market data connection started",
+        symbol:
+          symbol.toUpperCase(),
+        timeframe:
+          timeframe
+      });
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
     }
-
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
-    });
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
-| DEMO CLOSE
+| TRADING STATUS
 |--------------------------------------------------------------------------
 */
 
-app.post("/api/trading/close", (req, res) => {
-  try {
-    const result =
-      engine.closeAtCandleBoundary(
-        Number(req.body.price),
-        req.body.reason || "CANDLE_CLOSE"
+app.get(
+  "/api/trading/status",
+  (req, res) => {
+    res.json({
+      ok: true,
+      ...engine.getStatus()
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| START DEMO BOT
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/trading/start",
+  (req, res) => {
+    try {
+      res.json(
+        engine.start()
+      );
+      } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| STOP DEMO BOT
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/trading/stop",
+  (req, res) => {
+    try {
+      res.json(
+        engine.stop()
+      );
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| CHANGE TIMEFRAME
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/trading/timeframe",
+  (req, res) => {
+    try {
+      const timeframe =
+        req.body.timeframe;
+
+      engine.setTimeframe(
+        timeframe
       );
 
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
-    });
+      market.connect(
+        engine.symbol,
+        timeframe
+      );
+
+      res.json({
+        ok: true,
+        timeframe:
+          engine.timeframe,
+        message:
+          "Timeframe changed to " +
+          timeframe
+      });
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
-| TRADES
+| OPEN DEMO POSITION
 |--------------------------------------------------------------------------
 */
 
-app.get("/api/trading/trades", (req, res) => {
-  res.json({
-    ok: true,
-    trades: engine.getTrades()
-  });
-});
+app.post(
+  "/api/trading/open",
+  (req, res) => {
+    try {
+      const result =
+        engine.openDemoPosition(
+          req.body.signal,
+          Number(
+            req.body.price
+          ),
+          req.body.candleTime ||
+            Date.now()
+        );
+
+      if (!result.ok) {
+        return res
+          .status(400)
+          .json(result);
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
-| SERVER
+| CLOSE DEMO POSITION
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/trading/close",
+  (req, res) => {
+    try {
+      const result =
+        engine.closeAtCandleBoundary(
+          Number(
+            req.body.price
+          ),
+          req.body.reason ||
+            "CANDLE_CLOSE"
+        );
+
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| ANALYZE MARKET
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/trading/analyze",
+  (req, res) => {
+    try {
+      const result =
+        engine.analyzeMarket(
+          req.body
+        );
+
+      res.json({
+        ok: true,
+        analysis: result
+      });
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| TRADE HISTORY
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/trading/trades",
+  (req, res) => {
+    res.json({
+      ok: true,
+      trades:
+        engine.getTrades()
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| 404 API
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  "/api",
+  (req, res) => {
+    res.status(404).json({
+      ok: false,
+      error: "API endpoint not found"
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| START SERVER
 |--------------------------------------------------------------------------
 */
 
@@ -292,9 +420,8 @@ app.listen(
     );
 
     console.log(
-      "Trading Engine"
+      "Website + Trading Engine"
     );
-
     console.log(
       "Market Data"
     );
@@ -304,7 +431,8 @@ app.listen(
     );
 
     console.log(
-      "Server running on port " + PORT
+      "Server running on port " +
+        PORT
     );
 
     console.log(
