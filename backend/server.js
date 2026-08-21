@@ -178,7 +178,7 @@ const MAX_CANDLES = BOT_CONFIG.maxCandles;
 ========================================================= */
 
 function getMarketKey(symbol, timeframe) {
-  return ${symbol}:${timeframe};
+  return `${symbol}:${timeframe}`;
 }
 
 function getCandleKey(symbol, timeframe) {
