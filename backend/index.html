@@ -1,23 +1,35 @@
-display: grid;
+font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .page-heading p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* CARDS */
+
+    .cards {
+      display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
 
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .card {
       padding: 15px;
 
-      background: #0d141f;
-
-      border: 1px solid #1b2637;
-      border-radius: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
     }
 
     .card-label {
-      color: #77869a;
-      font-size: 10px;
-      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+      margin-bottom: 9px;
     }
 
     .card-value {
@@ -26,90 +38,153 @@ display: grid;
     }
 
     .green {
-      color: #42e58b;
+      color: var(--green);
     }
 
     .red {
-      color: #ff5d6c;
+      color: var(--red);
     }
 
-    /* =========================
-       PANELS
-    ========================= */
+    /* PANELS */
 
     .panel {
       padding: 15px;
-      margin-bottom: 14px;
 
-      background: #0d141f;
+      margin-bottom: 12px;
 
-      border: 1px solid #1b2637;
+      background: var(--panel);
+      border: 1px solid var(--border);
       border-radius: 14px;
     }
 
-    .panel-header {
+    .panel-head {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
 
-      margin-bottom: 14px;
+      margin-bottom: 13px;
     }
 
     .panel-title {
+      font-size: 14px;
       font-weight: 900;
     }
 
     .status {
-      color: #42e58b;
-      font-size: 10px;
-      font-weight: 800;
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 900;
     }
 
-    .status.off {
-      color: #ff5d6c;
+    .status.offline {
+      color: var(--red);
     }
 
-    /* =========================
-       MARKET
-    ========================= */
+    /* ROW */
 
-    .symbol-bar {
+    .row {
       display: flex;
       align-items: center;
       justify-content: space-between;
 
+      padding: 13px 0;
+
+      border-bottom: 1px solid #182231;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .row-title {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .row-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .row-right {
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* BUTTONS */
+
+    .primary-btn {
+      width: 100%;
+
+      padding: 14px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background: var(--green);
+      color: #031108;
+
+      font-weight: 900;
+    }
+
+    .primary-btn.stop {
+      background: var(--red);
+      color: white;
+    }
+
+    .secondary-btn {
+      width: 100%;
+
       padding: 13px;
+
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      background: var(--panel2);
+      color: white;
+
+      font-weight: 800;
+    }
+
+    /* MARKET */
+
+    .market-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 13px 14px;
 
       margin-bottom: 10px;
 
-      background: #0d141f;
-
-      border: 1px solid #1b2637;
+      background: var(--panel);
+      border: 1px solid var(--border);
       border-radius: 12px;
     }
 
-    .symbol-name {
+    .symbol {
       font-size: 16px;
       font-weight: 900;
     }
 
-    .live-market {
-      color: #42e58b;
-      font-size: 10px;
-      font-weight: 800;
+    .live {
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 900;
     }
 
-    .tradingview-container {
+    .chart-box {
       width: 100%;
-      height: 68vh;
-      min-height: 480px;
+      height: 65vh;
+      min-height: 450px;
 
       overflow: hidden;
 
-      border-radius: 12px;
-      border: 1px solid #1b2637;
+      border: 1px solid var(--border);
+      border-radius: 13px;
 
-      background: #0d141f;
+      background: #0b111a;
     }
 
     .tradingview-widget-container {
@@ -119,80 +194,45 @@ display: grid;
 
     .tradingview-widget-container__widget {
       width: 100%;
-      height: calc(100% - 28px);
+      height: calc(100% - 25px);
     }
 
     .tradingview-widget-copyright {
-      height: 28px;
+      height: 25px;
 
       display: flex;
       align-items: center;
       justify-content: center;
 
-      font-size: 9px;
+      font-size: 8px;
     }
 
     .tradingview-widget-copyright a {
-      color: #77869a;
+      color: #6f7c8d;
       text-decoration: none;
     }
 
-    /* =========================
-       TIMEFRAMES
-    ========================= */
+    /* AI */
 
-    .timeframes {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 6px;
-    }
-
-    .timeframe {
-      padding: 10px 3px;
-
-      border: 1px solid #263449;
-      border-radius: 8px;
-
-      background: #111a27;
-      color: #aeb8c7;
-
-      font-size: 10px;
-      font-weight: 800;
-
-      cursor: pointer;
-    }
-
-    .timeframe.active {
-      background: #ffffff;
-      color: #05080d;
-      border-color: #ffffff;
-    }
-
-    /* =========================
-       AI TRADING
-    ========================= */
-
-    .signal-box {
+    .signal-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-
       gap: 10px;
 
-      margin-bottom: 12px;
+      margin-bottom: 13px;
     }
 
     .signal-card {
       padding: 14px;
 
+      background: var(--panel2);
+      border: 1px solid var(--border);
       border-radius: 11px;
-
-      background: #101824;
-      border: 1px solid #1d2a3b;
     }
 
     .signal-label {
-      color: #77869a;
-      font-size: 10px;
+      color: var(--muted);
+      font-size: 9px;
       margin-bottom: 7px;
     }
 
@@ -201,69 +241,7 @@ display: grid;
       font-weight: 900;
     }
 
-    .bot-button {
-      width: 100%;
-
-      padding: 15px;
-
-      border: 0;
-      border-radius: 11px;
-
-      background: #42e58b;
-      color: #041109;
-
-      font-weight: 900;
-
-      cursor: pointer;
-    }
-
-    .bot-button.running {
-      background: #ff5363;
-      color: #ffffff;
-    }
-
-    /* =========================
-       LISTS
-    ========================= */
-
-    .empty {
-      padding: 35px 15px;
-
-      text-align: center;
-
-      color: #6e7c90;
-
-      font-size: 13px;
-    }
-
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      padding: 13px 0;
-
-      border-bottom: 1px solid #192434;
-    }
-
-    .list-item:last-child {
-      border-bottom: 0;
-    }
-
-    .list-main {
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    .list-sub {
-    color: #718096;
-      font-size: 10px;
-      margin-top: 4px;
-    }
-
-    /* =========================
-       FORM
-    ========================= */
+    /* FORM */
 
     .field {
       margin-bottom: 14px;
@@ -274,9 +252,10 @@ display: grid;
 
       margin-bottom: 7px;
 
-      color: #8290a2;
-      font-size: 11px;
-      font-weight: 700;
+      color: #8996a8;
+
+      font-size: 10px;
+      font-weight: 800;
     }
 
     .field input,
@@ -284,74 +263,100 @@ display: grid;
       width: 100%;
 
       padding: 13px;
-
-      border: 1px solid #253247;
+      border: 1px solid var(--border);
       border-radius: 9px;
 
-      background: #101824;
-      color: #ffffff;
-
       outline: none;
+
+      background: var(--panel2);
+      color: white;
     }
 
-    .action-button {
-      width: 100%;
+    /* TIMEFRAME */
 
-      padding: 14px;
+    .timeframes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
 
-      border: 0;
-      border-radius: 10px;
-
-      background: #ffffff;
-      color: #070b12;
-
-      font-weight: 900;
-
-      cursor: pointer;
+      margin-bottom: 13px;
     }
+
+    .tf-btn {
+      padding: 11px 5px;
+
+      border: 1px solid var(--border);
+      border-radius: 8px;
+
+      background: var(--panel2);
+      color: #9ba8b8;
+
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tf-btn.active {
+      background: white;
+      color: #05080d;
+    }
+
+    /* EMPTY */
+
+    .empty {
+      padding: 40px 15px;
+
+      text-align: center;
+
+      color: #667487;
+
+      font-size: 12px;
+    }
+
+    /* NOTICE */
 
     .notice {
       padding: 13px;
 
-      margin-bottom: 14px;
+      margin-bottom: 13px;
 
+      background: var(--panel2);
+      border: 1px solid var(--border);
       border-radius: 10px;
 
-      background: #101824;
+      color: #8e9bad;
 
-      color: #9ba8b8;
-
-      font-size: 11px;
-      line-height: 1.5;
+      font-size: 10px;
+      line-height: 1.6;
     }
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
+    /* DESKTOP */
 
     @media (min-width: 700px) {
+
+      .cards {
+        grid-template-columns:
+          repeat(4, 1fr);
+      }
 
       .page {
         padding: 30px;
       }
 
-      .cards {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .tradingview-container {
+      .chart-box {
         height: 650px;
       }
 
+      .timeframes {
+        grid-template-columns:
+          repeat(6, 1fr);
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- =========================
-       MENU OVERLAY
-  ========================= -->
+  <!-- OVERLAY -->
 
   <div
     id="overlay"
@@ -359,9 +364,7 @@ display: grid;
     onclick="closeMenu()"
   ></div>
 
-  <!-- =========================
-       SIDE MENU
-  ========================= -->
+  <!-- SIDEBAR -->
 
   <aside
     id="sidebar"
@@ -375,7 +378,7 @@ display: grid;
       </div>
 
       <button
-        class="close-button"
+        class="close-btn"
         onclick="closeMenu()"
       >
         ×
@@ -386,95 +389,95 @@ display: grid;
     <nav class="nav">
 
       <button
-        class="nav-button active"
+        class="nav-btn active"
         data-page="dashboard"
-        onclick="navigate('dashboard')"
+        onclick="go('dashboard')"
       >
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">Dashboard</span>
+        <span class="nav-text">Dashboard</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="market"
-        onclick="navigate('market')"
+        onclick="go('market')"
       >
         <span class="nav-icon">📊</span>
-        <span class="nav-label">Market</span>
+        <span class="nav-text">Market</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="ai"
-        onclick="navigate('ai')"
+        onclick="go('ai')"
       >
         <span class="nav-icon">🤖</span>
-        <span class="nav-label">AI Trading</span>
+        <span class="nav-text">AI Trading</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="positions"
-        onclick="navigate('positions')"
+        onclick="go('positions')"
       >
         <span class="nav-icon">💼</span>
-        <span class="nav-label">Positions</span>
+        <span class="nav-text">Positions</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="history"
-        onclick="navigate('history')"
+        onclick="go('history')"
       >
         <span class="nav-icon">📜</span>
-        <span class="nav-label">Trade History</span>
+        <span class="nav-text">Trade History</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="deposit"
-        onclick="navigate('deposit')"
+        onclick="go('deposit')"
       >
         <span class="nav-icon">💰</span>
-        <span class="nav-label">Deposit</span>
+        <span class="nav-text">Deposit</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="withdraw"
-        onclick="navigate('withdraw')"
+        onclick="go('withdraw')"
       >
         <span class="nav-icon">💸</span>
-        <span class="nav-label">Withdraw</span>
+        <span class="nav-text">Withdraw</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="account"
-        onclick="navigate('account')"
+        onclick="go('account')"
       >
         <span class="nav-icon">👤</span>
-        <span class="nav-label">Account</span>
+        <span class="nav-text">Account</span>
       </button>
 
       <button
-        class="nav-button"
+        class="nav-btn"
         data-page="settings"
-        onclick="navigate('settings')"
+        onclick="go('settings')"
       >
         <span class="nav-icon">⚙️</span>
-        <span class="nav-label">Settings</span>
+        <span class="nav-text">Settings</span>
       </button>
 
     </nav>
 
-    <div class="menu-account">
+    <div class="sidebar-account">
 
-      <div class="menu-account-title">
-        ACCOUNT MODE
+      <div class="sidebar-label">
+        CURRENT MODE
       </div>
 
-      <div class="menu-account-mode">
+      <div class="sidebar-mode">
         ● DEMO
       </div>
 
@@ -482,14 +485,12 @@ display: grid;
 
   </aside>
 
-  <!-- =========================
-  TOP BAR
-  ========================= -->
+  <!-- TOPBAR -->
 
   <header class="topbar">
 
     <button
-      class="menu-button"
+      class="menu-btn"
       onclick="openMenu()"
     >
       ☰
@@ -499,833 +500,847 @@ display: grid;
       AI MONSTER U
     </div>
 
-    <div class="mode-badge">
+    <div
+      id="topMode"
+          class="demo-badge"
+    >
       DEMO
     </div>
 
   </header>
 
-  <!-- =========================
-       DASHBOARD
-  ========================= -->
+  <main class="main">
 
-  <section
-    id="dashboardPage"
-    class="page active"
-  >
+    <!-- DASHBOARD -->
 
-    <div class="page-title">
+    <section
+      id="dashboard"
+      class="page active"
+    >
 
-      <h1>
-        AI Trading Dashboard
-      </h1>
+      <div class="page-heading">
 
-      <p>
-        Automated scalping control center
-      </p>
+        <h1>
+          AI MONSTER U
+        </h1>
 
-    </div>
-
-    <div class="cards">
-
-      <div class="card">
-        <div class="card-label">
-          BALANCE
-        </div>
-
-        <div
-          id="balance"
-          class="card-value"
-        >
-          $50.00
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">
-          DAILY PROFIT
-        </div>
-
-        <div
-          id="profit"
-          class="card-value green"
-        >
-          $0.00
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">
-          SYMBOL
-        </div>
-
-        <div
-          id="dashboardSymbol"
-          class="card-value"
-        >
-          BTCUSDT
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">
-          TIMEFRAME
-        </div>
-
-        <div
-          id="dashboardTimeframe"
-          class="card-value"
-        >
-          1M
-        </div>
-      </div>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="panel-header">
-
-        <div class="panel-title">
-          System Status
-        </div>
-
-        <div
-          id="dashboardStatus"
-          class="status"
-        >
-          ● CONNECTING
-        </div>
+        <p>
+          Professional AI trading dashboard
+        </p>
 
       </div>
 
-      <div class="list-item">
+      <div class="cards">
 
-        <div>
-          <div class="list-main">
-            Market Data
-          </div>
+        <div class="card">
 
-          <div class="list-sub">
-            Live market connection
-          </div>
-        </div>
-
-        <div
-          id="marketStatus"
-          class="green"
-        >
-          --
-        </div>
-
-      </div>
-
-      <div class="list-item">
-
-        <div>
-          <div class="list-main">
-            AI Engine
-          </div>
-
-          <div class="list-sub">
-            Automated strategy
-          </div>
-        </div>
-
-        <div
-          id="engineStatus"
-          class="green"
-        >
-          STOPPED
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="panel-header">
-
-        <div class="panel-title">
-          Quick AI Control
-        </div>
-
-      </div>
-
-      <button
-        class="bot-button"
-        id="dashboardBotButton"
-        onclick="toggleBot()"
-      >
-        START DEMO BOT
-      </button>
-
-    </div>
-
-  </section>
-
-  <!-- =========================
-       MARKET
-  ========================= -->
-
-  <section
-    id="marketPage"
-    class="page"
-  >
-
-    <div class="page-title">
-
-      <h1>
-        Market
-      </h1>
-
-      <p>
-        Live market chart
-      </p>
-
-    </div>
-
-    <div class="symbol-bar">
-
-      <div class="symbol-name">
-        BTCUSDT
-      </div>
-
-      <div class="live-market">
-        ● LIVE MARKET
-      </div>
-
-    </div>
-
-    <div class="tradingview-container">
-
-      <div
-        class="tradingview-widget-container"
-      >
-
-        <div
-          class="tradingview-widget-container__widget"
-        ></div>
-
-        <div class="tradingview-widget-copyright">
-
-          <a
-            href="https://www.tradingview.com/"
-            target="_blank"
-            rel="noopener nofollow"
-          >
-            TradingView
-          </a>
-
-        </div>
-
-        <script
-          type="text/javascript"
-          src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
-          async
-        >
-        {
-          "autosize": true,
-          "symbol": "BINANCE:BTCUSDT",
-          "interval": "1",
-          "timezone": "Etc/UTC",
-          "theme": "dark",
-          "style": "1",
-          "withdateranges": true,
-          "hide_side_toolbar": false,
-            "allow_symbol_change": true,
-          "hide_volume": false,
-          "hide_legend": false,
-          "calendar": false,
-          "save_image": false,
-          "studies": [
-            "RSI@tv-basicstudies",
-            "MACD@tv-basicstudies",
-            "MASimple@tv-basicstudies"
-          ],
-          "locale": "en",
-          "support_host": "https://www.tradingview.com"
-        }
-        </script>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- =========================
-       AI TRADING
-  ========================= -->
-
-  <section
-    id="aiPage"
-    class="page"
-  >
-
-    <div class="page-title">
-
-      <h1>
-        AI Trading
-      </h1>
-
-      <p>
-        AI MONSTER U scalping engine
-      </p>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="panel-header">
-
-        <div class="panel-title">
-          Strategy
-        </div>
-
-        <div
-          id="aiStatus"
-          class="status"
-        >
-          ● STOPPED
-        </div>
-
-      </div>
-
-      <div class="signal-box">
-
-        <div class="signal-card">
-
-          <div class="signal-label">
-            AI SIGNAL
+          <div class="card-label">
+            BALANCE
           </div>
 
           <div
-            id="aiSignal"
-            class="signal-value"
+            id="balance"
+            class="card-value"
+          >
+            $50.00
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-label">
+            DAILY PROFIT
+          </div>
+
+          <div
+            id="dailyProfit"
+            class="card-value green"
+          >
+            $0.00
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-label">
+            MARKET
+          </div>
+
+          <div
+            id="symbol"
+            class="card-value"
+          >
+            BTCUSDT
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-label">
+            TIMEFRAME
+          </div>
+
+          <div
+            id="timeframe"
+            class="card-value"
+          >
+            1M
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div class="panel-title">
+            System Status
+          </div>
+
+          <div
+            id="systemStatus"
+            class="status"
+          >
+            ● CONNECTING
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div>
+
+            <div class="row-title">
+              Market Data
+            </div>
+
+            <div class="row-sub">
+              Live BTCUSDT market feed
+            </div>
+
+          </div>
+
+          <div
+            id="marketConnection"
+            class="row-right green"
+          >
+            --
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div>
+
+            <div class="row-title">
+              AI Engine
+            </div>
+
+            <div class="row-sub">
+              Scalping engine
+            </div>
+
+          </div>
+
+          <div
+            id="engineConnection"
+            class="row-right"
+          >
+            STOPPED
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div class="panel-title">
+            AI MONSTER U Control
+          </div>
+
+        </div>
+
+        <button
+          id="dashboardBot"
+          class="primary-btn"
+          onclick="toggleBot()"
+        >
+          START DEMO BOT
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- MARKET -->
+
+    <section
+      id="market"
+      class="page"
+    >
+
+      <div class="page-heading">
+
+        <h1>
+          Market
+        </h1>
+
+        <p>
+          Live TradingView market analysis
+        </p>
+
+      </div>
+
+      <div class="market-top">
+
+        <div class="symbol">
+          BTCUSDT
+        </div>
+
+        <div class="live">
+          ● LIVE
+        </div>
+
+      </div>
+
+      <div class="chart-box">
+
+        <div
+          class="tradingview-widget-container"
+        >
+
+          <div
+            class="tradingview-widget-container__widget"
+          ></div>
+
+          <div
+            class="tradingview-widget-copyright"
+          >
+
+            <a
+              href="https://www.tradingview.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              TradingView
+            </a>
+
+          </div>
+
+          <script
+            type="text/javascript"
+            src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
+            async
+          >
+          {
+            "autosize": true,
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "1",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+                  "allow_symbol_change": true,
+            "withdateranges": true,
+            "hide_side_toolbar": false,
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "hide_volume": false,
+            "calendar": false,
+            "save_image": false,
+            "studies": [
+              "RSI@tv-basicstudies",
+              "MACD@tv-basicstudies",
+              "MASimple@tv-basicstudies"
+            ],
+            "support_host": "https://www.tradingview.com"
+          }
+          </script>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- AI TRADING -->
+
+    <section
+      id="ai"
+      class="page"
+    >
+
+      <div class="page-heading">
+
+        <h1>
+          AI Trading
+        </h1>
+
+        <p>
+          Automated candle-cycle scalping
+        </p>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div class="panel-title">
+            Trading Engine
+          </div>
+
+          <div
+            id="aiStatus"
+            class="status"
+          >
+            ● STOPPED
+          </div>
+
+        </div>
+
+        <div class="signal-grid">
+
+          <div class="signal-card">
+
+            <div class="signal-label">
+              AI SIGNAL
+            </div>
+
+            <div
+              id="signal"
+              class="signal-value"
+            >
+              WAIT
+            </div>
+
+          </div>
+
+          <div class="signal-card">
+
+            <div class="signal-label">
+              RISK
+            </div>
+
+            <div class="signal-value">
+              1%
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            TIMEFRAME
+          </label>
+
+          <select
+            id="timeframeSelect"
+            onchange="setTimeframe(this.value)"
+          >
+
+            <option value="1m">
+              1 Minute
+            </option>
+
+            <option value="5m">
+              5 Minutes
+            </option>
+
+            <option value="15m">
+              15 Minutes
+            </option>
+
+            <option value="30m">
+              30 Minutes
+            </option>
+
+            <option value="1h">
+              1 Hour
+            </option>
+
+            <option value="4h">
+              4 Hours
+            </option>
+
+          </select>
+
+        </div>
+
+        <button
+          id="aiBot"
+          class="primary-btn"
+          onclick="toggleBot()"
+        >
+          START DEMO BOT
+        </button>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <div class="panel-title">
+            Scalping Logic
+          </div>
+
+        </div>
+
+        <div class="notice">
+
+          The selected timeframe controls the
+          candle cycle. The engine receives
+          completed candles and can manage a
+          position at the candle boundary.
+
+          <br><br>
+
+          Example: with 1M selected, the strategy
+          evaluates each completed 1-minute candle.
+
+        </div>
+
+        <div class="row">
+
+          <div class="row-title">
+            Trend
+          </div>
+
+          <div
+            id="trend"
+            class="row-right"
           >
             WAIT
           </div>
 
         </div>
 
-        <div class="signal-card">
+        <div class="row">
 
-          <div class="signal-label">
-            RISK
+          <div class="row-title">
+            Momentum
           </div>
 
-          <div class="signal-value">
-            1%
+          <div
+            id="momentum"
+            class="row-right"
+          >
+            WAIT
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="row-title">
+            Volatility
+          </div>
+
+          <div
+            id="volatility"
+            class="row-right"
+          >
+            WAIT
           </div>
 
         </div>
 
       </div>
 
-      <div class="field">
+    </section>
 
-        <label>
-          SCALPING TIMEFRAME
-        </label>
+    <!-- POSITIONS -->
 
-        <select
-          id="timeframeSelect"
-          onchange="changeTimeframe(this.value)"
-        >
-
-          <option value="1m">
-            1 Minute
-          </option>
-
-          <option value="5m">
-            5 Minutes
-          </option>
-
-          <option value="15m">
-            15 Minutes
-          </option>
-
-          <option value="30m">
-            30 Minutes
-          </option>
-
-          <option value="1h">
-            1 Hour
-          </option>
-
-          <option value="4h">
-            4 Hours
-          </option>
-
-        </select>
-
-      </div>
-
-      <button
-        class="bot-button"
-        id="aiBotButton"
-        onclick="toggleBot()"
-      >
-        START DEMO BOT
-      </button>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="panel-header">
-
-        <div class="panel-title">
-          Strategy Logic
-        </div>
-
-      </div>
-
-      <div class="notice">
-        AI MONSTER U evaluates completed candles,
-        confirms market conditions and manages
-        demo positions according to the selected
-        timeframe.
-      </div>
-
-      <div class="list-item">
-
-        <div class="list-main">
-          Trend
-        </div>
-
-        <div id="trendValue">
-          WAIT
-        </div>
-
-      </div>
-
-      <div class="list-item">
-
-        <div class="list-main">
-          Momentum
-        </div>
-
-        <div id="momentumValue">
-          WAIT
-        </div>
-
-      </div>
-
-      <div class="list-item">
-
-        <div class="list-main">
-          Volatility
-        </div>
-
-        <div id="volatilityValue">
-          WAIT
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- =========================
-       POSITIONS
-  ========================= -->
-
-  <section
-    id="positionsPage"
-    class="page"
-  >
-
-    <div class="page-title">
-
-      <h1>
-        Positions
-      </h1>
-
-      <p>
-        Current AI MONSTER U positions
-      </p>
-
-    </div>
-
-    <div
-      id="positionPanel"
-      class="panel"
+    <section
+      id="positions"
+      class="page"
     >
 
-      <div class="empty">
-        No open position.
+      <div class="page-heading">
+
+        <h1>
+          Positions
+        </h1>
+
+        <p>
+          Current open position
+        </p>
+
       </div>
 
-    </div>
+      <div
+        id="positionBox"
+        class="panel"
+      >
 
-  </section>
+        <div class="empty">
+              No open position.
+        </div>
 
-  <!-- =========================
-       HISTORY
-  ========================= -->
+      </div>
 
-  <section
-    id="historyPage"
-    class="page"
-  >
+    </section>
 
-    <div class="page-title">
+    <!-- HISTORY -->
 
-      <h1>
-        Trade History
-      </h1>
-
-      <p>
-        Completed AI MONSTER U trades
-      </p>
-
-    </div>
-
-    <div
-      id="historyPanel"
-      class="panel"
+    <section
+      id="history"
+      class="page"
     >
 
-      <div class="empty">
-        No trades yet.
-      </div>
+      <div class="page-heading">
 
-    </div>
+        <h1>
+          Trade History
+        </h1>
 
-  </section>
-  <!-- =========================
-       DEPOSIT
-  ========================= -->
-
-  <section
-    id="depositPage"
-    class="page"
-  >
-
-    <div class="page-title">
-
-      <h1>
-        Deposit
-      </h1>
-
-      <p>
-        Fund your AI MONSTER U account
-      </p>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="notice">
-        Deposits will only be enabled after
-        authenticated payment processing is
-        connected. Do not send funds to an
-        address displayed by an unverified
-        system.
-      </div>
-
-      <div class="field">
-
-        <label>
-          AMOUNT
-        </label>
-
-        <input
-          type="number"
-          min="50"
-          placeholder="Minimum $50"
-        >
+        <p>
+          Completed trades
+        </p>
 
       </div>
 
-      <div class="field">
-
-        <label>
-          PAYMENT METHOD
-        </label>
-
-        <select>
-
-          <option>
-            USDT
-          </option>
-
-          <option>
-            Other supported crypto
-          </option>
-
-        </select>
-
-      </div>
-
-      <button
-        class="action-button"
-        onclick="alert('Payment processing will be connected after the payment provider is configured.')"
+      <div
+        id="historyBox"
+        class="panel"
       >
-        CONTINUE
-      </button>
 
-    </div>
+        <div class="empty">
+          No trades yet.
+        </div>
 
-  </section>
-
-  <!-- =========================
-       WITHDRAW
-  ========================= -->
-
-  <section
-    id="withdrawPage"
-    class="page"
-  >
-
-    <div class="page-title">
-
-      <h1>
-        Withdraw
-      </h1>
-
-      <p>
-        Request a withdrawal
-      </p>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="notice">
-        Withdrawal processing is disabled until
-        a secure payment provider and account
-        verification system are connected.
       </div>
 
-      <div class="field">
+    </section>
 
-        <label>
-          AMOUNT
-        </label>
+    <!-- DEPOSIT -->
 
-        <input
-          type="number"
-          min="1"
-          placeholder="Enter amount"
+    <section
+      id="deposit"
+      class="page"
+    >
+
+      <div class="page-heading">
+
+        <h1>
+          Deposit
+        </h1>
+
+        <p>
+          Add funds to your account
+        </p>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="notice">
+
+          Minimum deposit target: $50.
+
+          <br><br>
+
+          Real deposits will only be enabled
+          after a secure payment provider,
+          wallet verification and transaction
+          confirmation are implemented.
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            AMOUNT
+          </label>
+
+          <input
+            type="number"
+            min="50"
+            placeholder="50.00"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            PAYMENT METHOD
+          </label>
+
+          <select>
+
+            <option>
+              USDT
+            </option>
+
+          </select>
+
+        </div>
+
+        <button
+          class="secondary-btn"
+          onclick="depositNotice()"
         >
+          CONTINUE
+        </button>
 
       </div>
 
-      <div class="field">
+    </section>
 
-        <label>
-          WALLET ADDRESS
-        </label>
+    <!-- WITHDRAW -->
 
-        <input
-          type="text"
-          placeholder="USDT wallet address"
+    <section
+      id="withdraw"
+      class="page"
+    >
+
+      <div class="page-heading">
+
+        <h1>
+          Withdraw
+        </h1>
+
+        <p>
+          Withdraw available funds
+        </p>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="notice">
+
+          Secure withdrawals will be enabled
+          after wallet verification and payment
+          processing are connected.
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            AMOUNT
+          </label>
+
+          <input
+            type="number"
+            placeholder="Amount"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            USDT WALLET ADDRESS
+          </label>
+
+          <input
+            type="text"
+            placeholder="Wallet address"
+          >
+
+        </div>
+
+        <button
+          class="secondary-btn"
+          onclick="withdrawNotice()"
         >
+          REQUEST WITHDRAWAL
+        </button>
 
       </div>
 
-      <button
-        class="action-button"
-        onclick="alert('Withdrawal processing will be enabled after secure payment integration.')"
-      >
-        REQUEST WITHDRAWAL
-      </button>
+    </section>
 
-    </div>
+    <!-- ACCOUNT -->
 
-  </section>
+    <section
+      id="account"
+      class="page"
+    >
 
-  <!-- =========================
-       ACCOUNT
-  ========================= -->
+      <div class="page-heading">
 
-  <section
-    id="accountPage"
-    class="page"
-  >
+        <h1>
+          Account
+        </h1>
 
-    <div class="page-title">
+        <p>
+          Account information
+        </p>
 
-      <h1>
-        Account
-      </h1>
+      </div>
 
-      <p>
-        Your AI MONSTER U account
-      </p>
+      <div class="panel">
 
-    </div>
+        <div class="row">
 
-    <div class="panel">
+          <div class="row-title">
+            Account Mode
+          </div>
 
-      <div class="list-item">
+          <div class="row-right green">
+            DEMO
+          </div>
 
-        <div class="list-main">
-          Account Mode
         </div>
 
-        <div class="green">
-          DEMO
+        <div class="row">
+
+          <div class="row-title">
+            Balance
+          </div>
+
+          <div
+            id="accountBalance"
+            class="row-right"
+          >
+            $50.00
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="row-title">
+            Trading
+          </div>
+
+          <div
+            id="accountTrading"
+            class="row-right"
+          >
+            STOPPED
+          </div>
+
         </div>
 
       </div>
 
-      <div class="list-item">
+    </section>
 
-        <div class="list-main">
-          Trading Status
+    <!-- SETTINGS -->
+
+    <section
+      id="settings"
+      class="page"
+    >
+
+      <div class="page-heading">
+
+        <h1>
+          Settings
+        </h1>
+
+        <p>
+          AI MONSTER U configuration
+        </p>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="field">
+
+          <label>
+            RISK PER TRADE
+          </label>
+
+          <select>
+
+            <option>
+              0.25%
+            </option>
+
+            <option selected>
+              1%
+                  </option>
+
+            <option>
+              2%
+            </option>
+
+          </select>
+
         </div>
 
-        <div id="accountTradingStatus">
-          STOPPED
+        <div class="field">
+
+          <label>
+            DEFAULT TIMEFRAME
+          </label>
+
+          <select
+            onchange="setTimeframe(this.value)"
+          >
+
+            <option value="1m">
+              1 Minute
+            </option>
+
+            <option value="5m">
+              5 Minutes
+            </option>
+
+            <option value="15m">
+              15 Minutes
+            </option>
+
+            <option value="30m">
+              30 Minutes
+            </option>
+
+            <option value="1h">
+              1 Hour
+            </option>
+
+            <option value="4h">
+              4 Hours
+            </option>
+
+          </select>
+
         </div>
 
       </div>
 
-      <div class="list-item">
+    </section>
 
-        <div class="list-main">
-          Balance
-        </div>
-
-        <div id="accountBalance">
-          $50.00
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- =========================
-       SETTINGS
-  ========================= -->
-
-  <section
-    id="settingsPage"
-    class="page"
-  >
-
-    <div class="page-title">
-
-      <h1>
-        Settings
-      </h1>
-
-      <p>
-        AI MONSTER U configuration
-      </p>
-
-    </div>
-
-    <div class="panel">
-
-      <div class="field">
-
-        <label>
-          RISK PER TRADE
-        </label>
-
-        <select>
-
-          <option>
-            0.25%
-          </option>
-
-          <option selected>
-            1%
-          </option>
-
-          <option>
-            2%
-          </option>
-
-        </select>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          DEFAULT TIMEFRAME
-        </label>
-
-        <select
-          onchange="changeTimeframe(this.value)"
-        >
-
-          <option value="1m">
-            1 Minute
-          </option>
-
-          <option value="5m">
-            5 Minutes
-          </option>
-          <option value="15m">
-            15 Minutes
-          </option>
-
-          <option value="30m">
-            30 Minutes
-          </option>
-
-          <option value="1h">
-            1 Hour
-          </option>
-
-          <option value="4h">
-            4 Hours
-          </option>
-
-        </select>
-
-      </div>
-
-      <div class="notice">
-        Live trading settings will remain locked
-        until the live broker/execution connection
-        is authenticated and verified.
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- =========================
-       JAVASCRIPT
-  ========================= -->
+  </main>
 
   <script>
 
-    const API =
-      window.location.origin;
+    const API = window.location.origin;
 
     let botRunning = false;
 
-    let currentPage =
-      "dashboard";
-
     /*
-    =============================
     MENU
-    =============================
     */
 
     function openMenu() {
 
       document
         .getElementById("sidebar")
-        .classList.add("open");
+        .classList.add("show");
 
       document
         .getElementById("overlay")
-        .classList.add("open");
+        .classList.add("show");
 
     }
 
@@ -1333,64 +1348,46 @@ display: grid;
 
       document
         .getElementById("sidebar")
-        .classList.remove("open");
+        .classList.remove("show");
 
       document
         .getElementById("overlay")
-        .classList.remove("open");
+        .classList.remove("show");
 
     }
 
     /*
-    =============================
     NAVIGATION
-    =============================
     */
 
-    function navigate(page) {
-
-      currentPage =
-        page;
+    function go(page) {
 
       document
         .querySelectorAll(".page")
         .forEach(section => {
 
-          section.classList.remove(
-            "active"
-          );
+          section.classList.remove("active");
 
         });
 
-      const selected =
-        document.getElementById(
-          page + "Page"
-        );
+      const target =
+        document.getElementById(page);
 
-      if (selected) {
-
-        selected.classList.add(
-          "active"
-        );
-
+      if (target) {
+        target.classList.add("active");
       }
 
       document
-        .querySelectorAll(".nav-button")
+        .querySelectorAll(".nav-btn")
         .forEach(button => {
 
-          button.classList.remove(
-            "active"
-          );
+          button.classList.remove("active");
 
           if (
-            button.dataset.page ===
-            page
+            button.dataset.page === page
           ) {
 
-            button.classList.add(
-              "active"
-            );
+            button.classList.add("active");
 
           }
 
@@ -1398,187 +1395,76 @@ display: grid;
 
       closeMenu();
 
-      if (page === "history") {
-        loadHistory();
-      }
-
       if (page === "positions") {
         loadPosition();
       }
 
-    }
-
-    /*
-    =============================
-    TRADING STATUS
-    =============================
-    */
-
-    async function loadTradingStatus() {
-
-      try {
-
-        const response =
-          await fetch(
-            API +
-            "/api/trading/status"
-          );
-
-        const data =
-          await response.json();
-
-        if (!data.ok) {
-          return;
-        }
-
-        document
-          .getElementById("balance")
-          .textContent =
-          "$" +
-          Number(
-            data.balance || 0
-          ).toFixed(2);
-
-        document
-          .getElementById("profit")
-          .textContent =
-          "$" +
-          Number(
-            data.dailyProfit || 0
-          ).toFixed(2);
-
-        document
-          .getElementById(
-            "accountBalance"
-          )
-          .textContent =
-          "$" +
-          Number(
-            data.balance || 0
-          ).toFixed(2);
-
-        botRunning =
-          Boolean(data.running);
-
-        const state =
-          botRunning
-            ? "RUNNING"
-            : "STOPPED";
-
-        document
-          .getElementById(
-            "engineStatus"
-          )
-          .textContent =
-          state;
-
-        document
-          .getElementById(
-            "accountTradingStatus"
-          )
-          .textContent =
-          state;
-
-        document
-          .getElementById(
-            "aiStatus"
-          )
-          .textContent =
-          botRunning
-            ? "● RUNNING"
-            : "● STOPPED";
-
-        updateBotButtons();
-
-      } catch (error) {
-
-        console.log(
-          "Trading status error:",
-          error
-        );
-
+      if (page === "history") {
+        loadHistory();
       }
 
     }
 
     /*
-    =============================
-    MARKET STATUS
-    =============================
+    BOT BUTTONS
     */
 
-    async function loadMarketStatus() {
+    function updateBotButtons() {
 
-      try {
+      const buttons = [
+        document.getElementById("dashboardBot"),
+        document.getElementById("aiBot")
+      ];
 
-        const response =
-          await fetch(
-            API +
-            "/api/market/status"
-          );
+      buttons.forEach(button => {
 
-        const data =
-          await response.json();
-
-        if (!data.ok) {
+        if (!button) {
           return;
         }
 
-        document
-          .getElementById(
-            "marketStatus"
-          )
-          .textContent =
-          data.connected
-            ? "LIVE"
-            : "OFFLINE";
+        if (botRunning) {
 
-        document
-          .getElementById(
-            "dashboardStatus"
-          )
-          .textContent =
-          data.connected
-            ? "● ONLINE"
-            : "● OFFLINE";
+          button.textContent =
+            "STOP DEMO BOT";
 
-        if (data.timeframe) {
+          button.classList.add("stop");
 
-          document
-            .getElementById(
-              "dashboardTimeframe"
-            )
-            .textContent =
-            data.timeframe.toUpperCase();
+        } else {
+
+          button.textContent =
+            "START DEMO BOT";
+
+          button.classList.remove("stop");
 
         }
 
-        if (data.symbol) {
+      });
 
-          document
-            .getElementById(
-              "dashboardSymbol"
-            )
-            .textContent =
-            data.symbol;
+      document
+        .getElementById("engineConnection")
+        .textContent =
+        botRunning
+          ? "RUNNING"
+          : "STOPPED";
 
-        }
+      document
+        .getElementById("accountTrading")
+        .textContent =
+        botRunning
+          ? "RUNNING"
+          : "STOPPED";
 
-      } catch (error) {
-
-        console.log(
-          "Market status error:",
-          error
-        );
-
-      }
+      document
+        .getElementById("aiStatus")
+        .textContent =
+        botRunning
+          ? "● RUNNING"
+          : "● STOPPED";
 
     }
 
     /*
-    =============================
-    BOT
-    =============================
+    BOT START / STOP
     */
 
     async function toggleBot() {
@@ -1605,9 +1491,7 @@ display: grid;
         const data =
           await response.json();
 
-        if (
-          data.ok === false
-        ) {
+        if (data.ok === false) {
 
           alert(
             data.error ||
@@ -1619,9 +1503,7 @@ display: grid;
         }
 
         botRunning =
-          Boolean(
-            data.running
-          );
+          Boolean(data.running);
 
         updateBotButtons();
 
@@ -1629,62 +1511,441 @@ display: grid;
 
       } catch (error) {
 
+        console.error(error);
+
         alert(
-          "AI MONSTER U could not reach the trading engine."
+          "Could not connect to AI MONSTER U."
         );
 
       }
 
     }
 
-    function updateBotButtons() {
+    /*
+    TRADING STATUS
+    */
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      const buttons = [
-        document.getElementById(
-          "dashboardBotButton"
-        ),
-        document.getElementById(
-          "aiBotButton"
-        )
-      ];
+  <title>AI MONSTER U</title>
 
-      buttons.forEach(button => {
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        if (!button) {
+    :root {
+      --bg: #05080d;
+      --panel: #0c121b;
+      --panel2: #111a26;
+      --border: #1d2a3a;
+      --text: #ffffff;
+      --muted: #7f8da0;
+      --green: #39e58a;
+      --red: #ff5364;
+      --blue: #4c8dff;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* TOP BAR */
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 64px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 14px;
+
+      background: rgba(5, 8, 13, 0.97);
+      border-bottom: 1px solid var(--border);
+
+      z-index: 1000;
+    }
+
+    .menu-btn {
+      width: 43px;
+      height: 43px;
+
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      background: var(--panel2);
+      color: white;
+
+      font-size: 23px;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 1.4px;
+    }
+
+    .demo-badge {
+      padding: 7px 10px;
+
+      border-radius: 20px;
+
+      background: rgba(57, 229, 138, 0.12);
+      color: var(--green);
+
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    /* SIDEBAR */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+
+      background: rgba(0, 0, 0, 0.72);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition: 0.2s;
+
+      z-index: 1100;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+
+      width: 285px;
+      max-width: 86vw;
+      height: 100vh;
+
+      background: #090f17;
+
+      transform: translateX(-100%);
+      transition: transform 0.25s;
+
+      z-index: 1200;
+
+      overflow-y: auto;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      height: 72px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 17px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .close-btn {
+      width: 40px;
+      height: 40px;
+
+      border: 0;
+      background: transparent;
+
+      color: white;
+      font-size: 27px;
+    }
+
+    .nav {
+      padding: 14px;
+    }
+
+    .nav-btn {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      gap: 13px;
+
+      padding: 14px;
+
+      margin-bottom: 5px;
+
+      border: 0;
+      border-radius: 11px;
+
+      background: transparent;
+      color: #aeb8c7;
+
+      text-align: left;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #162131;
+      color: white;
+    }
+
+    .nav-icon {
+      width: 25px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .nav-text {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sidebar-account {
+      margin: 10px 14px 25px;
+
+      padding: 14px;
+
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .sidebar-label {
+      color: var(--muted);
+      font-size: 9px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-mode {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    /* MAIN */
+
+    .main {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+
+      width: 100%;
+      max-width: 1100px;
+
+      margin: 0 auto;
+
+      padding: 18px 15px 40px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-heading {
+      margin: 7px 0 18px;
+    }
+
+    .page-heading h1 {
+      font-size: 25px;
+          async function loadTradingStatus() {
+
+      try {
+
+        const response =
+          await fetch(
+            API +
+            "/api/trading/status"
+          );
+
+        const data =
+          await response.json();
+
+        if (!data.ok) {
           return;
         }
 
-        if (botRunning) {
+        if (
+          data.balance !== undefined
+        ) {
 
-          button.textContent =
-            "STOP DEMO BOT";
+          const balance =
+            Number(data.balance);
 
-          button.classList.add(
-            "running"
-          );
+          document
+            .getElementById("balance")
+            .textContent =
+            "$" +
+            balance.toFixed(2);
 
-        } else {
-
-          button.textContent =
-            "START DEMO BOT";
-
-          button.classList.remove(
-            "running"
-          );
+          document
+            .getElementById("accountBalance")
+            .textContent =
+            "$" +
+            balance.toFixed(2);
 
         }
 
-      });
+        if (
+          data.dailyProfit !== undefined
+        ) {
+
+          document
+            .getElementById("dailyProfit")
+            .textContent =
+            "$" +
+            Number(
+              data.dailyProfit
+            ).toFixed(2);
+
+        }
+
+        botRunning =
+          Boolean(data.running);
+
+        updateBotButtons();
+
+      } catch (error) {
+
+        console.log(
+          "Trading status unavailable"
+        );
+
+      }
 
     }
 
     /*
-    =============================
-    TIMEFRAME
-    =============================
+    MARKET STATUS
     */
 
-    async function changeTimeframe(
+    async function loadMarketStatus() {
+
+      try {
+
+        const response =
+          await fetch(
+            API +
+            "/api/market/status"
+          );
+
+        const data =
+          await response.json();
+
+        if (!data.ok) {
+          return;
+        }
+
+        const connected =
+          Boolean(data.connected);
+
+        document
+          .getElementById(
+            "marketConnection"
+          )
+          .textContent =
+          connected
+            ? "LIVE"
+            : "OFFLINE";
+
+        const status =
+          document.getElementById(
+            "systemStatus"
+          );
+
+        status.textContent =
+          connected
+            ? "● ONLINE"
+            : "● OFFLINE";
+
+        status.classList.toggle(
+          "offline",
+          !connected
+        );
+
+        if (data.symbol) {
+
+          document
+            .getElementById("symbol")
+            .textContent =
+            data.symbol;
+
+        }
+
+        if (data.timeframe) {
+
+          document
+            .getElementById("timeframe")
+            .textContent =
+            data.timeframe.toUpperCase();
+
+          document
+            .getElementById(
+              "timeframeSelect"
+            )
+            .value =
+            data.timeframe;
+
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Market status unavailable"
+        );
+
+      }
+
+    }
+
+    /*
+    TIMEFRAME
+    */
+
+    async function setTimeframe(
       timeframe
     ) {
 
@@ -1704,8 +1965,7 @@ display: grid;
 
               body:
                 JSON.stringify({
-                  timeframe:
-                    timeframe
+                  timeframe
                 })
             }
           );
@@ -1713,39 +1973,23 @@ display: grid;
         const data =
           await response.json();
 
-        if (
-          data.ok === false
-        ) {
+        if (data.ok === false) {
 
           alert(
             data.error ||
-            "Timeframe change failed."
+            "Unable to change timeframe."
           );
 
           return;
 
         }
 
-        document
-          .getElementById(
-            "dashboardTimeframe"
-          )
-          .textContent =
-          timeframe.toUpperCase();
-
-        document
-          .getElementById(
-            "timeframeSelect"
-          )
-          .value =
-          timeframe;
-
         await loadMarketStatus();
 
       } catch (error) {
 
         alert(
-          "Unable to change timeframe."
+          "Unable to connect to the trading engine."
         );
 
       }
@@ -1753,285 +1997,14 @@ display: grid;
     }
 
     /*
-    =============================
-    POSITIONS
-    =============================
+    POSITION
     */
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>AI MONSTER U</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #070b12;
-      color: #ffffff;
-      overflow-x: hidden;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    /* =========================
-       TOP BAR
-    ========================= */
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
-      height: 64px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 14px;
-
-      background: #0b111a;
-      border-bottom: 1px solid #1b2637;
-    }
-
-    .menu-button {
-      width: 44px;
-      height: 44px;
-
-      border: 0;
-      border-radius: 10px;
-
-      background: #151e2b;
-      color: #ffffff;
-
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    .logo {
-      font-size: 17px;
-      font-weight: 900;
-      letter-spacing: 1px;
-    }
-
-    .mode-badge {
-      padding: 7px 10px;
-      border-radius: 20px;
-
-      background: #10281d;
-      color: #42e58b;
-
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    /* =========================
-       SIDE MENU
-    ========================= */
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-
-      background: rgba(0, 0, 0, 0.7);
-
-      opacity: 0;
-      visibility: hidden;
-
-      transition: 0.2s;
-
-      z-index: 200;
-    }
-
-    .overlay.open {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .sidebar {
-      position: fixed;
-
-      top: 0;
-      left: 0;
-
-      width: 290px;
-      max-width: 86vw;
-      height: 100vh;
-
-      background: #0b111a;
-
-      transform: translateX(-100%);
-      transition: transform 0.25s;
-
-      z-index: 300;
-
-      overflow-y: auto;
-    }
-
-    .sidebar.open {
-      transform: translateX(0);
-    }
-
-    .sidebar-header {
-      height: 72px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 18px;
-
-      border-bottom: 1px solid #1b2637;
-    }
-
-    .sidebar-logo {
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: 1px;
-    }
-
-    .close-button {
-      width: 40px;
-      height: 40px;
-
-      border: 0;
-      background: transparent;
-
-      color: #ffffff;
-
-      font-size: 27px;
-      cursor: pointer;
-    }
-
-    .nav {
-      padding: 14px;
-    }
-
-    .nav-button {
-      width: 100%;
-
-      display: flex;
-      align-items: center;
-
-      gap: 13px;
-
-      padding: 14px;
-
-      margin-bottom: 6px;
-
-      border: 0;
-      border-radius: 11px;
-
-      background: transparent;
-      color: #b9c3d0;
-
-      text-align: left;
-
-      cursor: pointer;
-    }
-
-    .nav-button.active {
-      background: #182333;
-      color: #ffffff;
-    }
-
-    .nav-button:active {
-      transform: scale(0.98);
-    }
-
-    .nav-icon {
-      width: 25px;
-      text-align: center;
-      font-size: 18px;
-    }
-
-    .nav-label {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .menu-account {
-      margin: 12px 14px 25px;
-
-      padding: 15px;
-
-      border: 1px solid #1b2a3d;
-      border-radius: 12px;
-
-      background: #101824;
-    }
-
-    .menu-account-title {
-      color: #77869a;
-      font-size: 10px;
-      margin-bottom: 7px;
-    }
-
-    .menu-account-mode {
-      color: #42e58b;
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    /* =========================
-       APP
-    ========================= */
-
-    .page {
-      display: none;
-      padding: 16px;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .page-title {
-      margin: 6px 0 18px;
-    }
-
-    .page-title h1 {
-      font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    .page-title p {
-      color: #77869a;
-      font-size: 13px;
-    }
-
-    /* =========================
-       CARDS
-    ========================= */
-
-    .cards {
     async function loadPosition() {
 
-      const panel =
+      const box =
         document.getElementById(
-          "positionPanel"
+          "positionBox"
         );
 
       try {
@@ -2046,73 +2019,66 @@ display: grid;
           await response.json();
 
         if (
-          data.openPosition
+          !data.openPosition
         ) {
 
-          const position =
-            data.openPosition;
+          box.innerHTML =
+            '<div class="empty">No open position.</div>';
 
-          panel.innerHTML = `
-
-            <div class="list-item">
-
-              <div>
-
-                <div class="list-main">
-                  ${position.side || "POSITION"}
-                </div>
-
-                <div class="list-sub">
-                  ${position.symbol || "BTCUSDT"}
-                </div>
-
-              </div>
-
-              <div class="green">
-                OPEN
-              </div>
-
-            </div>
-
-          `;
-
-        } else {
-
-          panel.innerHTML = `
-
-            <div class="empty">
-              No open position.
-            </div>
-
-          `;
+          return;
 
         }
 
-      } catch {
+        const position =
+          data.openPosition;
 
-        panel.innerHTML = `
+        box.innerHTML = `
 
-          <div class="empty">
-            Unable to load positions.
+          <div class="row">
+
+            <div>
+            <div class="row-title">
+                ${
+                  position.side ||
+                  "POSITION"
+                }
+              </div>
+
+              <div class="row-sub">
+                ${
+                  position.symbol ||
+                  "BTCUSDT"
+                }
+              </div>
+
+            </div>
+
+            <div class="row-right green">
+              OPEN
+            </div>
+
           </div>
 
         `;
+
+      } catch {
+
+        box.innerHTML =
+          '<div class="empty">Unable to load position.</div>';
 
       }
 
     }
 
     /*
-    =============================
     HISTORY
-    =============================
     */
 
     async function loadHistory() {
 
-      const panel =
+      const box =
         document.getElementById(
-          "historyPanel"
+          "historyBox"
         );
 
       try {
@@ -2127,91 +2093,104 @@ display: grid;
           await response.json();
 
         const trades =
-          Array.isArray(
-            data.trades
-          )
+          Array.isArray(data.trades)
             ? data.trades
             : [];
 
         if (!trades.length) {
 
-          panel.innerHTML = `
-
-            <div class="empty">
-              No trades yet.
-            </div>
-
-          `;
+          box.innerHTML =
+            '<div class="empty">No trades yet.</div>';
 
           return;
 
         }
 
-        panel.innerHTML =
+        box.innerHTML =
           trades
             .slice()
             .reverse()
-            .map(trade => `
+            .map(trade => {
 
-              <div class="list-item">
+              const profit =
+                Number(
+                  trade.profit || 0
+                );
 
-                <div>
+              return `
 
-                  <div class="list-main">
-                    ${trade.side || "TRADE"}
+                <div class="row">
+
+                  <div>
+
+                    <div class="row-title">
+                      ${
+                        trade.side ||
+                        "TRADE"
+                      }
+                    </div>
+
+                    <div class="row-sub">
+                      ${
+                        trade.symbol ||
+                        "BTCUSDT"
+                      }
+                    </div>
+
                   </div>
 
-                  <div class="list-sub">
-                    ${trade.symbol || "BTCUSDT"}
+                  <div
+                    class="row-right ${
+                      profit >= 0
+                        ? "green"
+                        : "red"
+                    }"
+                  >
+                    ${
+                      profit >= 0
+                        ? "+"
+                        : ""
+                    }${profit.toFixed(2)}
                   </div>
 
                 </div>
 
-                <div class="${
-                  Number(
-                    trade.profit || 0
-                  ) >= 0
-                    ? "green"
-                    : "red"
-                }">
+              `;
 
-                  ${
-                    Number(
-                      trade.profit || 0
-                    ) >= 0
-                      ? "+"
-                      : ""
-                  }${
-                    Number(
-                      trade.profit || 0
-                    ).toFixed(2)
-                  }
-
-                </div>
-
-              </div>
-
-            `)
+            })
             .join("");
 
       } catch {
 
-        panel.innerHTML = `
-
-          <div class="empty">
-            Unable to load trade history.
-          </div>
-
-        `;
+        box.innerHTML =
+          '<div class="empty">Unable to load history.</div>';
 
       }
 
     }
 
     /*
-    =============================
+    DEPOSIT / WITHDRAW
+    */
+
+    function depositNotice() {
+
+      alert(
+        "Real deposits are not enabled yet. The secure payment integration must be connected before accepting real funds."
+      );
+
+    }
+
+    function withdrawNotice() {
+
+      alert(
+        "Real withdrawals are not enabled yet. Secure wallet verification and payment processing must be connected first."
+      );
+
+    }
+
+    /*
     INITIAL LOAD
-    =============================
     */
 
     loadTradingStatus();
