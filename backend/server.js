@@ -591,35 +591,19 @@ app.post(
             "Candle is not complete"
         });
       }
-
-      const candle = {
-        symbol:
-          String(symbol),
-
-        timeframe:
-          String(timeframe),
-
-        open:
-          Number(open),
-
-        high:
-          Number(high),
-
-        low:
-          Number(low),
-
-        close:
-          Number(close),
-
-        volume:
 const candle = {
+  symbol: String(symbol),
+  timeframe: String(timeframe),
+
+  open: Number(open),
+  high: Number(high),
+  low: Number(low),
+  close: Number(close),
+
   volume: Number(volume) || 0,
 
-  startTime:
-    Number(startTime) || Date.now(),
-
-  endTime:
-    Number(endTime) || Date.now(),
+  startTime: Number(startTime) || Date.now(),
+  endTime: Number(endTime) || Date.now(),
 
   complete: true
 };
@@ -628,6 +612,7 @@ const key =
   ${candle.symbol}:${candle.timeframe};
 
 if (!candleHistory.has(key)) {
+
   candleHistory.set(
     key,
     []
