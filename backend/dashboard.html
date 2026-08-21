@@ -7165,6 +7165,709 @@ aggressiveRiskCard?.addEventListener(
 );
 
 updateRiskMode();
+/* =========================================================
+   SETTINGS — TRADING CONFIGURATION
+========================================================= */
+
+const SETTINGS_SYMBOLS = [
+  {
+    value: "XAUUSD",
+    label: "XAUUSD",
+    description: "Gold"
+  },
+  {
+    value: "EURUSD",
+    label: "EURUSD",
+    description: "Euro / USD"
+  },
+  {
+    value: "GBPUSD",
+    label: "GBPUSD",
+    description: "Pound / USD"
+  },
+  {
+    value: "USDJPY",
+    label: "USDJPY",
+    description: "USD / Yen"
+  },
+  {
+    value: "AUDUSD",
+    label: "AUDUSD",
+    description: "Australian Dollar"
+  },
+  {
+    value: "USDCAD",
+    label: "USDCAD",
+    description: "USD / Canadian Dollar"
+  },
+  {
+    value: "USDCHF",
+    label: "USDCHF",
+    description: "USD / Swiss Franc"
+  },
+  {
+    value: "NZDUSD",
+    label: "NZDUSD",
+    description: "New Zealand Dollar"
+  },
+  {
+    value: "EURGBP",
+    label: "EURGBP",
+    description: "Euro / Pound"
+  },
+  {
+    value: "EURJPY",
+    label: "EURJPY",
+    description: "Euro / Yen"
+  },
+  {
+    value: "GBPJPY",
+    label: "GBPJPY",
+    description: "Pound / Yen"
+  },
+  {
+    value: "BTCUSD",
+    label: "BTCUSD",
+    description: "Bitcoin"
+  },
+  {
+    value: "ETHUSD",
+    label: "ETHUSD",
+    description: "Ethereum"
+  }
+];
+
+
+/* =========================================================
+   RENDER SYMBOLS
+========================================================= */
+
+function renderSettingsSymbols() {
+
+  const grid =
+    document.getElementById(
+      "settingsSymbolGrid"
+    );
+
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  SETTINGS_SYMBOLS.forEach(
+    (symbol) => {
+
+      const checked =
+        selectedSymbols.includes(
+          symbol.value
+        );
+
+      const item =
+        document.createElement(
+          "label"
+        );
+
+      item.className =
+        "symbol-option";
+
+      item.innerHTML = `
+        <input
+          type="checkbox"
+          value="${symbol.value}"
+          ${checked ? "checked" : ""}
+        >
+
+        <span>
+          <strong>${symbol.label}</strong>
+          <small>${symbol.description}</small>
+        </span>
+      `;
+
+      const checkbox =
+        item.querySelector(
+          "input"
+        );
+
+      checkbox.addEventListener(
+        "change",
+        () => {
+
+          selectedSymbols =
+            Array.from(
+              grid.querySelectorAll(
+                "input:checked"
+              )
+            ).map(
+              input => input.value
+            );
+
+        }
+      );
+
+      grid.appendChild(item);
+
+    }
+  );
+}
+
+
+/* =========================================================
+   RISK MODE
+========================================================= */
+
+const settingsRiskMode =
+  document.getElementById(
+    "settingsRiskMode"
+  );
+
+const settingsRiskPercent =
+  document.getElementById(
+    "settingsRiskPercent"
+  );
+
+const settingsRiskStatus =
+  document.getElementById(
+    "settingsRiskStatus"
+  );
+
+
+function updateSettingsRiskMode() {
+
+  if (!settingsRiskMode ||
+      !settingsRiskPercent) {
+    return;
+  }
+
+  const mode =
+    settingsRiskMode.value;
+
+  if (mode === "aggressive") {
+
+    settingsRiskPercent.value =
+      "3.5";
+
+    riskMode =
+      "aggressive";
+
+    riskPercent =
+      3.5;
+
+    if (settingsRiskStatus) {
+
+      settingsRiskStatus.textContent =
+        "AGGRESSIVE — 3.5%";
+
+    }
+
+  } else {
+
+    settingsRiskPercent.value =
+      "2";
+
+    riskMode =
+      "standard";
+
+    riskPercent =
+      2;
+
+    if (settingsRiskStatus) {
+
+      settingsRiskStatus.textContent =
+        "STANDARD — 2%";
+
+    }
+
+  }
+
+}
+
+
+if (settingsRiskMode) {
+
+  settingsRiskMode.addEventListener(
+    "change",
+    updateSettingsRiskMode
+  );
+
+}
+
+
+if (settingsRiskPercent) {
+
+  settingsRiskPercent.addEventListener(
+    "change",
+    () => {
+
+      riskPercent =
+        Number(
+          settingsRiskPercent.value
+        );
+
+      if (
+        riskPercent >= 3.5
+      ) {
+
+        riskMode =
+          "aggressive";
+
+        if (settingsRiskMode) {
+          settingsRiskMode.value =
+            "aggressive";
+        }
+
+        if (settingsRiskStatus) {
+          settingsRiskStatus.textContent =
+            "AGGRESSIVE — 3.5%";
+        }
+
+      } else {
+
+        riskMode =
+          "standard";
+
+        if (settingsRiskMode) {
+          settingsRiskMode.value =
+            "standard";
+        }
+
+        if (settingsRiskStatus) {
+          settingsRiskStatus.textContent =
+            STANDARD — ${riskPercent}%;
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SAVE TRADING SETTINGS
+========================================================= */
+
+const saveTradingSettings =
+  document.getElementById(
+    "saveTradingSettings"
+  );
+
+
+if (saveTradingSettings) {
+
+  saveTradingSettings.addEventListener(
+    "click",
+    async () => {
+
+      riskMode =
+        settingsRiskMode
+          ? settingsRiskMode.value
+          : "standard";
+
+      riskPercent =
+        settingsRiskPercent
+          ? Number(
+              settingsRiskPercent.value
+            )
+          : 2;
+
+
+      const timeframe =
+        document.getElementById(
+          "settingsTimeframe"
+        )?.value || "1m";
+
+
+      const strategy =
+        document.getElementById(
+          "settingsStrategy"
+        )?.value || "AI Scalping";
+
+
+      const automaticLot =
+        document.getElementById(
+          "settingsAutomaticLot"
+        )?.value === "true";
+
+
+      const automaticSL =
+        document.getElementById(
+          "settingsAutomaticSL"
+        )?.value === "true";
+
+
+      const automaticTP =
+        document.getElementById(
+          "settingsAutomaticTP"
+        )?.value === "true";
+
+
+      const payload = {
+
+        risk_mode:
+          riskMode,
+
+        risk_percent:
+          riskPercent,
+
+        timeframe,
+
+        strategy,
+
+        allowed_symbols:
+          selectedSymbols,
+
+        automatic_lot_size:
+          automaticLot,
+
+        automatic_sl:
+          automaticSL,
+
+        automatic_tp:
+          automaticTP
+
+      };
+
+
+      console.log(
+        "AI MONSTER U SETTINGS:",
+        payload
+      );
+
+
+      try {
+
+        const result =
+          await sendTradingCommand(
+            "UPDATE_SETTINGS",
+            payload
+          );
+
+
+        if (result?.error) {
+
+          setMessage(
+            "tradingSettingsMessage",
+            result.error.message ||
+              "Could not save trading settings.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        /*
+        Save locally so settings
+        remain available after refresh.
+        */
+
+        localStorage.setItem(
+          "aiMonsterTradingSettings",
+          JSON.stringify(payload)
+        );
+
+
+        setMessage(
+          "tradingSettingsMessage",
+          Trading settings saved — ${riskMode.toUpperCase()} ${riskPercent}% risk. ${selectedSymbols.length} symbol(s) selected.,
+          "success"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Settings save error:",
+          error
+        );
+
+        setMessage(
+          "tradingSettingsMessage",
+          "Trading settings could not be saved.",
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   LOAD SAVED SETTINGS
+========================================================= */
+
+function loadSavedTradingSettings() {
+
+  try {
+
+    const saved =
+      localStorage.getItem(
+        "aiMonsterTradingSettings"
+      );
+
+    if (!saved) {
+
+      renderSettingsSymbols();
+      updateSettingsRiskMode();
+
+      return;
+
+    }
+
+
+    const settings =
+      JSON.parse(saved);
+
+
+    if (settings.risk_mode) {
+
+      riskMode =
+        settings.risk_mode;
+
+      if (settingsRiskMode) {
+
+        settingsRiskMode.value =
+          settings.risk_mode;
+
+      }
+
+    }
+
+
+    if (
+      Number.isFinite(
+        Number(settings.risk_percent)
+      )
+    ) {
+
+      riskPercent =
+        Number(
+          settings.risk_percent
+        );
+
+      if (settingsRiskPercent) {
+
+        settingsRiskPercent.value =
+          String(
+            settings.risk_percent
+          );
+
+      }
+
+    }
+
+
+    if (
+      Array.isArray(
+        settings.
+        allowed_symbols
+      )
+    ) {
+
+      selectedSymbols =
+        settings.allowed_symbols;
+
+    }
+
+
+    const timeframe =
+      document.getElementById(
+        "settingsTimeframe"
+      );
+
+    if (
+      timeframe &&
+      settings.timeframe
+    ) {
+
+      timeframe.value =
+        settings.timeframe;
+
+    }
+
+
+    const strategy =
+      document.getElementById(
+        "settingsStrategy"
+      );
+
+    if (
+      strategy &&
+      settings.strategy
+    ) {
+
+      strategy.value =
+        settings.strategy;
+
+    }
+
+
+    const lot =
+      document.getElementById(
+        "settingsAutomaticLot"
+      );
+
+    if (
+      lot &&
+      settings.automatic_lot_size !== undefined
+    ) {
+
+      lot.value =
+        String(
+          settings.automatic_lot_size
+        );
+
+    }
+
+
+    const sl =
+      document.getElementById(
+        "settingsAutomaticSL"
+      );
+
+    if (
+      sl &&
+      settings.automatic_sl !== undefined
+    ) {
+
+      sl.value =
+        String(
+          settings.automatic_sl
+        );
+
+    }
+
+
+    const tp =
+      document.getElementById(
+        "settingsAutomaticTP"
+      );
+
+    if (
+      tp &&
+      settings.automatic_tp !== undefined
+    ) {
+
+      tp.value =
+        String(
+          settings.automatic_tp
+        );
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Could not load saved settings:",
+      error
+    );
+
+  }
+
+
+  renderSettingsSymbols();
+
+  updateSettingsRiskMode();
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logoutFromSettings() {
+
+  const confirmed =
+    window.confirm(
+      "Are you sure you want to sign out?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.signOut();
+
+
+    if (error) {
+
+      console.error(
+        "Logout error:",
+        error
+      );
+
+      setMessage(
+        "logoutMessage",
+        "Unable to sign out. Please try again.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    localStorage.removeItem(
+      "aiMonsterTradingSettings"
+    );
+
+
+    window.location.replace(
+      "auth.html"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+    setMessage(
+      "logoutMessage",
+      "Unable to sign out.",
+      "error"
+    );
+
+  }
+
+}
+
+
+const settingsLogout =
+  document.getElementById(
+    "settingsLogout"
+  );
+
+
+if (settingsLogout) {
+
+  settingsLogout.addEventListener(
+    "click",
+    logoutFromSettings
+  );
+
+}
+
+
+/* =========================================================
+   INITIALIZE SETTINGS
+========================================================= */
+
+loadSavedTradingSettings();
 </script> 
 
 </body>
