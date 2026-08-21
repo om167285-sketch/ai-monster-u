@@ -1329,9 +1329,10 @@ app.listen(
       'PORT: ${PORT}'
     );
 
-    console.log(
-      TIME: ${new Date().toISOString()}
-    );
+  console.log(
+  `PORT: ${PORT}
+TIME: ${new Date().toISOString()}`
+);
 
     console.log(
       "========================================"
