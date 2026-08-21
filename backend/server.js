@@ -133,7 +133,7 @@ const lastProcessedCandle = new Map();
 */
 
 function getMarketKey(symbol, timeframe) {
-return '${symbol}:${timeframe}';
+return `${symbol}:${timeframe}`;
 }
 function timeframeMilliseconds(timeframe) {
   const values = {
@@ -169,7 +169,7 @@ function resetMT5Command(reason = null) {
 */
 
 function calculateEMA(values, period) {
-  if (!Array.isArray(values) || values.length < period) {
+  if (!Array.isArray(values) || values.length < period) 
     return null;
   }
 
@@ -484,7 +484,7 @@ function createMT5Command(signal, candle, analysis) {
       : price - stopDistance * rewardRisk;
 
   mt5Command = {
-    id: 'AMU-${Date.now()}',
+    id: `AMU-${Date.now()}`,
 
     action: signal,
 
@@ -1080,7 +1080,7 @@ app.post(
         String(id)
       ) {
         resetMT5Command(
-          'ACK_${String(status).toUpperCase()}'
+          `ACK_${String(status).toUpperCase()}`
         );
       }
 
@@ -1289,8 +1289,7 @@ app.use(
 
     res.status(500).json({
       ok: false,
-      error:
-        "Internal server error"
+      error: "Internal server error"
     });
   }
 );
@@ -1326,13 +1325,12 @@ app.listen(
     );
 
     console.log(
-      'PORT: ${PORT}'
+      `PORT: ${PORT}`
     );
 
   console.log(
-  `PORT: ${PORT}
-TIME: ${new Date().toISOString()}`
-);
+    `TIME: ${new Date().toISOString()}`
+    );
 
     console.log(
       "========================================"
