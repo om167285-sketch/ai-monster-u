@@ -827,7 +827,7 @@ function createMT5TradeCommand(
   );
 
   console.log(
-    MODE: ${mode}
+    `MODE: ${mode}`
   );
 
   console.log(
