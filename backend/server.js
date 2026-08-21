@@ -55,7 +55,7 @@ try {
 ========================================================= */
 
 const BOT_CONFIG = {
-  symbol: "BTCUSDm",
+  SYMBOL    : "BTCUSDm",
   timeframe: "1m",
   minimumLot: 0.01,
   rewardRisk: 1.5,
@@ -92,7 +92,7 @@ let mt5Bridge = {
   margin: 0,
   freeMargin: 0,
 
-  symbol: BOT_CONFIG.symbol,
+  SYMBOL    : BOT_CONFIG.SYMBOL    ,
   timeframe: BOT_CONFIG.timeframe,
 
   bid: 0,
@@ -110,7 +110,7 @@ let botState = {
 
   requestedMode: "DEMO",
 
-  symbol: BOT_CONFIG.symbol,
+  SYMBOL    : BOT_CONFIG.SYMBOL    ,
 
   timeframe: BOT_CONFIG.timeframe,
 
@@ -138,7 +138,7 @@ let mt5Command = {
 
   mode: "DEMO",
 
-  symbol: BOT_CONFIG.symbol,
+  SYMBOL    : BOT_CONFIG.SYMBOL    ,
 
   timeframe: BOT_CONFIG.timeframe,
 
@@ -168,7 +168,7 @@ let mt5Execution = {
 
   ticket: null,
 
-  symbol: null,
+  SYMBOL    : null,
 
   volume: 0,
 
@@ -195,8 +195,8 @@ const MAX_CANDLES = BOT_CONFIG.maxCandles;
    HELPERS
 ========================================================= */
 
-function getMarketKey(symbol, timeframe) {
-  return `${symbol}:${timeframe}`;
+function getMarketKey(SYMBOL    , timeframe) {
+  return `${SYMBOL    }:${timeframe}`;
 }
 
 function normalizeMode(mode) {
@@ -221,12 +221,12 @@ function normalizeTimeframe(timeframe) {
   return BOT_CONFIG.timeframe;
 }
 
-function normalizeSymbol(symbol) {
+function normalizeSYMBOL    (SYMBOL    ) {
   const value = String(
-     symbol || BOT_CONFIG.symbol
+     SYMBOL    || BOT_CONFIG.SYMBOL   
   ).trim();
 
-  return value || BOT_CONFIG.symbol;
+  return value || BOT_CONFIG.SYMBOL   ;
 }
 
 function createCommandId(prefix = "AMU") {
@@ -259,7 +259,7 @@ function resetMT5Command(reason = null) {
 
     mode: botState.requestedMode,
 
-    symbol: botState.symbol,
+    SYMBOL   : botState.SYMBOL   ,
 
     timeframe: botState.timeframe,
 
@@ -818,10 +818,10 @@ function createMT5TradeCommand(
 
     mode,
 
-    symbol:
-      normalizeSymbol(
-        candle.symbol ||
-          BOT_CONFIG.symbol
+    SYMBOL   :
+      normalizeSYMBOL   (
+        candle.SYMBOL    ||
+          BOT_CONFIG.SYMBOL   
       ),
 
     timeframe:
@@ -885,35 +885,35 @@ function createMT5TradeCommand(
   );
 
   console.log(
-    SYMBOL: ${mt5Command.symbol}
+    `SYMBOL   : ${mt5Command.SYMBOL   }`
   );
 
   console.log(
-    TIMEFRAME: ${mt5Command.timeframe}
+    `TIMEFRAME: ${mt5Command.timeframe}`
   );
 
   console.log(
-    ACTION: ${mt5Command.action}
+    `ACTION: ${mt5Command.action}`
   );
 
   console.log(
-    LOT: ${mt5Command.volume}
+    `LOT: ${mt5Command.volume}`
   );
 
   console.log(
-    SL: ${mt5Command.sl}
+    `SL: ${mt5Command.sl}`
   );
 
   console.log(
-    TP: ${mt5Command.tp}
+    `TP: ${mt5Command.tp}`
   );
 
   console.log(
-    CONFIDENCE: ${analysis.confidence}
+    `CONFIDENCE: ${analysis.confidence}`
   );
 
   console.log(
-    COMMAND ID: ${mt5Command.id}
+    `COMMAND ID: ${mt5Command.id}`
   );
 
   console.log(
@@ -938,10 +938,10 @@ app.post(
             "DEMO"
         );
 
-      const requestedSymbol =
-        normalizeSymbol(
-          req.body?.symbol ||
-            BOT_CONFIG.symbol
+      const requestedSYMBOL    =
+        normalizeSYMBOL   (
+          req.body?.SYMBOL    ||
+            BOT_CONFIG.SYMBOL   
         );
 
       const requestedTimeframe =
@@ -991,8 +991,8 @@ app.post(
 
         requestedMode,
 
-        symbol:
-          requestedSymbol,
+        SYMBOL   :
+          requestedSYMBOL   ,
 
         timeframe:
           requestedTimeframe,
@@ -1015,8 +1015,8 @@ app.post(
         mode:
           requestedMode,
 
-        symbol:
-          requestedSymbol,
+        SYMBOL   :
+          requestedSYMBOL   ,
 
         timeframe:
           requestedTimeframe,
@@ -1032,8 +1032,8 @@ app.post(
           "USER_START_BOT",
 
         payload: {
-          symbol:
-            requestedSymbol,
+          SYMBOL   :
+            requestedSYMBOL   ,
 
           timeframe:
             requestedTimeframe,
@@ -1074,7 +1074,7 @@ app.post(
       );
 
       console.log(
-        SYMBOL: ${requestedSymbol}
+        SYMBOL   : ${requestedSYMBOL   }
       );
 
       console.log(
@@ -1101,8 +1101,8 @@ app.post(
         mode:
           requestedMode,
 
-        symbol:
-          requestedSymbol,
+        SYMBOL   :
+          requestedSYMBOL   ,
 
         timeframe:
           requestedTimeframe,
@@ -1172,8 +1172,8 @@ app.post(
             botState.requestedMode
           ),
 
-        symbol:
-          botState.symbol,
+        SYMBOL   :
+          botState.SYMBOL   ,
 
         timeframe:
           botState.timeframe,
@@ -1235,7 +1235,7 @@ app.post(
   (req, res) => {
     try {
       const {
-        symbol,
+        SYMBOL   ,
         timeframe,
         open,
         high,
@@ -1248,7 +1248,7 @@ app.post(
       } = req.body || {};
 
       if (
-        !symbol ||
+        !SYMBOL    ||
         !timeframe ||
         open === undefined ||
         high === undefined ||
@@ -1277,8 +1277,8 @@ app.post(
       }
 
       const candle = {
-        symbol:
-          normalizeSymbol(symbol),
+        SYMBOL   :
+          normalizeSYMBOL   (SYMBOL   ),
 
         timeframe:
           normalizeTimeframe(timeframe),
@@ -1333,7 +1333,7 @@ app.post(
 
       const key =
         getMarketKey(
-          candle.symbol,
+          candle.SYMBOL   ,
           candle.timeframe
         );
 
@@ -1415,16 +1415,16 @@ app.post(
       if (
         botState.running
       ) {
-        const correctSymbol =
-          candle.symbol ===
-          botState.symbol;
+        const correctSYMBOL    =
+          candle.SYMBOL    ===
+          botState.SYMBOL   ;
 
         const correctTimeframe =
           candle.timeframe ===
           botState.timeframe;
 
         if (
-          correctSymbol &&
+          correctSYMBOL    &&
           correctTimeframe
         ) {
           if (
@@ -1450,7 +1450,7 @@ app.post(
       );
 
       console.log(
-        SYMBOL: ${candle.symbol}
+        SYMBOL   : ${candle.SYMBOL   }
       );
 
       console.log(
@@ -1537,7 +1537,7 @@ app.post(
         margin,
         freeMargin,
         mode,
-        symbol,
+        SYMBOL   ,
         timeframe,
         bid,
         ask
@@ -1594,10 +1594,10 @@ app.post(
         freeMargin:
           safeNumber(freeMargin),
 
-        symbol:
-          symbol
-            ? normalizeSymbol(symbol)
-            : BOT_CONFIG.symbol,
+        SYMBOL   :
+          SYMBOL   
+            ? normalizeSYMBOL   (SYMBOL   )
+            : BOT_CONFIG.SYMBOL   ,
 
         timeframe:
           timeframe
@@ -1704,8 +1704,8 @@ app.get(
       freeMargin:
         mt5Bridge.freeMargin,
 
-      symbol:
-        mt5Bridge.symbol,
+      SYMBOL   :
+        mt5Bridge.SYMBOL   ,
 
       timeframe:
         mt5Bridge.timeframe,
@@ -1828,7 +1828,7 @@ app.post(
         status,
         action,
         ticket,
-        symbol,
+        SYMBOL   ,
         volume,
         price,
         profit,
@@ -1864,10 +1864,10 @@ app.post(
             ? String(ticket)
             : null,
 
-        symbol:
-          symbol !== undefined &&
-          symbol !== null
-            ? String(symbol)
+        SYMBOL   :
+          SYMBOL    !== undefined &&
+          SYMBOL    !== null
+            ? String(SYMBOL   )
             : null,
 
         volume:
@@ -1970,8 +1970,8 @@ app.get(
       requestedMode:
         botState.requestedMode,
 
-      symbol:
-        botState.symbol,
+      SYMBOL   :
+        botState.SYMBOL   ,
 
       timeframe:
         botState.timeframe,
@@ -2034,11 +2034,11 @@ app.get(
 app.get(
   "/api/mt5/analysis",
   (req, res) => {
-    const symbol =
-      normalizeSymbol(
-        req.query.symbol ||
-          mt5Bridge.symbol ||
-          BOT_CONFIG.symbol
+    const SYMBOL    =
+      normalizeSYMBOL   (
+        req.query.SYMBOL    ||
+          mt5Bridge.SYMBOL    ||
+          BOT_CONFIG.SYMBOL   
       );
 
     const timeframe =
@@ -2050,7 +2050,7 @@ app.get(
 
     const key =
       getMarketKey(
-        symbol,
+        SYMBOL   ,
         timeframe
       );
 
@@ -2061,7 +2061,7 @@ app.get(
     return res.json({
       ok: true,
 
-      symbol,
+      SYMBOL   ,
 
       timeframe,
 
@@ -2090,11 +2090,11 @@ app.get(
 app.get(
   "/api/mt5/candles",
   (req, res) => {
-    const symbol =
-      normalizeSymbol(
-        req.query.symbol ||
-          mt5Bridge.symbol ||
-          BOT_CONFIG.symbol
+    const SYMBOL    =
+      normalizeSYMBOL   (
+        req.query.SYMBOL    ||
+          mt5Bridge.SYMBOL    ||
+          BOT_CONFIG.SYMBOL   
       );
 
     const timeframe =
@@ -2106,7 +2106,7 @@ app.get(
 
     const key =
       getMarketKey(
-        symbol,
+        SYMBOL   ,
         timeframe
       );
 
@@ -2117,7 +2117,7 @@ app.get(
     return res.json({
       ok: true,
 
-      symbol,
+      SYMBOL   ,
 
       timeframe,
 
@@ -2151,8 +2151,8 @@ app.get(
       demoExecution:
         true,
 
-      symbol:
-        BOT_CONFIG.symbol,
+      SYMBOL   :
+        BOT_CONFIG.SYMBOL   ,
 
       timeframe:
         BOT_CONFIG.timeframe,
@@ -2174,7 +2174,7 @@ app.get(
       supportedTimeframes:
         SUPPORTED_TIMEFRAMES,
 
-      supportedSymbols: [
+      supportedSYMBOL   s: [
         "BTCUSDm"
       ],
 
@@ -2212,8 +2212,8 @@ app.get(
       mt5Mode:
         mt5Bridge.mode,
 
-      symbol:
-        botState.symbol,
+      SYMBOL   :
+        botState.SYMBOL   ,
 
       timeframe:
         botState.timeframe,
@@ -2378,7 +2378,7 @@ app.listen(
     );
 
     console.log(
-      SYMBOL: ${BOT_CONFIG.symbol}
+      SYMBOL   : ${BOT_CONFIG.SYMBOL   }
     );
 
     console.log(
