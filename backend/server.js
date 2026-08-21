@@ -80,7 +80,7 @@ let mt5Bridge = {
 
   lastHeartbeat: null,
 
-  mode: "DEMO",
+  MODE: "DEMO",
 
   account: null,
   broker: null,
@@ -108,7 +108,7 @@ let mt5Bridge = {
 let botState = {
   running: false,
 
-  requestedMode: "DEMO",
+  requestedMODE: "DEMO",
 
   SYMBOL    : BOT_CONFIG.SYMBOL    ,
 
@@ -136,7 +136,7 @@ let mt5Command = {
 
   action: "NONE",
 
-  mode: "DEMO",
+  MODE: "DEMO",
 
   SYMBOL    : BOT_CONFIG.SYMBOL    ,
 
@@ -199,8 +199,8 @@ function getMarketKey(SYMBOL    , timeframe) {
   return `${SYMBOL    }:${timeframe}`;
 }
 
-function normalizeMode(mode) {
-  const value = String(mode || "DEMO").trim().toUpperCase();
+function normalizeMODE(MODE) {
+  const value = String(MODE || "DEMO").trim().toUpperCase();
 
   if (value === "LIVE") {
     return "LIVE";
@@ -257,7 +257,7 @@ function resetMT5Command(reason = null) {
 
     action: "NONE",
 
-    mode: botState.requestedMode,
+    MODE: botState.requestedMODE,
 
     SYMBOL   : botState.SYMBOL   ,
 
@@ -787,9 +787,9 @@ function createMT5TradeCommand(
      : price -
         stopDistance * rewardRisk;
 
-  const mode =
-    normalizeMode(
-      botState.requestedMode
+  const MODE =
+    normalizeMODE(
+      botState.requestedMODE
     );
 
   /*
@@ -797,9 +797,9 @@ function createMT5TradeCommand(
   */
 
   if (
-    mode === "LIVE" &&
-    normalizeMode(
-      mt5Bridge.mode
+    MODE === "LIVE" &&
+    normalizeMODE(
+      mt5Bridge.MODE
     ) !== "LIVE"
   ) {
     console.log(
@@ -816,7 +816,7 @@ function createMT5TradeCommand(
     action:
       signal,
 
-    mode,
+    MODE,
 
     SYMBOL   :
       normalizeSYMBOL   (
@@ -881,7 +881,7 @@ function createMT5TradeCommand(
   );
 
   console.log(
-    `MODE: ${mode}`
+    `MODE: ${MODE}`
   );
 
   console.log(
@@ -931,10 +931,10 @@ app.post(
   "/api/trading/start",
   (req, res) => {
     try {
-      const requestedMode =
-        normalizeMode(
-          req.body?.mode ||
-            req.body?.executionMode ||
+      const requestedMODE =
+        normalizeMODE(
+          req.body?.MODE ||
+            req.body?.executionMODE ||
             "DEMO"
         );
 
@@ -955,7 +955,7 @@ app.post(
       */
 
       if (
-        requestedMode === "LIVE"
+        requestedMODE === "LIVE"
       ) {
         if (!isHeartbeatAlive()) {
           return res.status(400).json({
@@ -969,8 +969,8 @@ app.post(
         }
 
         if (
-          normalizeMode(
-            mt5Bridge.mode
+          normalizeMODE(
+            mt5Bridge.MODE
           ) !== "LIVE"
         ) {
           return res.status(400).json({
@@ -979,7 +979,7 @@ app.post(
             running: false,
 
             error:
-              "LIVE mode selected, but MT5 is not reporting a LIVE account."
+              "LIVE MODE selected, but MT5 is not reporting a LIVE account."
           });
         }
       }
@@ -989,7 +989,7 @@ app.post(
 
         running: true,
 
-        requestedMode,
+        requestedMODE,
 
         SYMBOL   :
           requestedSYMBOL   ,
@@ -1012,8 +1012,8 @@ app.post(
         action:
           "START_BOT",
 
-        mode:
-          requestedMode,
+        MODE:
+          requestedMODE,
 
         SYMBOL   :
           requestedSYMBOL   ,
@@ -1038,8 +1038,8 @@ app.post(
           timeframe:
             requestedTimeframe,
 
-          mode:
-            requestedMode
+          MODE:
+            requestedMODE
         },
 
         createdAt:
@@ -1070,15 +1070,15 @@ app.post(
       );
 
       console.log(
-        MODE: ${requestedMode}
+        `MODE: ${requestedMode}`
       );
 
       console.log(
-        SYMBOL   : ${requestedSYMBOL   }
+        `SYMBOL   : ${requestedSYMBOL   }`
       );
 
       console.log(
-        TIMEFRAME: ${requestedTimeframe}
+        `TIMEFRAME: ${requestedTimeframe}`
       );
 
       console.log(
