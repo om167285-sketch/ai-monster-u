@@ -191,7 +191,7 @@ function normalizeTime(value) {
 }
 
 function getCandleKey(symbol, timeframe) {
-  return ${symbol}:${timeframe};
+  return String(symbol) + ":" + String(timeframe);
 }
 
 /*
@@ -643,7 +643,7 @@ function createMT5Command(
 
   mt5Command = {
     id:
-      AMU-${Date.now()},
+     "AMU-" + Date.now()
 
     action:
       signal,
@@ -1727,7 +1727,7 @@ app.listen(
     );
 
     console.log(
-      Port: ${PORT}
+      "Port: " + PORT
     );
 
     console.log(
