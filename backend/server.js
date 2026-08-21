@@ -1450,11 +1450,11 @@ app.post(
       );
 
       console.log(
-        SYMBOL   : ${candle.SYMBOL   }
+        `SYMBOL   : ${candle.SYMBOL   }`
       );
 
       console.log(
-        TIMEFRAME: ${candle.timeframe}
+        `TIMEFRAME: ${candle.timeframe}`
       );
 
       console.log(
@@ -2378,15 +2378,15 @@ app.listen(
     );
 
     console.log(
-      SYMBOL   : ${BOT_CONFIG.SYMBOL   }
+      `SYMBOL   : ${BOT_CONFIG.SYMBOL   }`
     );
 
     console.log(
-      TIMEFRAME: ${BOT_CONFIG.timeframe}
+      `TIMEFRAME: ${BOT_CONFIG.timeframe}`
     );
 
     console.log(
-      MINIMUM LOT: ${BOT_CONFIG.minimumLot}
+      `MINIMUM LOT: ${BOT_CONFIG.minimumLot}`
     );
 
     console.log(
