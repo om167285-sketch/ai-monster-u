@@ -28,74 +28,31 @@ class TradingEngine {
     // ------------------------------------------------
 
     this.running = false;
+this.symbol = "BTCUSD";
+this.timeframe = "1m";
 
-    this.symbol = "BTCUSDT";
+this.settings = {
+  riskPercent: 0.5,
 
-    this.timeframe = "1m";
+  emaFast: 9,
+  emaMedium: 21,
+  emaSlow: 50,
 
-    this.balance = 50.00;
+  rsiPeriod: 14,
+  rsiBuyLevel: 55,
+  rsiSellLevel: 45,
 
-    this.startingBalance = 50.00;
+  atrPeriod: 14,
 
-    this.position = null;
+  rewardRisk: 1.2,
+  stopAtrMultiplier: 1.0,
 
-    this.trades = [];
+  minimumConfidence: 60,
 
-    this.lastCandleTime = null;
+  defaultVolume: 0.01,
 
-    this.lastSignal = "WAIT";
-
-    this.lastAnalysis = null;
-
-    this.lastProcessedCandle = null;
-
-    this.totalCandlesProcessed = 0;
-
-    this.totalSignals = 0;
-
-    this.totalTrades = 0;
-
-    // ------------------------------------------------
-    // STRATEGY SETTINGS
-    // ------------------------------------------------
-
-    this.settings = {
-
-      // Starting account risk
-      riskPercent: 0.5,
-
-      // EMA strategy
-      emaFast: 9,
-
-      emaMedium: 21,
-
-      emaSlow: 50,
-
-      // RSI
-      rsiPeriod: 14,
-
-      rsiBuyLevel: 55,
-
-      rsiSellLevel: 45,
-
-      // ATR
-      atrPeriod: 14,
-
-      // Reward / Risk
-      rewardRisk: 1.5,
-
-      // ATR multiplier
-      stopAtrMultiplier: 1.2,
-
-      // Minimum confidence
-      minimumConfidence: 60,
-
-      // Position size used by MT5 Demo bridge
-      defaultVolume: 0.01,
-
-      // Force candle boundary close
-      closeAtCandleBoundary: true
-    };
+  closeAtCandleBoundary: true
+};
   }
 
 
