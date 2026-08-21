@@ -8,7 +8,7 @@ const serviceRoleKey =
 
 if (!supabaseUrl || !serviceRoleKey) {
   console.warn(
-    "Supabase wallet service is not configured."
+    "WARNING: Supabase wallet service is not configured."
   );
 }
 
@@ -54,7 +54,9 @@ class WalletService {
         .eq("user_id", userId)
         .order(
           "created_at",
-          { ascending: false }
+          {
+            ascending: false
+          }
         );
 
     if (error) {
@@ -90,7 +92,9 @@ class WalletService {
 
     const { data, error } =
       await supabase
-        .from("wallet_transactions")
+        .from(
+          "wallet_transactions"
+        )
         .insert({
           user_id: userId,
           type: "DEPOSIT",
@@ -142,6 +146,12 @@ class WalletService {
       );
     }
 
+    if (!network) {
+      throw new Error(
+        "Network is required"
+      );
+    }
+
     const wallet =
       await this.getWallet(
         userId
@@ -158,22 +168,16 @@ class WalletService {
       );
     }
 
-    /*
-     * Reserve the withdrawal amount.
-     *
-     * The database RPC should perform this
-     * atomically so two withdrawal requests
-     * cannot spend the same balance.
-     */
-
     const { data, error } =
       await supabase.rpc(
         "request_withdrawal",
         {
-          p_user_id: userId,
-          p_amount: value,
+          p_user_id:
+            userId,
+          p_amount:
+            value,
           p_network:
-            network || null,
+            network,
           p_wallet_address:
             walletAddress
         }
