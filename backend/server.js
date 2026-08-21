@@ -7,6 +7,7 @@ import TradingEngine from "./tradingEngine.js";
 import MarketData from "./marketData.js";
 
 const app = express();
+
 const PORT = process.env.PORT || 10000;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,26 +18,22 @@ app.use(express.json());
 
 /*
 |--------------------------------------------------------------------------
-| WEBSITE
+| FRONTEND
 |--------------------------------------------------------------------------
 */
 
+app.use(express.static(__dirname));
+
 app.get("/", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "index.html")
-  );
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get("/auth.html", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "auth.html")
-  );
+  res.sendFile(path.join(__dirname, "auth.html"));
 });
 
 app.get("/dashboard.html", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "dashboard.html")
-  );
+  res.sendFile(path.join(__dirname, "dashboard.html"));
 });
 
 /*
@@ -46,36 +43,32 @@ app.get("/dashboard.html", (req, res) => {
 */
 
 const engine = new TradingEngine();
-
 const market = new MarketData();
 
 /*
 |--------------------------------------------------------------------------
-| CONNECT COMPLETED CANDLES TO ENGINE
+| COMPLETED CANDLE → TRADING ENGINE
 |--------------------------------------------------------------------------
 */
 
-market.setCandleCloseHandler(
-  (candle, candles) => {
-    try {
-      const result =
-        engine.processCompletedCandle(
-          candle,
-          candles
-        );
+market.setCandleCloseHandler((candle, candles) => {
+  try {
+    const result = engine.processCompletedCandle(
+      candle,
+      candles
+    );
 
-      console.log(
-        "Candle processed:",
-        JSON.stringify(result)
-      );
-    } catch (error) {
-      console.error(
-        "Trading engine error:",
-        error.message
-      );
-    }
+    console.log(
+      "Candle processed:",
+      JSON.stringify(result)
+    );
+  } catch (error) {
+    console.error(
+      "Trading engine error:",
+      error.message
+    );
   }
-);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -83,10 +76,7 @@ market.setCandleCloseHandler(
 |--------------------------------------------------------------------------
 */
 
-market.connect(
-  "BTCUSDT",
-  "1m"
-);
+market.connect("BTCUSDT", "1m");
 
 /*
 |--------------------------------------------------------------------------
@@ -100,10 +90,8 @@ app.get("/api/health", (req, res) => {
     service: "AI MONSTER U",
     mode: "demo",
     tradingEngine: true,
-    marketData:
-      market.getStatus(),
-    time:
-      new Date().toISOString()
+    marketData: market.getStatus(),
+    time: new Date().toISOString()
   });
 });
 
@@ -113,15 +101,12 @@ app.get("/api/health", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.get(
-  "/api/market/status",
-  (req, res) => {
-    res.json({
-      ok: true,
-      ...market.getStatus()
-    });
-  }
-);
+app.get("/api/market/status", (req, res) => {
+  res.json({
+    ok: true,
+    ...market.getStatus()
+  });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -129,46 +114,37 @@ app.get(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/market/connect",
-  (req, res) => {
-    try {
-      const symbol =
-        req.body.symbol ||
-        "BTCUSDT";
+app.post("/api/market/connect", (req, res) => {
+  try {
+    const symbol =
+      req.body.symbol || "BTCUSDT";
 
-      const timeframe =
-        req.body.timeframe ||
-        "1m";
+    const timeframe =
+      req.body.timeframe || "1m";
 
-      market.connect(
-        symbol,
-        timeframe
-      );
+    market.connect(
+      symbol,
+      timeframe
+    );
 
-      engine.setSymbol(symbol);
-      engine.setTimeframe(
-        timeframe
-      );
+    engine.setSymbol(symbol);
+    engine.setTimeframe(timeframe);
 
-      res.json({
-        ok: true,
-        message:
-          "Market data connection started",
-        symbol:
-          symbol.toUpperCase(),
-        timeframe:
-          timeframe
-      });
-    } catch (error) {
-      res.status(400).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
+    res.json({
+      ok: true,
+      message:
+        "Market data connection started",
+      symbol:
+        symbol.toUpperCase(),
+      timeframe
+    });
+  } catch (error) {
+    res.status(400).json({
+      ok: false,
+      error: error.message
+    });
   }
-);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -176,15 +152,12 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-app.get(
-  "/api/trading/status",
-  (req, res) => {
-    res.json({
-      ok: true,
-      ...engine.getStatus()
-    });
-  }
-);
+app.get("/api/trading/status", (req, res) => {
+  res.json({
+    ok: true,
+    ...engine.getStatus()
+  });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -192,22 +165,18 @@ app.get(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/trading/start",
-  (req, res) => {
-    try {
-      res.json(
-        engine.start()
-      );
-      } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
+app.post("/api/trading/start", (req, res) => {
+  try {
+    const result = engine.start();
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
   }
-);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -215,22 +184,18 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/trading/stop",
-  (req, res) => {
-    try {
-      res.json(
-        engine.stop()
-      );
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
+app.post("/api/trading/stop", (req, res) => {
+  try {
+    const result = engine.stop();
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
   }
-);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -244,6 +209,14 @@ app.post(
     try {
       const timeframe =
         req.body.timeframe;
+
+      if (!timeframe) {
+        return res.status(400).json({
+          ok: false,
+          error:
+            "Timeframe is required"
+        });
+      }
 
       engine.setTimeframe(
         timeframe
@@ -265,8 +238,7 @@ app.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error:
-          error.message
+        error: error.message
       });
     }
   }
@@ -282,14 +254,21 @@ app.post(
   "/api/trading/open",
   (req, res) => {
     try {
+      const signal =
+        req.body.signal;
+
+      const price =
+        Number(req.body.price);
+
+      const candleTime =
+        req.body.candleTime ||
+        Date.now();
+
       const result =
         engine.openDemoPosition(
-          req.body.signal,
-          Number(
-            req.body.price
-          ),
-          req.body.candleTime ||
-            Date.now()
+          signal,
+          price,
+          candleTime
         );
 
       if (!result.ok) {
@@ -302,8 +281,7 @@ app.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error:
-          error.message
+        error: error.message
       });
     }
   }
@@ -319,21 +297,24 @@ app.post(
   "/api/trading/close",
   (req, res) => {
     try {
+      const price =
+        Number(req.body.price);
+
+      const reason =
+        req.body.reason ||
+        "CANDLE_CLOSE";
+
       const result =
         engine.closeAtCandleBoundary(
-          Number(
-            req.body.price
-          ),
-          req.body.reason ||
-            "CANDLE_CLOSE"
+          price,
+          reason
         );
 
       res.json(result);
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error:
-          error.message
+        error: error.message
       });
     }
   }
@@ -361,8 +342,7 @@ app.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error:
-          error.message
+        error: error.message
       });
     }
   }
@@ -387,7 +367,7 @@ app.get(
 
 /*
 |--------------------------------------------------------------------------
-| 404 API
+| API 404
 |--------------------------------------------------------------------------
 */
 
@@ -396,14 +376,15 @@ app.use(
   (req, res) => {
     res.status(404).json({
       ok: false,
-      error: "API endpoint not found"
+      error:
+        "API endpoint not found"
     });
   }
 );
 
 /*
 |--------------------------------------------------------------------------
-| START SERVER
+| SERVER
 |--------------------------------------------------------------------------
 */
 
@@ -421,7 +402,8 @@ app.listen(
 
     console.log(
       "Website + Trading Engine"
-    );
+      );
+
     console.log(
       "Market Data"
     );
