@@ -1080,7 +1080,7 @@ app.post(
         String(id)
       ) {
         resetMT5Command(
-          ACK_${String(status).toUpperCase()}
+          'ACK_${String(status).toUpperCase()}'
         );
       }
 
