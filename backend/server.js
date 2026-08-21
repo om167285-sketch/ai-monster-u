@@ -2,84 +2,19 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createClient } from "@supabase/supabase-js";
 
 import TradingEngine from "./tradingEngine.js";
 import MarketData from "./marketData.js";
-import BinanceService from "./binanceService.js";
-import WalletService from "./walletService.js";
 
 const app = express();
 
-const PORT =
-  process.env.PORT || 10000;
+const PORT = Number(process.env.PORT) || 10000;
 
-const __filename =
-  fileURLToPath(import.meta.url);
-
-const __dirname =
-  path.dirname(__filename);
-
-/*
-|--------------------------------------------------------------------------
-| SUPABASE
-|--------------------------------------------------------------------------
-*/
-
-const supabaseUrl =
-  process.env.SUPABASE_URL || "";
-
-const supabaseServiceRoleKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-
-let supabase = null;
-
-if (
-  supabaseUrl &&
-  supabaseServiceRoleKey
-) {
-  supabase =
-    createClient(
-      supabaseUrl,
-      supabaseServiceRoleKey
-    );
-} else {
-  console.warn(
-    "Supabase environment variables are missing."
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| SERVICES
-|--------------------------------------------------------------------------
-*/
-
-const engine =
-  new TradingEngine();
-
-const market =
-  new MarketData();
-
-const binance =
-  new BinanceService();
-
-const wallet =
-  new WalletService();
-
-/*
-|--------------------------------------------------------------------------
-| MIDDLEWARE
-|--------------------------------------------------------------------------
-*/
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(cors());
-
-app.use(
-  express.json({
-    limit: "1mb"
-  })
-);
+app.use(express.json());
 
 /*
 |--------------------------------------------------------------------------
@@ -88,127 +23,56 @@ app.use(
 */
 
 app.get("/", (req, res) => {
-  res.type("html");
-
   res.sendFile(
-    path.join(
-      __dirname,
-      "index.html"
-    )
+    path.join(__dirname, "index.html")
   );
 });
 
-app.get(
-  "/auth.html",
-  (req, res) => {
-    res.type("html");
+app.get("/auth.html", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "auth.html")
+  );
+});
 
-    res.sendFile(
-      path.join(
-        __dirname,
-        "auth.html"
-      )
-    );
-  }
-);
-
-app.get(
-  "/dashboard.html",
-  (req, res) => {
-    res.type("html");
-
-    res.sendFile(
-      path.join(
-        __dirname,
-        "dashboard.html"
-      )
-    );
-  }
-);
+app.get("/dashboard.html", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "dashboard.html")
+  );
+});
 
 /*
 |--------------------------------------------------------------------------
-| AUTHENTICATION
+| TRADING ENGINE
 |--------------------------------------------------------------------------
 */
 
-async function requireUser(
-  req,
-  res,
-  next
-) {
-  try {
-    if (!supabase) {
-      return res.status(503).json({
-        ok: false,
-        error:
-          "Supabase is not configured"
-      });
-    }
-
-    const authorization =
-      req.headers.authorization ||
-      "";
-
-    if (
-      !authorization.startsWith(
-        "Bearer "
-      )
-    ) {
-      return res.status(401).json({
-        ok: false,
-        error:
-          "Authentication required"
-      });
-    }
-
-    const token =
-      authorization.substring(7);
-
-    if (!token) {
-      return res.status(401).json({
-        ok: false,
-        error:
-          "Authentication token missing"
-      });
-    }
-
-    const {
-      data,
-      error
-    } =
-      await supabase.auth.getUser(
-        token
-      );
-
-    if (
-      error ||
-      !data ||
-      !data.user
-    ) {
-      return res.status(401).json({
-        ok: false,
-        error:
-          "Invalid or expired session"
-      });
-    }
-
-    req.user =
-      data.user;
-
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      ok: false,
-      error:
-        "Authentication failed"
-    });
-  }
-}
+const engine = new TradingEngine();
+const market = new MarketData();
 
 /*
 |--------------------------------------------------------------------------
-| COMPLETED CANDLE → ENGINE
+| MT5 BRIDGE STATE
+|--------------------------------------------------------------------------
+*/
+
+let mt5Bridge = {
+  connected: false,
+  lastHeartbeat: null,
+
+  account: null,
+  broker: null,
+  server: null,
+  currency: null,
+
+  balance: 0,
+  equity: 0,
+
+  updatedAt: null
+};
+
+/*
+|--------------------------------------------------------------------------
+| COMPLETED CANDLE → TRADING ENGINE
 |--------------------------------------------------------------------------
 */
 
@@ -225,6 +89,7 @@ market.setCandleCloseHandler(
         "Candle processed:",
         JSON.stringify(result)
       );
+
     } catch (error) {
       console.error(
         "Trading engine error:",
@@ -256,209 +121,20 @@ app.get(
   (req, res) => {
     res.json({
       ok: true,
-      service:
-        "AI MONSTER U",
+      service: "AI MONSTER U",
       mode: "demo",
+
       tradingEngine: true,
-      supabase:
-        Boolean(supabase),
+
+      mt5Bridge:
+        mt5Bridge.connected,
+
       marketData:
         market.getStatus(),
+
       time:
         new Date().toISOString()
     });
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| BINANCE STATUS
-|--------------------------------------------------------------------------
-*/
-
-app.get(
-  "/api/binance/status",
-  async (req, res) => {
-    try {
-      const status =
-        await binance.getStatus();
-
-      res.json({
-        ok: true,
-        ...status
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        connected: false,
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| BINANCE BALANCE
-|--------------------------------------------------------------------------
-*/
-
-app.get(
-  "/api/binance/balance",
-  async (req, res) => {
-    try {
-      const balance =
-        await binance.getUsdtBalance();
-
-      res.json({
-        ok: true,
-        ...balance
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| WALLET
-|--------------------------------------------------------------------------
-*/
-
-app.get(
-  "/api/wallet",
-  requireUser,
-  async (req, res) => {
-    try {
-      const data =
-        await wallet.getWallet(
-          req.user.id
-        );
-
-      res.json({
-        ok: true,
-        wallet: data
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| WALLET TRANSACTIONS
-|--------------------------------------------------------------------------
-*/
-
-app.get(
-  "/api/wallet/transactions",
-  requireUser,
-  async (req, res) => {
-    try {
-      const data =
-        await wallet.getTransactions(
-          req.user.id
-        );
-
-      res.json({
-        ok: true,
-        transactions:
-          data
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| DEPOSIT REQUEST
-|--------------------------------------------------------------------------
-*/
-
-app.post(
-  "/api/wallet/deposit",
-  requireUser,
-  async (req, res) => {
-    try {
-      const result =
-        await wallet.createDepositRequest({
-          userId:
-            req.user.id,
-          amount:
-            req.body.amount,
-          network:
-            req.body.network,
-          txHash:
-            req.body.txHash
-        });
-
-      res.json({
-        ok: true,
-        deposit:
-          result
-      });
-    } catch (error) {
-      res.status(400).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| WITHDRAWAL REQUEST
-|--------------------------------------------------------------------------
-*/
-
-app.post(
-  "/api/wallet/withdraw",
-  requireUser,
-  async (req, res) => {
-    try {
-      const result =
-        await wallet.createWithdrawalRequest({
-          userId:
-            req.user.id,
-          amount:
-            req.body.amount,
-          network:
-            req.body.network,
-          walletAddress:
-            req.body.walletAddress
-        });
-
-      res.json({
-        ok: true,
-        withdrawal:
-          result
-      });
-    } catch (error) {
-      res.status(400).json({
-        ok: false,
-        error:
-          error.message
-      });
-    }
   }
 );
 
@@ -488,6 +164,7 @@ app.post(
   "/api/market/connect",
   (req, res) => {
     try {
+
       const symbol =
         req.body.symbol ||
         "BTCUSDT";
@@ -511,18 +188,24 @@ app.post(
 
       res.json({
         ok: true,
+
         message:
           "Market data connection started",
+
         symbol:
           symbol.toUpperCase(),
+
         timeframe
       });
+
     } catch (error) {
+
       res.status(400).json({
         ok: false,
         error:
           error.message
       });
+
     }
   }
 );
@@ -536,10 +219,12 @@ app.post(
 app.get(
   "/api/trading/status",
   (req, res) => {
+
     res.json({
       ok: true,
       ...engine.getStatus()
     });
+
   }
 );
 
@@ -552,18 +237,24 @@ app.get(
 app.post(
   "/api/trading/start",
   (req, res) => {
+
     try {
+
       const result =
         engine.start();
 
       res.json(result);
+
     } catch (error) {
+
       res.status(500).json({
         ok: false,
         error:
           error.message
       });
+
     }
+
   }
 );
 
@@ -576,18 +267,24 @@ app.post(
 app.post(
   "/api/trading/stop",
   (req, res) => {
+
     try {
+
       const result =
         engine.stop();
 
       res.json(result);
+
     } catch (error) {
+
       res.status(500).json({
         ok: false,
         error:
           error.message
       });
+
     }
+
   }
 );
 
@@ -600,16 +297,20 @@ app.post(
 app.post(
   "/api/trading/timeframe",
   (req, res) => {
+
     try {
+
       const timeframe =
         req.body.timeframe;
 
       if (!timeframe) {
+
         return res.status(400).json({
           ok: false,
           error:
             "Timeframe is required"
         });
+
       }
 
       engine.setTimeframe(
@@ -622,20 +323,28 @@ app.post(
       );
 
       res.json({
+
         ok: true,
+
         timeframe:
           engine.timeframe,
+
         message:
           "Timeframe changed to " +
           timeframe
+
       });
+
     } catch (error) {
+
       res.status(400).json({
         ok: false,
         error:
           error.message
       });
+
     }
+
   }
 );
 
@@ -648,7 +357,9 @@ app.post(
 app.post(
   "/api/trading/open",
   (req, res) => {
+
     try {
+
       const signal =
         req.body.signal;
 
@@ -667,20 +378,27 @@ app.post(
           price,
           candleTime
         );
+
       if (!result.ok) {
+
         return res
           .status(400)
           .json(result);
+
       }
 
       res.json(result);
+
     } catch (error) {
+
       res.status(400).json({
         ok: false,
         error:
           error.message
       });
+
     }
+
   }
 );
 
@@ -693,7 +411,9 @@ app.post(
 app.post(
   "/api/trading/close",
   (req, res) => {
+
     try {
+
       const price =
         Number(
           req.body.price
@@ -710,13 +430,17 @@ app.post(
         );
 
       res.json(result);
+
     } catch (error) {
+
       res.status(400).json({
         ok: false,
         error:
           error.message
       });
+
     }
+
   }
 );
 
@@ -729,24 +453,33 @@ app.post(
 app.post(
   "/api/trading/analyze",
   (req, res) => {
+
     try {
+
       const result =
         engine.analyzeMarket(
           req.body
         );
 
       res.json({
+
         ok: true,
+
         analysis:
           result
+
       });
+
     } catch (error) {
+
       res.status(400).json({
         ok: false,
         error:
           error.message
       });
+
     }
+
   }
 );
 
@@ -759,11 +492,241 @@ app.post(
 app.get(
   "/api/trading/trades",
   (req, res) => {
+
     res.json({
+
       ok: true,
+
       trades:
         engine.getTrades()
+
     });
+
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| MT5 HEARTBEAT
+|--------------------------------------------------------------------------
+|
+| The EA running on your PC sends account information
+| to this endpoint every few seconds.
+|
+*/
+
+app.post(
+  "/api/mt5/heartbeat",
+  (req, res) => {
+
+    try {
+
+      const {
+        account,
+        broker,
+        server,
+        currency,
+        balance,
+        equity
+      } = req.body;
+
+      if (
+        account === undefined ||
+        broker === undefined ||
+        server === undefined
+      ) {
+
+        return res.status(400).json({
+
+          ok: false,
+
+          error:
+            "Invalid MT5 heartbeat"
+
+        });
+
+      }
+
+      mt5Bridge = {
+
+        connected: true,
+
+        lastHeartbeat:
+          new Date().toISOString(),
+
+        account:
+          String(account),
+
+        broker:
+          String(broker),
+
+        server:
+          String(server),
+
+        currency:
+          currency
+            ? String(currency)
+            : null,
+
+        balance:
+          Number(balance) || 0,
+
+        equity:
+          Number(equity) || 0,
+
+        updatedAt:
+          new Date().toISOString()
+
+      };
+
+      res.json({
+
+        ok: true,
+
+        received: true
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "MT5 heartbeat error:",
+        error.message
+      );
+
+      res.status(400).json({
+
+        ok: false,
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| MT5 STATUS
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/mt5/status",
+  (req, res) => {
+
+    const now =
+      Date.now();
+
+    const last =
+      mt5Bridge.lastHeartbeat
+        ? new Date(
+            mt5Bridge.lastHeartbeat
+          ).getTime()
+        : 0;
+
+    const heartbeatAgeMs =
+      last
+        ? now - last
+        : null;
+
+    const connected =
+      heartbeatAgeMs !== null &&
+      heartbeatAgeMs < 30000;
+
+    mt5Bridge.connected =
+      connected;
+
+    res.json({
+
+      ok: true,
+
+      connected,
+
+      account:
+        mt5Bridge.account,
+
+      broker:
+        mt5Bridge.broker,
+
+      server:
+        mt5Bridge.server,
+
+      currency:
+        mt5Bridge.currency,
+
+      balance:
+        mt5Bridge.balance,
+
+      equity:
+        mt5Bridge.equity,
+
+      lastHeartbeat:
+        mt5Bridge.lastHeartbeat,
+
+      heartbeatAgeMs,
+
+      updatedAt:
+        mt5Bridge.updatedAt
+
+    });
+
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| MT5 CONNECTION CHECK
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/mt5/connection",
+  (req, res) => {
+
+    const last =
+      mt5Bridge.lastHeartbeat
+        ? new Date(
+            mt5Bridge.lastHeartbeat
+          ).getTime()
+        : 0;
+
+    const age =
+      last
+        ? Date.now() - last
+        : null;
+
+    const connected =
+      age !== null &&
+      age < 30000;
+
+    res.json({
+
+      ok: true,
+
+      status:
+        connected
+          ? "CONNECTED"
+          : "DISCONNECTED",
+
+      connected,
+
+      message:
+        connected
+          ? "MT5 bridge is connected"
+          : "MT5 bridge is offline",
+
+      lastHeartbeat:
+        mt5Bridge.lastHeartbeat,
+
+      heartbeatAgeMs:
+        age
+
+    });
+
   }
 );
 
@@ -776,11 +739,16 @@ app.get(
 app.use(
   "/api",
   (req, res) => {
+
     res.status(404).json({
+
       ok: false,
+
       error:
         "API endpoint not found"
+
     });
+
   }
 );
 
@@ -794,6 +762,7 @@ app.listen(
   PORT,
   "0.0.0.0",
   () => {
+
     console.log(
       "================================"
     );
@@ -807,11 +776,11 @@ app.listen(
     );
 
     console.log(
-      "Wallet System"
+      "Market Data"
     );
 
     console.log(
-      "Market Data"
+      "MT5 Bridge Monitoring"
     );
 
     console.log(
@@ -826,5 +795,6 @@ app.listen(
     console.log(
       "================================"
     );
+
   }
 );
