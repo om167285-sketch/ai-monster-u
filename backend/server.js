@@ -125,7 +125,7 @@ let mt5Execution = {
 
 let botRunning = false;
 
-let lastProcessedCandle = new Map();
+const lastProcessedCandle = new Map();
 
 /*
 |--------------------------------------------------------------------------
@@ -140,7 +140,8 @@ function timeframeMilliseconds(timeframe) {
     "15m": 15 * 60 * 1000,
     "30m": 30 * 60 * 1000,
     "1h": 60 * 60 * 1000,
-    "4h": 4 * 60 * 60 * 1000
+    "4h": 4 * 60 * 60 * 1000,
+    "1d": 24 * 60 * 60 * 1000
   };
 
   return values[timeframe] || 60 * 1000;
@@ -159,9 +160,10 @@ function calculateEMA(values, period) {
 
   const multiplier = 2 / (period + 1);
 
-  let ema = values
-    .slice(0, period)
-    .reduce((a, b) => a + b, 0) / period;
+  let ema =
+    values
+      .slice(0, period)
+      .reduce((a, b) => a + b, 0) / period;
 
   for (let i = period; i < values.length; i++) {
     ema =
@@ -187,11 +189,11 @@ function calculateRSI(values, period = 14) {
   let losses = 0;
 
   for (let i = 1; i <= period; i++) {
-    const change = values[i] - values[i - 1];
-
+    const change =
+      values[i] - values[i - 1];
     if (change > 0) {
       gains += change;
-      } else {
+    } else {
       losses += Math.abs(change);
     }
   }
@@ -200,10 +202,14 @@ function calculateRSI(values, period = 14) {
   let averageLoss = losses / period;
 
   for (let i = period + 1; i < values.length; i++) {
-    const change = values[i] - values[i - 1];
+    const change =
+      values[i] - values[i - 1];
 
-    const gain = change > 0 ? change : 0;
-    const loss = change < 0 ? Math.abs(change) : 0;
+    const gain =
+      change > 0 ? change : 0;
+
+    const loss =
+      change < 0 ? Math.abs(change) : 0;
 
     averageGain =
       ((averageGain * (period - 1)) + gain) /
@@ -423,7 +429,6 @@ function analyzeMT5Market(candles) {
 | CREATE MT5 COMMAND
 |--------------------------------------------------------------------------
 */
-
 function createMT5Command(
   signal,
   candle,
@@ -478,19 +483,18 @@ function createMT5Command(
 
   const tp =
     signal === "BUY"
-      ? price + (
-          stopDistance *
-          rewardRisk
-        )
-      : price - (
-          stopDistance *
-          rewardRisk
-        );
+      ? price + (stopDistance * rewardRisk)
+      : price - (stopDistance * rewardRisk);
+
+  /*
+  The MT5 EA should calculate the final
+  broker-valid lot size from the account
+  balance/equity and configured risk.
+  */
 
   mt5Command = {
     id:
-      "AMU-" +
-      Date.now(),
+      "AMU-" + Date.now(),
 
     action:
       signal,
@@ -501,18 +505,18 @@ function createMT5Command(
     symbol:
       candle.symbol,
 
+    /*
+    0 means automatic lot sizing on the EA.
+    */
+
     volume:
-      0.01,
+      0,
 
     sl:
-      Number(
-        sl.toFixed(8)
-      ),
+      Number(sl.toFixed(8)),
 
     tp:
-      Number(
-        tp.toFixed(8)
-      ),
+      Number(tp.toFixed(8)),
 
     reason:
       "MT5_CANDLE_AI_SIGNAL",
@@ -530,9 +534,7 @@ function createMT5Command(
   );
 
   console.log(
-    JSON.stringify(
-      mt5Command
-    )
+    JSON.stringify(mt5Command, null, 2)
   );
 
   console.log(
@@ -578,8 +580,7 @@ app.post(
       ) {
         return res.status(400).json({
           ok: false,
-          error:
-            "Incomplete MT5 candle"
+          error: "Incomplete MT5 candle"
         });
       }
 
@@ -587,39 +588,43 @@ app.post(
         return res.json({
           ok: true,
           processed: false,
-          reason:
-            "Candle is not complete"
+          reason: "Candle is not complete"
         });
       }
-const candle = {
-  symbol: String(symbol),
-  timeframe: String(timeframe),
 
-  open: Number(open),
-  high: Number(high),
-  low: Number(low),
-  close: Number(close),
+      const candle = {
+        symbol: String(symbol),
+        timeframe: String(timeframe),
 
-  volume: Number(volume) || 0,
+        open: Number(open),
+        high: Number(high),
+        low: Number(low),
+        close: Number(close),
 
-  startTime: Number(startTime) || Date.now(),
-  endTime: Number(endTime) || Date.now(),
+        volume:
+          Number(volume) || 0,
 
-  complete: true
-};
+        startTime:
+          Number(startTime) || Date.now(),
 
-const key =
-  ${candle.symbol}:${candle.timeframe};
+        endTime:
+          Number(endTime) || Date.now(),
 
-if (!candleHistory.has(key)) {
-  candleHistory.set(
-    key,
-    []
-  );
-}
+        complete: true
+      };
 
-const candles =
-  candleHistory.get(key);
+      const key =
+        `${candle.symbol}:${candle.timeframe}`;
+
+      if (!candleHistory.has(key)) {
+        candleHistory.set(
+          key,
+          []
+        );
+      }
+
+      const candles =
+        candleHistory.get(key);
 
       /*
       Prevent duplicate candles.
@@ -666,11 +671,8 @@ const candles =
         candle.startTime
       );
 
-      let analysis =
-        analyzeMT5Market(
-          candles
-        );
-
+      const analysis =
+        analyzeMT5Market(candles);
       let command = null;
 
       /*
@@ -713,8 +715,7 @@ const candles =
 
       res.status(500).json({
         ok: false,
-        error:
-          error.message
+        error: error.message
       });
     }
   }
@@ -914,14 +915,14 @@ app.post(
 
         mode:
           mode
-            ? String(mode)
+            ? String(mode).toUpperCase()
             : "UNKNOWN",
 
         account:
           String(account),
-
         broker:
           String(broker),
+
         server:
           String(server),
 
@@ -1175,8 +1176,9 @@ app.post(
 
         symbol:
           symbol
-            ? String(symbol)
+        ? String(symbol)
             : null,
+
         volume:
           Number(volume) || 0,
 
@@ -1270,7 +1272,7 @@ app.get(
       );
 
     const key =
-      ${symbol}:${timeframe};
+          symbol: String(symbol
 
     const candles =
       candleHistory.get(key) || [];
@@ -1292,6 +1294,35 @@ app.get(
       analysis:
         analyzeMT5Market(
           candles
+        )
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| TIMEFRAME INFO
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/mt5/timeframe",
+  (req, res) => {
+    const timeframe =
+      String(
+        req.query.timeframe ||
+        mt5Bridge.timeframe ||
+        "1m"
+      );
+
+    res.json({
+      ok: true,
+
+      timeframe,
+
+      milliseconds:
+        timeframeMilliseconds(
+          timeframe
         )
     });
   }
