@@ -1,13 +1,13 @@
-import { createClient } from "@supabase/supabase-js";
-import WalletService from "./walletService.js";
 import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import { createClient } from "@supabase/supabase-js";
 
 import TradingEngine from "./tradingEngine.js";
 import MarketData from "./marketData.js";
 import BinanceService from "./binanceService.js";
+import WalletService from "./walletService.js";
 
 const app = express();
 
@@ -20,8 +20,66 @@ const __filename =
 const __dirname =
   path.dirname(__filename);
 
+/*
+|--------------------------------------------------------------------------
+| SUPABASE
+|--------------------------------------------------------------------------
+*/
+
+const supabaseUrl =
+  process.env.SUPABASE_URL || "";
+
+const supabaseServiceRoleKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+let supabase = null;
+
+if (
+  supabaseUrl &&
+  supabaseServiceRoleKey
+) {
+  supabase =
+    createClient(
+      supabaseUrl,
+      supabaseServiceRoleKey
+    );
+} else {
+  console.warn(
+    "Supabase environment variables are missing."
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| SERVICES
+|--------------------------------------------------------------------------
+*/
+
+const engine =
+  new TradingEngine();
+
+const market =
+  new MarketData();
+
+const binance =
+  new BinanceService();
+
+const wallet =
+  new WalletService();
+
+/*
+|--------------------------------------------------------------------------
+| MIDDLEWARE
+|--------------------------------------------------------------------------
+*/
+
 app.use(cors());
-app.use(express.json());
+
+app.use(
+  express.json({
+    limit: "1mb"
+  })
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -40,16 +98,19 @@ app.get("/", (req, res) => {
   );
 });
 
-app.get("/auth.html", (req, res) => {
-  res.type("html");
+app.get(
+  "/auth.html",
+  (req, res) => {
+    res.type("html");
 
-  res.sendFile(
-    path.join(
-      __dirname,
-      "auth.html"
-    )
-  );
-});
+    res.sendFile(
+      path.join(
+        __dirname,
+        "auth.html"
+      )
+    );
+  }
+);
 
 app.get(
   "/dashboard.html",
@@ -67,22 +128,87 @@ app.get(
 
 /*
 |--------------------------------------------------------------------------
-| SERVICES
+| AUTHENTICATION
 |--------------------------------------------------------------------------
 */
 
-const engine =
-  new TradingEngine();
+async function requireUser(
+  req,
+  res,
+  next
+) {
+  try {
+    if (!supabase) {
+      return res.status(503).json({
+        ok: false,
+        error:
+          "Supabase is not configured"
+      });
+    }
 
-const market =
-  new MarketData();
+    const authorization =
+      req.headers.authorization ||
+      "";
 
-const binance =
-  new BinanceService();
+    if (
+      !authorization.startsWith(
+        "Bearer "
+      )
+    ) {
+      return res.status(401).json({
+        ok: false,
+        error:
+          "Authentication required"
+      });
+    }
+
+    const token =
+      authorization.substring(7);
+
+    if (!token) {
+      return res.status(401).json({
+        ok: false,
+        error:
+          "Authentication token missing"
+      });
+    }
+
+    const {
+      data,
+      error
+    } =
+      await supabase.auth.getUser(
+        token
+      );
+
+    if (
+      error ||
+      !data ||
+      !data.user
+    ) {
+      return res.status(401).json({
+        ok: false,
+        error:
+          "Invalid or expired session"
+      });
+    }
+
+    req.user =
+      data.user;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      ok: false,
+      error:
+        "Authentication failed"
+    });
+  }
+}
 
 /*
 |--------------------------------------------------------------------------
-| COMPLETED CANDLE → TRADING ENGINE
+| COMPLETED CANDLE → ENGINE
 |--------------------------------------------------------------------------
 */
 
@@ -134,6 +260,8 @@ app.get(
         "AI MONSTER U",
       mode: "demo",
       tradingEngine: true,
+      supabase:
+        Boolean(supabase),
       marketData:
         market.getStatus(),
       time:
@@ -172,7 +300,7 @@ app.get(
 
 /*
 |--------------------------------------------------------------------------
-| BINANCE USDT BALANCE
+| BINANCE BALANCE
 |--------------------------------------------------------------------------
 */
 
@@ -189,6 +317,143 @@ app.get(
       });
     } catch (error) {
       res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| WALLET
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/wallet",
+  requireUser,
+  async (req, res) => {
+    try {
+      const data =
+        await wallet.getWallet(
+          req.user.id
+        );
+
+      res.json({
+        ok: true,
+        wallet: data
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| WALLET TRANSACTIONS
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/wallet/transactions",
+  requireUser,
+  async (req, res) => {
+    try {
+      const data =
+        await wallet.getTransactions(
+          req.user.id
+        );
+
+      res.json({
+        ok: true,
+        transactions:
+          data
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| DEPOSIT REQUEST
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/wallet/deposit",
+  requireUser,
+  async (req, res) => {
+    try {
+      const result =
+        await wallet.createDepositRequest({
+          userId:
+            req.user.id,
+          amount:
+            req.body.amount,
+          network:
+            req.body.network,
+          txHash:
+            req.body.txHash
+        });
+
+      res.json({
+        ok: true,
+        deposit:
+          result
+      });
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| WITHDRAWAL REQUEST
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/wallet/withdraw",
+  requireUser,
+  async (req, res) => {
+    try {
+      const result =
+        await wallet.createWithdrawalRequest({
+          userId:
+            req.user.id,
+          amount:
+            req.body.amount,
+          network:
+            req.body.network,
+          walletAddress:
+            req.body.walletAddress
+        });
+
+      res.json({
+        ok: true,
+        withdrawal:
+          result
+      });
+    } catch (error) {
+      res.status(400).json({
         ok: false,
         error:
           error.message
@@ -288,9 +553,10 @@ app.post(
   "/api/trading/start",
   (req, res) => {
     try {
-      res.json(
-        engine.start()
-      );
+      const result =
+        engine.start();
+
+      res.json(result);
     } catch (error) {
       res.status(500).json({
         ok: false,
@@ -311,9 +577,10 @@ app.post(
   "/api/trading/stop",
   (req, res) => {
     try {
-      res.json(
-        engine.stop()
-      );
+      const result =
+        engine.stop();
+
+      res.json(result);
     } catch (error) {
       res.status(500).json({
         ok: false,
@@ -400,7 +667,6 @@ app.post(
           price,
           candleTime
         );
-
       if (!result.ok) {
         return res
           .status(400)
@@ -443,8 +709,7 @@ app.post(
           reason
         );
 
-      res.
-        json(result);
+      res.json(result);
     } catch (error) {
       res.status(400).json({
         ok: false,
@@ -472,7 +737,8 @@ app.post(
 
       res.json({
         ok: true,
-        analysis: result
+        analysis:
+          result
       });
     } catch (error) {
       res.status(400).json({
@@ -541,7 +807,7 @@ app.listen(
     );
 
     console.log(
-      "Binance Integration"
+      "Wallet System"
     );
 
     console.log(
