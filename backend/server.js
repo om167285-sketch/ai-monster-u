@@ -169,31 +169,48 @@ function resetMT5Command(reason = null) {
 */
 
 function calculateEMA(values, period) {
-  if (!Array.isArray(values) || values.length < period) 
+  if (
+    !Array.isArray(values) ||
+    values.length < period
+  ) {
     return null;
   }
 
   const numbers = values.map(Number);
 
-  if (numbers.some((value) => !Number.isFinite(value))) {
+  if (
+    numbers.some(
+      (value) => !Number.isFinite(value)
+    )
+  ) {
     return null;
   }
 
-  const multiplier = 2 / (period + 1);
+  const multiplier =
+    2 / (period + 1);
 
   let ema =
     numbers
       .slice(0, period)
-      .reduce((sum, value) => sum + value, 0) / period;
+      .reduce(
+        (sum, value) => sum + value,
+        0
+      ) / period;
 
-  for (let i = period; i < numbers.length; i++) {
+  for (
+    let i = period;
+    i < numbers.length;
+    i++
+  ) {
     ema =
-      (numbers[i] - ema) * multiplier +
+      (numbers[i] - ema) *
+        multiplier +
       ema;
   }
 
   return ema;
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -201,22 +218,40 @@ function calculateEMA(values, period) {
 |--------------------------------------------------------------------------
 */
 
-function calculateRSI(values, period = 14) {
-  if (!Array.isArray(values) || values.length < period + 1) {
+function calculateRSI(
+  values,
+  period = 14
+) {
+  if (
+    !Array.isArray(values) ||
+    values.length < period + 1
+  ) {
     return null;
   }
 
-  const numbers = values.map(Number);
+  const numbers =
+    values.map(Number);
 
-  if (numbers.some((value) => !Number.isFinite(value))) {
+  if (
+    numbers.some(
+      (value) =>
+        !Number.isFinite(value)
+    )
+  ) {
     return null;
   }
 
   let gains = 0;
   let losses = 0;
 
-  for (let i = 1; i <= period; i++) {
-    const change = numbers[i] - numbers[i - 1];
+  for (
+    let i = 1;
+    i <= period;
+    i++
+  ) {
+    const change =
+      numbers[i] -
+      numbers[i - 1];
 
     if (change > 0) {
       gains += change;
@@ -225,32 +260,60 @@ function calculateRSI(values, period = 14) {
     }
   }
 
-  let averageGain = gains / period;
-  let averageLoss = losses / period;
+  let averageGain =
+    gains / period;
 
-  for (let i = period + 1; i < numbers.length; i++) {
-    const change = numbers[i] - numbers[i - 1];
+  let averageLoss =
+    losses / period;
 
-    const gain = change > 0 ? change : 0;
-    const loss = change < 0 ? Math.abs(change) : 0;
+  for (
+    let i = period + 1;
+    i < numbers.length;
+    i++
+  ) {
+    const change =
+      numbers[i] -
+      numbers[i - 1];
+
+    const gain =
+      change > 0
+        ? change
+        : 0;
+
+    const loss =
+      change < 0
+        ? Math.abs(change)
+        : 0;
 
     averageGain =
-      ((averageGain * (period - 1)) + gain) /
-      period;
+      (
+        averageGain *
+          (period - 1) +
+        gain
+      ) / period;
 
     averageLoss =
-      ((averageLoss * (period - 1)) + loss) /
-      period;
+      (
+        averageLoss *
+          (period - 1) +
+        loss
+      ) / period;
   }
 
   if (averageLoss === 0) {
     return 100;
   }
 
-  const rs = averageGain / averageLoss;
+  const rs =
+    averageGain /
+    averageLoss;
 
-  return 100 - 100 / (1 + rs);
+  return (
+    100 -
+    100 / (1 + rs)
+  );
 }
+
 
 /*
 |--------------------------------------------------------------------------
