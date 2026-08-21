@@ -1464,19 +1464,19 @@ app.post(
       );
 
       console.log(
-        BOT RUNNING: ${botState.running}
+        `BOT RUNNING: ${botState.running}`
       );
 
       console.log(
-        MODE: ${botState.requestedMode}
+        `MODE: ${botState.requestedMode}`
       );
 
       console.log(
-        SIGNAL: ${analysis.signal}
+        `SIGNAL: ${analysis.signal}`
       );
 
       console.log(
-        CONFIDENCE: ${analysis.confidence}
+        `CONFIDENCE: ${analysis.confidence}`
       );
 
       console.log(
@@ -2394,7 +2394,7 @@ app.listen(
     );
 
     console.log(
-      TIME: ${new Date().toISOString()}
+      `TIME: ${new Date().toISOString()}`
     );
 
     console.log(
