@@ -484,7 +484,7 @@ function createMT5Command(signal, candle, analysis) {
       : price - stopDistance * rewardRisk;
 
   mt5Command = {
-    id: AMU-${Date.now()},
+    id: 'AMU-${Date.now()}',
 
     action: signal,
 
