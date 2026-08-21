@@ -46,7 +46,7 @@ try {
 } catch (error) {
   console.warn(
     "TradingEngine could not be initialized:",
-    error?.message || error
+    error?.MESSAGE || error
   );
 }
 
@@ -176,7 +176,7 @@ let mt5Execution = {
 
   profit: 0,
 
-  message: null,
+  MESSAGE: null,
 
   executedAt: null
 };
@@ -1056,7 +1056,7 @@ app.post(
       } catch (engineError) {
         console.warn(
           "Trading engine start warning:",
-          engineError?.message ||
+          engineError?.MESSAGE ||
             engineError
         );
       }
@@ -1110,8 +1110,8 @@ app.post(
         command:
           mt5command,
 
-        message:
-          COMMAND: `AI MONSTER U ${requestedMode}` trading started.
+        MESSAGE:
+          `COMMAND: AI MONSTER U ${requestedMode} trading started.`
       });
     } catch (error) {
       console.error(
@@ -1123,7 +1123,7 @@ app.post(
         ok: false,
 
         error:
-          error?.message ||
+          error?.MESSAGE ||
           "Failed to start trading"
       });
     }
@@ -1153,7 +1153,7 @@ app.post(
       } catch (engineError) {
         console.warn(
           "Trading engine stop warning:",
-          engineError?.message ||
+          engineError?.MESSAGE ||
             engineError
         );
       }
@@ -1206,7 +1206,7 @@ app.post(
         command:
           mt5command,
 
-        message:
+        MESSAGE:
           "AI MONSTER U trading stopped."
       });
     } catch (error) {
@@ -1219,7 +1219,7 @@ app.post(
         ok: false,
 
         error:
-          error?.message ||
+          error?.MESSAGE ||
           "Failed to stop trading"
       });
     }
@@ -1513,7 +1513,7 @@ app.post(
         ok: false,
 
         error:
-          error?.message ||
+          error?.MESSAGE ||
           "Candle processing failed"
       });
     }
@@ -1649,7 +1649,7 @@ app.post(
         ok: false,
 
         error:
-          error?.message ||
+          error?.MESSAGE ||
           "Heartbeat failed"
       });
     }
@@ -1832,7 +1832,7 @@ app.post(
         volume,
         price,
         profit,
-        message
+        MESSAGE
       } = req.body || {};
 
       if (
@@ -1879,10 +1879,10 @@ app.post(
         profit:
           safeNumber(profit),
 
-        message:
-          message !== undefined &&
-          message !== null
-            ? String(message)
+        MESSAGE:
+          MESSAGE !== undefined &&
+          MESSAGE !== null
+            ? String(MESSAGE)
             : null,
 
         executedAt:
@@ -1925,7 +1925,7 @@ app.post(
         ok: false,
 
         error:
-          error?.message ||
+          error?.MESSAGE ||
           "Acknowledgement failed"
       });
     }
@@ -1953,7 +1953,7 @@ app.get(
     } catch (error) {
       engineStatus = {
         error:
-          error?.message ||
+          error?.MESSAGE ||
           "Engine status unavailable"
       };
     }
@@ -2343,7 +2343,7 @@ app.use(
       ok: false,
 
       error:
-        error?.message ||
+        error?.MESSAGE ||
         "Internal server error"
     });
   }
