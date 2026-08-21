@@ -7039,6 +7039,132 @@ if (securityLogout) {
 }
 
 renderSymbolGrid();
+function renderSymbolGrid() {
+  const grid = document.getElementById("aiSymbolGrid");
+
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  AVAILABLE_SYMBOLS.forEach((symbol) => {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "symbol-option";
+
+    if (selectedSymbols.includes(symbol.value)) {
+      button.classList.add("selected");
+    }
+
+    button.innerHTML = `
+      <strong>${symbol.label}</strong>
+      <small>${symbol.description}</small>
+    `;
+
+    button.addEventListener("click", () => {
+      if (selectedSymbols.includes(symbol.value)) {
+        selectedSymbols = selectedSymbols.filter(
+          (item) => item !== symbol.value
+        );
+      } else {
+        selectedSymbols.push(symbol.value);
+      }
+
+      renderSymbolGrid();
+    });
+
+    grid.appendChild(button);
+  });
+}
+
+renderSymbolGrid();
+  const aiRiskMode =
+  document.getElementById("aiRiskMode");
+
+const aiRiskInput =
+  document.getElementById("aiRiskInput");
+
+const standardRiskCard =
+  document.getElementById("standardRiskCard");
+
+const aggressiveRiskCard =
+  document.getElementById("aggressiveRiskCard");
+
+const riskProfileStatus =
+  document.getElementById("riskProfileStatus");
+
+function updateRiskMode() {
+  if (!aiRiskMode || !aiRiskInput) return;
+
+  riskMode = aiRiskMode.value;
+
+  if (riskMode === "aggressive") {
+    riskPercent = 3.5;
+    aiRiskInput.value = "3.5";
+
+    if (riskProfileStatus)
+      riskProfileStatus.textContent = "AGGRESSIVE";
+
+    standardRiskCard?.classList.remove("active");
+    aggressiveRiskCard?.classList.add("active");
+
+  } else {
+    riskPercent = 2;
+    aiRiskInput.value = "2";
+
+    if (riskProfileStatus)
+      riskProfileStatus.textContent = "STANDARD";
+
+    aggressiveRiskCard?.classList.remove("active");
+    standardRiskCard?.classList.add("active");
+  }
+}
+
+aiRiskMode?.addEventListener(
+  "change",
+  updateRiskMode
+);
+
+aiRiskInput?.addEventListener(
+  "change",
+  () => {
+    let value = Number(aiRiskInput.value);
+
+    if (value < 2) value = 2;
+    if (value > 3.5) value = 3.5;
+
+    riskPercent = value;
+    aiRiskInput.value = value;
+
+    if (value === 3.5) {
+      riskMode = "aggressive";
+      aiRiskMode.value = "aggressive";
+    } else {
+      riskMode = "standard";
+      aiRiskMode.value = "standard";
+    }
+
+    updateRiskMode();
+  }
+);
+
+standardRiskCard?.addEventListener(
+  "click",
+  () => {
+    aiRiskMode.value = "standard";
+    updateRiskMode();
+  }
+);
+
+aggressiveRiskCard?.addEventListener(
+  "click",
+  () => {
+    aiRiskMode.value = "aggressive";
+    updateRiskMode();
+  }
+);
+
+updateRiskMode();
 </script> 
 
 </body>
