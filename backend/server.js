@@ -128,10 +128,10 @@ let botState = {
 };
 
 /* =========================================================
-   COMMAND STATE
+   command STATE
 ========================================================= */
 
-let mt5Command = {
+let mt5command = {
   id: null,
 
   action: "NONE",
@@ -229,7 +229,7 @@ function normalizeSYMBOL    (SYMBOL    ) {
   return value || BOT_CONFIG.SYMBOL   ;
 }
 
-function createCommandId(prefix = "AMU") {
+function createcommandId(prefix = "AMU") {
   return `${prefix}-${Date.now()}-${Math.floor(
     Math.random() * 1000000
   )}`;
@@ -251,8 +251,8 @@ function isHeartbeatAlive() {
   return Date.now() - heartbeatTime < 30000;
 }
 
-function resetMT5Command(reason = null) {
-  mt5Command = {
+function resetMT5command(reason = null) {
+  mt5command = {
     id: null,
 
     action: "NONE",
@@ -718,10 +718,10 @@ function analyzeMT5Market(candles) {
 }
 
 /* =========================================================
-   CREATE TRADE COMMAND
+   CREATE TRADE command
 ========================================================= */
 
-function createMT5TradeCommand(
+function createMT5Tradecommand(
   signal,
   candle,
   analysis
@@ -734,7 +734,7 @@ function createMT5TradeCommand(
   }
 
   if (
-    mt5Command.action !== "NONE"
+    mt5command.action !== "NONE"
   ) {
     return null;
   }
@@ -809,9 +809,9 @@ function createMT5TradeCommand(
     return null;
   }
 
-  mt5Command = {
+  mt5command = {
     id:
-      createCommandId(),
+      createcommandId(),
 
     action:
       signal,
@@ -877,7 +877,7 @@ function createMT5TradeCommand(
   );
 
   console.log(
-    "AI MONSTER U TRADE COMMAND"
+    "AI MONSTER U TRADE command"
   );
 
   console.log(
@@ -885,27 +885,27 @@ function createMT5TradeCommand(
   );
 
   console.log(
-    `SYMBOL   : ${mt5Command.SYMBOL   }`
+    `SYMBOL   : ${mt5command.SYMBOL   }`
   );
 
   console.log(
-    `TIMEFRAME: ${mt5Command.timeframe}`
+    `TIMEFRAME: ${mt5command.timeframe}`
   );
 
   console.log(
-    `ACTION: ${mt5Command.action}`
+    `ACTION: ${mt5command.action}`
   );
 
   console.log(
-    `LOT: ${mt5Command.volume}`
+    `LOT: ${mt5command.volume}`
   );
 
   console.log(
-    `SL: ${mt5Command.sl}`
+    `SL: ${mt5command.sl}`
   );
 
   console.log(
-    `TP: ${mt5Command.tp}`
+    `TP: ${mt5command.tp}`
   );
 
   console.log(
@@ -913,14 +913,14 @@ function createMT5TradeCommand(
   );
 
   console.log(
-    `COMMAND ID: ${mt5Command.id}`
+    `command ID: ${mt5command.id}`
   );
 
   console.log(
     "========================================"
   );
 
-  return mt5Command;
+  return mt5command;
 }
 
 /* =========================================================
@@ -1003,9 +1003,9 @@ app.post(
         stoppedAt: null
       };
 
-      mt5Command = {
+      mt5command = {
         id:
-          createCommandId(
+          createcommandId(
             "START"
           ),
 
@@ -1086,7 +1086,7 @@ app.post(
       );
 
       console.log(
-        COMMAND: ${mt5Command.id}
+        `COMMAND: ${mt5Command.id}`
       );
 
       console.log(
@@ -1108,7 +1108,7 @@ app.post(
           requestedTimeframe,
 
         command:
-          mt5Command,
+          mt5command,
 
         message:
           AI MONSTER U ${requestedMode} trading started.
@@ -1158,9 +1158,9 @@ app.post(
         );
       }
 
-      mt5Command = {
+      mt5command = {
         id:
-          createCommandId(
+          createcommandId(
             "STOP"
           ),
 
@@ -1204,7 +1204,7 @@ app.post(
         running: false,
 
         command:
-          mt5Command,
+          mt5command,
 
         message:
           "AI MONSTER U trading stopped."
@@ -1428,11 +1428,11 @@ app.post(
           correctTimeframe
         ) {
           if (
-            mt5Command.action ===
+            mt5command.action ===
             "NONE"
           ) {
             command =
-              createMT5TradeCommand(
+              createMT5Tradecommand(
                 analysis.signal,
                 candle,
                 analysis
@@ -1731,7 +1731,7 @@ app.get(
 );
 
 /* =========================================================
-   MT5 COMMAND
+   MT5 command
 ========================================================= */
 
 app.get(
@@ -1755,14 +1755,14 @@ app.get(
     }
 
     if (
-      mt5Command.action ===
+      mt5command.action ===
       "NONE"
     ) {
       return res.json({
         ok: true,
 
         command:
-          mt5Command,
+          mt5command,
 
         botRunning:
           botState.running,
@@ -1771,7 +1771,7 @@ app.get(
           botState.requestedMode,
 
         reason:
-           "NO_PENDING_COMMAND"
+           "NO_PENDING_command"
       });
     }
 
@@ -1781,7 +1781,7 @@ app.get(
     */
 
     if (
-      mt5Command.mode ===
+      mt5command.mode ===
         "LIVE" &&
       normalizeMode(
         mt5Bridge.mode
@@ -1804,7 +1804,7 @@ app.get(
       ok: true,
 
       command:
-        mt5Command,
+        mt5command,
 
       botRunning:
         botState.running,
@@ -1816,7 +1816,7 @@ app.get(
 );
 
 /* =========================================================
-   MT5 COMMAND ACK
+   MT5 command ACK
 ========================================================= */
 
 app.post(
@@ -1856,7 +1856,7 @@ app.post(
 
         action:
           action ||
-          mt5Command.action,
+          mt5command.action,
 
         ticket:
           ticket !== undefined &&
@@ -1890,10 +1890,10 @@ app.post(
       };
 
       if (
-        mt5Command.id ===
+        mt5command.id ===
         String(id)
       ) {
-        resetMT5Command(
+        resetMT5command(
           `ACK_${String(
             status
           ).toUpperCase()}`
@@ -1901,7 +1901,7 @@ app.post(
       }
 
       console.log(
-        "MT5 COMMAND ACK:",
+        "MT5 command ACK:",
         JSON.stringify(
           mt5Execution
         )
@@ -1991,8 +1991,8 @@ app.get(
       lastConfidence:
         botState.lastConfidence,
 
-      pendingCommand:
-        mt5Command,
+      pendingcommand:
+        mt5command,
 
       lastExecution:
         mt5Execution,
@@ -2218,12 +2218,12 @@ app.get(
       timeframe:
         botState.timeframe,
 
-      pendingCommand:
-        mt5Command.action !==
+      pendingcommand:
+        mt5command.action !==
         "NONE",
 
       command:
-        mt5Command,
+        mt5command,
 
       lastExecution:
         mt5Execution,
@@ -2275,10 +2275,10 @@ app.get(
         mt5Candle:
           "/api/mt5/candle",
 
-        mt5Command:
+        mt5command:
           "/api/mt5/command",
 
-        mt5CommandAck:
+        mt5commandAck:
           "/api/mt5/command/ack",
 
         mt5Execution:
