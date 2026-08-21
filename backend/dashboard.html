@@ -4024,7 +4024,2934 @@ setupNavigation();
 
 start();
 
+<script>
+
+/* =========================================================
+   AI MONSTER U — DASHBOARD ENGINE
+========================================================= */
+
+let currentUser = null;
+let demoAccount = null;
+
+let walletBalance = 0;
+
+let riskPercent = 2;
+let riskMode = "standard";
+
+let selectedSymbols = [
+  "XAUUSD",
+  "EURUSD",
+  "BTCUSD"
+];
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function money(value) {
+
+  const number =
+    Number(value || 0);
+
+  return "$" +
+    number.toFixed(2);
+
+}
+
+
+function escapeHTML(value) {
+
+  if (value === null ||
+      value === undefined) {
+
+    return "";
+
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function setMessage(
+  elementId,
+  message,
+  type
+) {
+
+  const element =
+    document.getElementById(
+      elementId
+    );
+
+  if (!element)
+    return;
+
+  element.textContent =
+    message;
+
+  element.className =
+    type ?
+      "message " + type :
+      "message";
+
+}
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+async function getCurrentUser() {
+
+  const result =
+    await supabaseClient.auth.getUser();
+
+  if (result.error) {
+
+    console.error(
+      result.error
+    );
+
+    return null;
+
+  }
+
+  return result.data.user;
+
+}
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+async function loadWallet(
+  userId
+) {
+
+  try {
+
+    const result =
+      await supabaseClient
+        .from("wallets")
+        .select("*")
+        .eq(
+          "user_id",
+          userId
+        )
+        .maybeSingle();
+
+
+    if (result.error) {
+
+      console.error(
+        "Wallet error:",
+        result.error
+      );
+
+      return;
+
+    }
+
+
+    if (result.data) {
+
+      walletBalance =
+        Number(
+          result.data.balance || 0
+        );
+
+    } else {
+
+      walletBalance = 0;
+
+    }
+
+
+    const balance =
+      document.getElementById(
+        "walletBalance"
+      );
+
+    if (balance) {
+
+      balance.textContent =
+        money(walletBalance);
+
+    }
+
+
+    const withdrawBalance =
+      document.getElementById(
+        "withdrawBalance"
+      );
+
+    if (withdrawBalance) {
+
+      withdrawBalance.textContent =
+        money(walletBalance);
+
+    }
+
+  } catch(error) {
+
+    console.error(
+      "Wallet loading error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   DEMO ACCOUNT
+========================================================= */
+
+async function loadDemoAccount(
+  userId
+) {
+
+  const result =
+    await supabaseClient
+      .from("trading_accounts")
+      .select("*")
+      .eq(
+        "user_id",
+        userId
+      )
+      .eq(
+        "mode",
+        "demo"
+      )
+      .maybeSingle();
+
+
+  if (result.error) {
+
+    console.error(
+      "Demo account error:",
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  demoAccount =
+    result.data || null;
+
+}
+
+
+/* =========================================================
+   ACCOUNTS
+========================================================= */
+
+async function loadAccounts() {
+
+  if (!currentUser)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from("trading_accounts")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (result.error) {
+
+    console.error(
+      "Accounts error:",
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  const accounts =
+    result.data || [];
+
+
+  if (!demoAccount &&
+      accounts.length) {
+
+    demoAccount =
+      accounts.find(
+        account =>
+          account.mode === "demo"
+      ) ||
+      accounts[0];
+
+  }
+
+
+  const accountStatus =
+    document.getElementById(
+      "accountStatus"
+    );
+
+  if (accountStatus) {
+
+    accountStatus.
+      textContent =
+      demoAccount ?
+      "CONNECTED" :
+      "NOT CONNECTED";
+
+  }
+
+}
+
+
+/* =========================================================
+   BOT SETTINGS
+========================================================= */
+
+async function loadBotSettings() {
+
+  if (!demoAccount)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from("bot_settings")
+      .select("*")
+      .eq(
+        "trading_account_id",
+        demoAccount.id
+      )
+      .maybeSingle();
+
+
+  if (result.error) {
+
+    console.error(
+      "Bot settings error:",
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  if (!result.data)
+    return;
+
+
+  const settings =
+    result.data;
+
+
+  const storedRisk =
+    Number(
+      settings.risk_percent || 2
+    );
+
+
+  riskPercent =
+    storedRisk >= 3.5 ?
+    3.5 :
+    2;
+
+
+  riskMode =
+    riskPercent >= 3.5 ?
+    "aggressive" :
+    "standard";
+
+
+  selectedSymbols =
+    String(
+      settings.allowed_symbols ||
+      "XAUUSD,EURUSD,BTCUSD"
+    )
+    .split(",")
+    .map(
+      symbol =>
+        symbol
+          .trim()
+          .toUpperCase()
+    )
+    .filter(Boolean);
+
+
+  const risk =
+    document.getElementById(
+      "riskPercent"
+    );
+
+  if (risk)
+    risk.value =
+      riskPercent;
+
+
+  const aiRisk =
+    document.getElementById(
+      "aiRiskInput"
+    );
+
+  if (aiRisk)
+    aiRisk.value =
+      riskPercent;
+
+
+  const aiMode =
+    document.getElementById(
+      "aiRiskMode"
+    );
+
+  if (aiMode)
+    aiMode.value =
+      riskMode;
+
+
+  const timeframe =
+    document.getElementById(
+      "riskTimeframe"
+    );
+
+  if (timeframe)
+    timeframe.value =
+      settings.timeframe ||
+      "1m";
+
+
+  const aiTimeframe =
+    document.getElementById(
+      "aiTimeframe"
+    );
+
+  if (aiTimeframe)
+    aiTimeframe.value =
+      settings.timeframe ||
+      "1m";
+
+
+  const strategy =
+    document.getElementById(
+      "aiStrategy"
+    );
+
+  if (strategy)
+    strategy.value =
+      settings.strategy ||
+      "AI Scalping";
+
+
+  if (
+    settings.automatic_lot_size !==
+    undefined
+  ) {
+
+    const automaticLot =
+      document.getElementById(
+        "automaticLot"
+      );
+
+    if (automaticLot) {
+
+      automaticLot.value =
+        settings.automatic_lot_size ?
+        "true" :
+        "false";
+
+    }
+
+  }
+
+
+  if (
+    settings.automatic_sl !==
+    undefined
+  ) {
+
+    const automaticSL =
+      document.getElementById(
+        "automaticSL"
+      );
+
+    if (automaticSL) {
+
+      automaticSL.value =
+        settings.automatic_sl ?
+        "true" :
+        "false";
+
+    }
+
+  }
+
+
+  if (
+    settings.automatic_tp !==
+    undefined
+  ) {
+
+    const automaticTP =
+      document.getElementById(
+        "automaticTP"
+      );
+
+    if (automaticTP) {
+
+      automaticTP.value =
+        settings.automatic_tp ?
+        "true" :
+        "false";
+
+    }
+
+  }
+
+
+  updateRiskUI();
+
+  renderSymbolGrids();
+
+}
+
+
+/* =========================================================
+   RISK UI
+========================================================= */
+
+function updateRiskUI() {
+
+  const standard =
+    document.getElementById(
+      "standardRiskCard"
+    );
+
+  const aggressive =
+    document.getElementById(
+      "aggressiveRiskCard"
+    );
+
+
+  if (standard)
+    standard.classList.remove(
+      "active"
+    );
+
+
+  if (aggressive)
+    aggressive.classList.remove(
+      "active"
+    );
+
+
+  if (
+    riskMode ===
+    "aggressive"
+  ) {
+
+    if (aggressive)
+      aggressive.classList.add(
+        "active"
+      );
+
+
+    const status =
+      document.getElementById(
+        "riskProfileStatus"
+      );
+
+    if (status)
+      status.textContent =
+        "AGGRESSIVE";
+
+  } else {
+
+    if (standard)
+      standard.classList.add(
+        "active"
+      );
+
+
+    const status =
+      document.getElementById(
+        "riskProfileStatus"
+      );
+
+    if (status)
+      status.textContent =
+        "STANDARD";
+
+  }
+
+
+  const dashboardRisk =
+    document.getElementById(
+      "dashboardRisk"
+    );
+
+  if (dashboardRisk)
+    dashboardRisk.textContent =
+      riskPercent + "%";
+
+
+  const dashboardMode =
+    document.getElementById(
+      "dashboardRiskMode"
+    );
+
+  if (dashboardMode)
+    dashboardMode.textContent =
+      riskMode.toUpperCase();
+
+}
+
+
+/* =========================================================
+   SAVE BOT SETTINGS
+========================================================= */
+
+async function saveBotSettings() {
+
+  if (!demoAccount) {
+
+    setMessage(
+      "riskMessage",
+      "Create or connect a trading account first.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      "riskPercent"
+    );
+
+
+  const selectedRisk =
+    Number(
+      input ?
+      input.value :
+      2
+    );
+
+
+  riskPercent =
+    selectedRisk >= 3.5 ?
+    3.5 :
+    2;
+
+
+  riskMode =
+    riskPercent >= 3.5 ?
+    "aggressive" :
+    "standard";
+
+
+  const risk =
+    document.getElementById(
+      "riskPercent"
+    );
+
+  if (risk)
+    risk.value =
+      riskPercent;
+
+
+  const aiRisk =
+    document.getElementById(
+      "aiRiskInput"
+    );
+
+  if (aiRisk)
+    aiRisk.value =
+      riskPercent;
+
+
+  const aiMode =
+    document.getElementById(
+      "aiRiskMode"
+    );
+
+  if (aiMode)
+    aiMode.value =
+      riskMode;
+
+
+  if (!selectedSymbols.length) {
+
+    setMessage(
+      "riskMessage",
+      "Select at least one trading symbol.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  const automaticLot =
+    document.getElementById(
+      "automaticLot"
+    );
+
+  const automaticSL =
+    document.getElementById(
+      "automaticSL"
+    );
+
+  const automaticTP =
+    document.getElementById(
+      "automaticTP"
+    );
+
+  const strategy =
+    document.getElementById(
+      "aiStrategy"
+    );
+
+  const timeframe =
+    document.getElementById(
+      "riskTimeframe"
+    );
+
+
+  const values = {
+
+    trading_account_id:
+      demoAccount.id,
+
+    risk_percent:
+      riskPercent,
+
+    automatic_lot_size:
+      automaticLot ?
+      automaticLot.value === "true" :
+      true,
+
+    automatic_sl:
+      automaticSL ?
+      automaticSL.value === "true" :
+      true,
+
+    automatic_tp:
+      automaticTP ?
+      automaticTP.value === "true" :
+      true,
+
+    strategy:
+      strategy ?
+      strategy.value :
+      "AI Scalping",
+
+    timeframe:
+      timeframe ?
+      timeframe.value :
+      "1m",
+
+    allowed_symbols:
+      selectedSymbols.join(",")
+
+  };
+
+
+  const result =
+    await supabaseClient
+      .from("bot_settings")
+      .upsert(
+        values,
+        {
+          onConflict:
+            "trading_account_id"
+        }
+      );
+
+
+  if (result.error) {
+
+    setMessage(
+      "riskMessage",
+      result.error.message,
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  updateRiskUI();
+
+  renderSymbolGrids();
+
+
+  setMessage(
+    "riskMessage",
+    "Risk, symbols and automatic lot settings saved.",
+    "success"
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   SYMBOL GRID
+========================================================= */
+
+function renderSymbolGrids() {
+
+  const containers =
+    document.querySelectorAll(
+      "[data-symbol]"
+    );
+
+
+  containers.forEach(
+    element => {
+
+      const symbol =
+        String(
+          element.dataset.symbol ||
+          ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+      if (
+        selectedSymbols.includes(
+          symbol
+        )
+      ) {
+
+        element.classList.add(
+          "active",
+          "selected"
+        );
+
+      } else {
+
+        element.classList.remove(
+          "active",
+          "selected"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SAVE SYMBOLS
+========================================================= */
+
+async function saveMarketSymbols() {
+
+  if (!demoAccount) {
+
+    setMessage(
+      "marketMessage",
+      "Create or connect a trading account first.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!selectedSymbols.length) {
+
+    setMessage(
+      "marketMessage",
+      "Select at least one symbol.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const result =
+    await supabaseClient
+      .from("bot_settings")
+      .upsert(
+
+        {
+          trading_account_id:
+            demoAccount.id,
+
+          allowed_symbols:
+            selectedSymbols.join(",")
+
+        },
+
+        {
+
+          onConflict:
+            "trading_account_id"
+
+        }
+
+      );
+
+
+  if (result.error) {
+
+    setMessage(
+      "marketMessage",
+      result.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  setMessage(
+    "marketMessage",
+    selectedSymbols.length +
+    " symbols saved for the EA bridge.",
+    "success"
+  );
+
+}
+
+
+/* =========================================================
+   MT5 BRIDGE STATUS
+========================================================= */
+
+async function loadMT5Status() {
+
+  if (!demoAccount ||
+      !currentUser)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from("mt5_bridge_status")
+      .select("*")
+      .eq(
+        "trading_account_id",
+        demoAccount.id
+      )
+      .maybeSingle();
+
+
+  if (result.error) {
+
+    console.error(
+      "MT5 status error:",
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  const status =
+    result.data;
+
+
+  const botStatus =
+    document.getElementById(
+      "aiBotStatus"
+    );
+
+  const engineStatus =
+    document.getElementById(
+      "engineStatus"
+    );
+
+
+  if (!status) {
+
+    if (botStatus)
+      botStatus.textContent =
+        "OFFLINE";
+
+    if (engineStatus)
+      engineStatus.textContent =
+        "MT5 NOT CONNECTED";
+
+    return;
+
+  }
+
+
+  const heartbeat =
+    status.last_heartbeat ?
+    new Date(
+      status.last_heartbeat
+    ) :
+    null;
+
+
+  const age =
+    heartbeat ?
+    Date.now() -
+    heartbeat.getTime() :
+    Infinity;
+
+
+  const online =
+    status.connected &&
+    age <
+    30000;
+
+
+  if (online) {
+
+    if (botStatus) {
+
+      botStatus.textContent =
+        status.trading_allowed ?
+        "CONNECTED" :
+        "CONNECTED / TRADING DISABLED";
+
+    }
+
+
+    if (engineStatus)
+      engineStatus.textContent =
+        status.trading_allowed ?
+        "MT5 ONLINE" :
+        "TRADING NOT AUTHORIZED";
+
+  } else {
+
+    if (botStatus)
+      botStatus.textContent =
+        "OFFLINE";
+
+    if (engineStatus)
+      engineStatus.textContent =
+        "MT5 NOT CONNECTED";
+
+  }
+
+
+  const balance =
+    document.getElementById(
+      "mt5Balance"
+    );
+
+  if (balance)
+    balance.textContent =
+      money(status.balance);
+
+
+  const equity =
+    document.getElementById(
+      "mt5Equity"
+    );
+
+  if (equity)
+    equity.textContent =
+      money(status.equity);
+
+
+  const broker =
+    document.getElementById(
+      "mt5Broker"
+    );
+
+  if (broker)
+    broker.textContent =
+      status.broker ||
+      "—";
+
+
+  const mode =
+    document.getElementById(
+      "mt5AccountMode"
+    );
+
+  if (mode)
+    mode.textContent =
+      String(
+        status.account_mode ||
+        "demo"
+      ).toUpperCase();
+
+
+  const login =
+    document.getElementById(
+      "mt5Login"
+    );
+
+  if (login)
+    login.textContent =
+      status.account_login ||
+      "—";
+
+
+  const error =
+    document.getElementById(
+      "mt5Error"
+    );
+
+  if (error)
+    error.textContent =
+      status.last_error ||
+      "";
+
+}
+
+
+/* =========================================================
+   SEND TRADING COMMAND
+========================================================= */
+
+async function sendTradingCommand(
+  command,
+  payload = {}
+) {
+
+  if (!currentUser) {
+
+    return {
+      error:
+        new Error(
+          "User is not authenticated."
+        )
+    };
+
+  }
+
+
+  if (!demoAccount) {
+
+    return {
+      error:
+        new Error(
+          "No trading account connected."
+        )
+    };
+
+  }
+
+
+  return await supabaseClient
+    .from("trading_commands")
+    .insert({
+
+      user_id:
+        currentUser.id,
+
+      trading_account_id:
+        demoAccount.id,
+
+      command:
+        command,
+
+      status:
+        "pending",
+
+      payload:
+        payload
+
+    });
+
+}
+
+
+/* =========================================================
+   POSITIONS
+========================================================= */
+
+async function loadPositions() {
+
+  const body =
+    document.getElementById(
+      "positionsBody"
+    );
+  const empty =
+    document.getElementById(
+      "positionsEmpty"
+    );
+
+
+  if (!body)
+    return;
+
+
+  if (!currentUser)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from("positions")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "opened_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (result.error) {
+
+    body.innerHTML = "";
+
+    if (empty) {
+
+      empty.style.display =
+        "block";
+
+      empty.textContent =
+        "Positions unavailable: " +
+        result.error.message;
+
+    }
+
+    return;
+
+  }
+
+
+  const rows =
+    result.data || [];
+
+
+  const openPositions =
+    document.getElementById(
+      "openPositions"
+    );
+
+  if (openPositions)
+    openPositions.textContent =
+      rows.length;
+
+
+  const positionsCount =
+    document.getElementById(
+      "positionsCount"
+    );
+
+  if (positionsCount)
+    positionsCount.textContent =
+      rows.length +
+      " ACTIVE";
+
+
+  if (!rows.length) {
+
+    body.innerHTML = "";
+
+    if (empty) {
+
+      empty.style.display =
+        "block";
+
+      empty.textContent =
+        "No open positions.";
+
+    }
+
+    return;
+
+  }
+
+
+  if (empty)
+    empty.style.display =
+      "none";
+
+
+  body.innerHTML =
+    rows.map(
+      position => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(
+            position.symbol
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            position.side
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            position.volume
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            position.entry_price
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            position.current_price
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            position.stop_loss
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            position.take_profit ??
+            position.take_profits ??
+            "—"
+          )}
+        </td>
+
+        <td>
+          ${money(
+            position.floating_profit
+          )}
+        </td>
+
+      </tr>
+
+      `
+    ).join("");
+
+}
+
+
+/* =========================================================
+   TRADE HISTORY
+========================================================= */
+
+async function loadTrades() {
+
+  const body =
+    document.getElementById(
+      "tradesBody"
+    );
+
+  const empty =
+    document.getElementById(
+      "tradesEmpty"
+    );
+
+
+  if (!body ||
+      !currentUser)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from("trades")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "closed_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(100);
+
+
+  if (result.error) {
+
+    body.innerHTML = "";
+
+    if (empty) {
+
+      empty.style.display =
+        "block";
+
+      empty.textContent =
+        "Trade history unavailable: " +
+        result.error.message;
+
+    }
+
+    return;
+
+  }
+
+
+  const rows =
+    result.data || [];
+
+
+  if (!rows.length) {
+
+    body.innerHTML = "";
+
+    if (empty) {
+
+      empty.style.display =
+        "block";
+
+      empty.textContent =
+        "No completed trades.";
+
+    }
+
+    const todayProfit =
+      document.getElementById(
+        "todayProfit"
+      );
+
+    if (todayProfit)
+      todayProfit.textContent =
+        money(0);
+
+    return;
+
+  }
+
+
+  if (empty)
+    empty.style.display =
+      "none";
+
+
+  body.innerHTML =
+    rows.map(
+      trade => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(
+            trade.symbol
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            trade.side
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            trade.volume
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            trade.entry_price
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            trade.exit_price
+          )}
+        </td>
+
+        <td class="${
+          Number(
+            trade.result || 0
+          ) >= 0
+          ? "green"
+            : "red"
+        }">
+
+          ${money(
+            trade.result
+          )}
+
+        </td>
+
+        <td>
+          ${escapeHTML(
+            trade.opened_at
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            trade.closed_at
+          )}
+        </td>
+
+      </tr>
+
+      `
+    ).join("");
+
+
+  const today =
+    rows
+      .filter(
+        trade => {
+
+          if (!trade.closed_at)
+            return false;
+
+
+          const date =
+            new Date(
+              trade.closed_at
+            );
+
+
+          const now =
+            new Date();
+
+
+          return (
+            date.toDateString() ===
+            now.toDateString()
+          );
+
+        }
+      )
+      .reduce(
+        (
+          sum,
+          trade
+        ) =>
+          sum +
+          Number(
+            trade.result || 0
+          ),
+        0
+      );
+
+
+  const todayProfit =
+    document.getElementById(
+      "todayProfit"
+    );
+
+  if (todayProfit)
+    todayProfit.textContent =
+      money(today);
+
+}
+
+
+/* =========================================================
+   TRANSACTIONS
+========================================================= */
+
+async function loadTransactions() {
+
+  const body =
+    document.getElementById(
+      "depositHistoryBody"
+    );
+
+
+  if (!body ||
+      !currentUser)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from("transactions")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(100);
+
+
+  if (result.error) {
+
+    console.error(
+      "Transactions error:",
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    (result.data || [])
+      .map(
+        tx => `
+
+        <tr>
+
+          <td>
+            ${escapeHTML(
+              tx.type
+            )}
+          </td>
+
+          <td>
+            ${escapeHTML(
+              tx.amount
+            )}
+          </td>
+
+          <td>
+            ${escapeHTML(
+              tx.currency
+            )}
+          </td>
+
+          <td>
+            ${escapeHTML(
+              tx.status
+            )}
+          </td>
+
+          <td>
+            ${escapeHTML(
+              tx.tx_hash ||
+              "—"
+            )}
+          </td>
+
+          <td>
+            ${escapeHTML(
+              tx.created_at ||
+              "—"
+            )}
+          </td>
+
+        </tr>
+
+        `
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function setupNavigation() {
+
+  const links =
+    document.querySelectorAll(
+      ".menu a[data-page]"
+    );
+
+
+  const pages =
+    document.querySelectorAll(
+      ".page-section"
+    );
+
+
+  function showPage(name) {
+
+    pages.forEach(
+      page => {
+
+        page.classList.remove(
+          "active"
+        );
+
+        page.style.display =
+          "none";
+
+      }
+    );
+
+
+    const selected =
+      document.getElementById(
+        name
+      );
+
+
+    if (selected) {
+
+      selected.classList.add(
+        "active"
+      );
+
+      selected.style.display =
+        "block";
+
+    }
+
+
+    links.forEach(
+      link =>
+        link.classList.remove(
+          "active"
+        )
+    );
+
+
+    const active =
+      document.querySelector(
+        '.menu a[data-page="' +
+        name +
+        '"]'
+      );
+
+
+    if (active)
+      active.classList.add(
+        "active"
+      );
+
+
+    history.replaceState(
+      null,
+      "",
+      "#" + name
+    );
+
+
+    window.scrollTo(
+      0,
+      0
+    );
+
+  }
+
+
+  links.forEach(
+    link => {
+
+      link.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+          showPage(
+            link.getAttribute(
+              "data-page"
+            )
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  const initial =
+    location.hash.replace(
+      "#",
+      ""
+    );
+
+
+  if (
+    initial &&
+    document.getElementById(
+      initial
+    )
+  ) {
+
+    showPage(
+      initial
+    );
+
+  } else {
+
+    showPage(
+      "dashboard"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   WITHDRAWAL CALCULATOR
+========================================================= */
+
+function setupWithdrawCalculation() {
+
+  const amount =
+    document.getElementById(
+      "withdrawAmount"
+    );
+
+  const receive =
+    document.getElementById(
+      "withdrawReceive"
+    );
+
+  const fee =
+    document.getElementById(
+      "withdrawFee"
+    );
+
+
+  if (!amount ||
+      !receive ||
+      !fee)
+    return;
+
+
+  function update() {
+
+    const value =
+      Number(
+        amount.value || 0
+      );
+
+
+    const networkFee =
+      value > 0 ?
+      1 :
+      0;
+
+
+    fee.textContent =
+      money(
+        networkFee
+      );
+
+
+    receive.textContent =
+      money(
+        Math.max(
+          0,
+          value -
+          networkFee
+        )
+      );
+
+  }
+
+
+  amount.addEventListener(
+    "input",
+    update
+  );
+
+
+  update();
+
+}
+
+
+/* =========================================================
+   RISK PROFILE BUTTONS
+========================================================= */
+
+const standardRiskCard =
+  document.getElementById(
+    "standardRiskCard"
+  );
+
+
+if (standardRiskCard) {
+
+  standardRiskCard.addEventListener(
+    "click",
+    () => {
+
+      riskMode =
+        "standard";
+
+      riskPercent =
+        2;
+
+
+      const risk =
+        document.getElementById(
+          "riskPercent"
+        );
+
+      if (risk)
+        risk.value = 2;
+
+
+      const aiRisk =
+        document.getElementById(
+          "aiRiskInput"
+        );
+
+      if (aiRisk)
+        aiRisk.value = 2;
+
+
+      const aiMode =
+        document.getElementById(
+          "aiRiskMode"
+        );
+
+      if (aiMode)
+        aiMode.value =
+          "standard";
+
+
+      updateRiskUI();
+
+    }
+  );
+
+}
+
+
+const aggressiveRiskCard =
+  document.getElementById(
+    "aggressiveRiskCard"
+  );
+
+
+if (aggressiveRiskCard) {
+
+  aggressiveRiskCard.addEventListener(
+    "click",
+    () => {
+
+      riskMode =
+        "aggressive";
+
+      riskPercent =
+        3.5;
+
+
+      const risk =
+        document.getElementById(
+          "riskPercent"
+        );
+
+      if (risk)
+        risk.value =
+          3.5;
+
+
+      const aiRisk =
+        document.getElementById(
+          "aiRiskInput"
+        );
+
+      if (aiRisk)
+        aiRisk.value =
+          3.5;
+
+
+      const aiMode =
+        document.getElementById(
+          "aiRiskMode"
+        );
+
+      if (aiMode)
+        aiMode.value =
+          "aggressive";
+
+
+      updateRiskUI();
+
+    }
+  );
+
+}
+
+
+const aiRiskMode =
+  document.getElementById(
+    "aiRiskMode"
+  );
+
+
+if (aiRiskMode) {
+
+  aiRiskMode.addEventListener(
+    "change",
+    event => {
+
+      riskMode =
+        event.target.value;
+
+
+      riskPercent =
+        riskMode ===
+        "aggressive" ?
+        3.5 :
+        2;
+
+
+      const aiRisk =
+        document.getElementById(
+          "aiRiskInput"
+        );
+
+      if (aiRisk)
+        aiRisk.value =
+          riskPercent;
+
+
+      const risk =
+        document.getElementById(
+          "riskPercent"
+        );
+
+      if (risk)
+        risk.value =
+          riskPercent;
+
+
+      updateRiskUI();
+
+    }
+  );
+
+}
+
+
+const aiRiskInput =
+  document.getElementById(
+    "aiRiskInput"
+  );
+
+
+if (aiRiskInput) {
+
+  aiRiskInput.addEventListener(
+    "change",
+    event => {
+
+      const value =
+        Number(
+          event.target.value
+        );
+
+
+      riskPercent =
+        value >= 3.5 ?
+        3.5 :
+        2;
+
+
+      riskMode =
+        riskPercent >= 3.5 ?
+        "aggressive" :
+        "standard";
+
+
+      event.target.value =
+        riskPercent;
+
+
+      const risk =
+        document.getElementById(
+          "riskPercent"
+        );
+
+      if (risk)
+        risk.value =
+          riskPercent;
+
+
+      const mode =
+        document.getElementById(
+          "aiRiskMode"
+        );
+
+      if (mode)
+        mode.value =
+          riskMode;
+
+
+      updateRiskUI();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   START AI BOT
+   ========================================================= */
+
+const startAiBot =
+  document.getElementById(
+    "startAiBot"
+  );
+
+
+if (startAiBot) {
+
+  startAiBot.addEventListener(
+    "click",
+    async () => {
+
+      if (!demoAccount) {
+
+        setMessage(
+          "aiMessage",
+          "Create or connect a trading account first.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const saved =
+        await saveBotSettings();
+
+
+      if (!saved)
+        return;
+
+
+      const timeframeElement =
+        document.getElementById(
+          "riskTimeframe"
+        );
+
+
+      const strategyElement =
+        document.getElementById(
+          "aiStrategy"
+        );
+
+
+      const automaticLot =
+        document.getElementById(
+          "automaticLot"
+        );
+
+
+      const automaticSL =
+        document.getElementById(
+          "automaticSL"
+        );
+
+
+      const automaticTP =
+        document.getElementById(
+          "automaticTP"
+        );
+
+
+      const payload = {
+
+        risk_percent:
+          riskPercent,
+
+        risk_mode:
+          riskMode,
+
+        timeframe:
+          timeframeElement ?
+          timeframeElement.value :
+          "1m",
+
+        strategy:
+          strategyElement ?
+          strategyElement.value :
+          "AI Scalping",
+
+        allowed_symbols:
+          selectedSymbols,
+
+        automatic_lot_size:
+          automaticLot ?
+          automaticLot.value ===
+          "true" :
+          true,
+
+        automatic_sl:
+          automaticSL ?
+          automaticSL.value ===
+          "true" :
+          true,
+
+        automatic_tp:
+          automaticTP ?
+          automaticTP.value ===
+          "true" :
+          true
+
+      };
+
+
+      const result =
+        await sendTradingCommand(
+          "START_BOT",
+          payload
+        );
+
+
+      if (result.error) {
+
+        setMessage(
+          "aiMessage",
+          result.error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const status =
+        document.getElementById(
+          "aiBotStatus"
+        );
+
+      if (status)
+        status.textContent =
+          "CONNECTING";
+
+
+      const engine =
+        document.getElementById(
+          "engineStatus"
+        );
+
+      if (engine)
+        engine.textContent =
+          "WAITING FOR MT5";
+
+
+      setMessage(
+        "aiMessage",
+        "START command sent. Waiting for MT5 confirmation.",
+        "success"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   STOP AI BOT
+========================================================= */
+
+const stopAiBot =
+  document.getElementById(
+    "stopAiBot"
+  );
+
+
+if (stopAiBot) {
+
+  stopAiBot.addEventListener(
+    "click",
+    async () => {
+
+      if (!demoAccount) {
+
+        setMessage(
+          "aiMessage",
+          "No trading account connected.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const result =
+        await sendTradingCommand(
+          "STOP_BOT",
+          {}
+        );
+
+
+      if (result.error) {
+
+        setMessage(
+          "aiMessage",
+          result.error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      await supabaseClient
+        .from("trading_accounts")
+        .update({
+          bot_enabled: false
+        })
+        .eq(
+          "id",
+          demoAccount.id
+        );
+
+
+      const status =
+        document.getElementById(
+          "aiBotStatus"
+        );
+
+      if (status)
+        status.textContent =
+          "STOPPING";
+
+
+      const engine =
+        document.getElementById(
+          "engineStatus"
+        );
+
+      if (engine)
+        engine.textContent =
+          "WAITING FOR MT5";
+
+
+      setMessage(
+        "aiMessage",
+        "STOP command sent to MT5.",
+        "success"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   EMERGENCY CLOSE
+========================================================= */
+
+const emergencyClose =
+  document.getElementById(
+    "emergencyClose"
+  );
+
+
+if (emergencyClose) {
+
+  emergencyClose.addEventListener(
+    "click",
+    async () => {
+
+      if (!demoAccount) {
+
+        setMessage(
+          "aiMessage",
+          "No trading account connected.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const confirmed =
+        window.confirm(
+          "EMERGENCY CLOSE: Close ALL MT5 positions for this account?"
+        );
+
+
+      if (!confirmed)
+        return;
+
+
+      const result =
+        await sendTradingCommand(
+          "CLOSE_ALL",
+          {
+            reason:
+              "USER_EMERGENCY_CLOSE"
+          }
+        );
+
+
+      if (result.error) {
+
+        setMessage(
+          "aiMessage",
+          result.error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      setMessage(
+        "aiMessage",
+        "Emergency close command sent to MT5.",
+        "success"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const autoTradingSwitch =
+  document.getElementById(
+    "autoTradingSwitch"
+  );
+
+
+if (autoTradingSwitch) {
+
+  autoTradingSwitch.addEventListener(
+    "click",
+    function() {
+
+      this.classList.toggle(
+        "on"
+      );
+
+    }
+  );
+
+}
+
+
+const notificationSwitch =
+  document.getElementById(
+    "notificationSwitch"
+  );
+
+
+if (notificationSwitch) {
+
+  notificationSwitch.addEventListener(
+    "click",
+    function() {
+
+      this.classList.toggle(
+        "on"
+      );
+
+    }
+  );
+
+}
+
+
+const saveSettings =
+  document.getElementById(
+    "saveSettings"
+  );
+
+
+if (saveSettings) {
+
+  saveSettings.addEventListener(
+    "click",
+    () => {
+
+      setMessage(
+        "settingsMessage",
+        "Platform settings saved for this session.",
+        "success"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  window.location.replace(
+    "auth.html"
+  );
+
+}
+
+
+const logoutButton =
+  document.getElementById(
+    "logoutButton"
+  );
+
+
+if (logoutButton) {
+
+  logoutButton.addEventListener(
+    "click",
+    logout
+  );
+
+}
+
+
+const securityLogout =
+  document.getElementById(
+    "securityLogout"
+  );
+
+
+if (securityLogout) {
+
+  securityLogout.addEventListener(
+    "click",
+    logout
+  );
+
+}
+
+
+/* =========================================================
+   DEPOSIT
+========================================================= */
+
+const depositSubmit =
+  document.getElementById(
+    "depositSubmit"
+  );
+
+
+if (depositSubmit) {
+
+  depositSubmit.addEventListener(
+    "click",
+    async () => {
+
+      const amount =
+        Number(
+          document.getElementById(
+            "depositAmount"
+          )?.value || 0
+        );
+
+
+      if (amount < 50) {
+
+        setMessage(
+          "depositMessage",
+          "Minimum deposit is $50.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const currency =
+        document.getElementById(
+          "depositCurrency"
+        )?.value ||
+        "USDT";
+
+
+      const result =
+        await supabaseClient
+          .from("transactions")
+          .insert({
+
+            user_id:
+              currentUser.id,
+
+            type:
+              "deposit",
+
+            amount:
+              amount,
+
+            currency:
+              currency,
+
+            status:
+              "pending",
+
+            tx_hash:
+              null
+
+          });
+
+
+      if (result.error) {
+
+        setMessage(
+          "depositMessage",
+          result.error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      setMessage(
+        "depositMessage",
+        "Deposit request created. Waiting for verified payment confirmation.",
+        "success"
+      );
+
+
+      await loadTransactions();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   WITHDRAW
+========================================================= */
+
+const withdrawSubmit =
+  document.getElementById(
+    "withdrawSubmit"
+  );
+
+
+if (withdrawSubmit) {
+
+  withdrawSubmit.
+    addEventListener(
+    "click",
+    async () => {
+
+      const amount =
+        Number(
+          document.getElementById(
+            "withdrawAmount"
+          )?.value || 0
+        );
+
+
+      const address =
+        document.getElementById(
+          "withdrawAddress"
+        )?.value.trim() ||
+        "";
+
+
+      if (!address) {
+
+        setMessage(
+          "withdrawMessage",
+          "Enter a destination wallet address.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (amount <= 0) {
+
+        setMessage(
+          "withdrawMessage",
+          "Enter a valid withdrawal amount.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (amount > walletBalance) {
+
+        setMessage(
+          "withdrawMessage",
+          "Insufficient available balance.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const currency =
+        document.getElementById(
+          "withdrawCurrency"
+        )?.value ||
+        "USDT";
+
+
+      const result =
+        await supabaseClient
+          .from("transactions")
+          .insert({
+
+            user_id:
+              currentUser.id,
+
+            type:
+              "withdrawal",
+
+            amount:
+              amount,
+
+            currency:
+              currency,
+
+            status:
+              "pending",
+
+            tx_hash:
+              null,
+
+            wallet_address:
+              address
+
+          });
+
+
+      if (result.error) {
+
+        setMessage(
+          "withdrawMessage",
+          result.error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      setMessage(
+        "withdrawMessage",
+        "Withdrawal request submitted for review.",
+        "success"
+      );
+
+
+      await loadTransactions();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   STARTUP
+========================================================= */
+
+async function start() {
+
+  try {
+
+    currentUser =
+      await getCurrentUser();
+
+
+    if (!currentUser) {
+
+      window.location.replace(
+        "auth.html"
+      );
+
+      return;
+
+    }
+
+
+    const email =
+      currentUser.email ||
+      "Trader";
+
+
+    const userEmail =
+      document.getElementById(
+        "userEmail"
+      );
+
+    if (userEmail)
+      userEmail.textContent =
+        email;
+
+
+    const settingsEmail =
+      document.getElementById(
+        "settingsEmail"
+      );
+
+    if (settingsEmail)
+      settingsEmail.textContent =
+        email;
+
+
+    const avatar =
+      document.getElementById(
+        "avatar"
+      );
+
+    if (avatar) {
+
+      avatar.textContent =
+        email
+          .charAt(0)
+          .toUpperCase();
+
+    }
+
+
+    await loadWallet(
+      currentUser.id
+    );
+
+
+    await loadDemoAccount(
+      currentUser.id
+    );
+
+
+    await loadAccounts();
+
+
+    await loadBotSettings();
+
+
+    await loadMT5Status();
+
+
+    await loadPositions();
+
+
+    await loadTrades();
+
+
+    await loadTransactions();
+
+
+    renderSymbolGrids();
+
+
+    updateRiskUI();
+
+
+    setupWithdrawCalculation();
+
+
+    const withdrawBalance =
+      document.getElementById(
+        "withdrawBalance"
+      );
+
+    if (withdrawBalance)
+      withdrawBalance.textContent =
+        money(walletBalance);
+
+
+    /*
+      Refresh live information.
+      The dashboard will NOT claim MT5 is
+      connected unless the bridge heartbeat
+      is recent.
+    */
+
+    setInterval(
+      async () => {
+
+        await loadMT5Status();
+
+        await loadPositions();
+
+        await loadTrades();
+
+      },
+      5000
+    );
+
+
+  } catch(error) {
+
+    console.error(
+      "Dashboard startup error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+setupNavigation();
+
+start();
+
 </script>
+  
 
 </body>
 </html>
