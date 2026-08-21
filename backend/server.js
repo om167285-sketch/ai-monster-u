@@ -1,3 +1,5 @@
+import { createClient } from "@supabase/supabase-js";
+import WalletService from "./walletService.js";
 import express from "express";
 import cors from "cors";
 import path from "path";
