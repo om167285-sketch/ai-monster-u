@@ -5,13 +5,18 @@ import { fileURLToPath } from "url";
 
 import TradingEngine from "./tradingEngine.js";
 import MarketData from "./marketData.js";
+import BinanceService from "./binanceService.js";
 
 const app = express();
 
-const PORT = process.env.PORT || 10000;
+const PORT =
+  process.env.PORT || 10000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename =
+  fileURLToPath(import.meta.url);
+
+const __dirname =
+  path.dirname(__filename);
 
 app.use(cors());
 app.use(express.json());
@@ -24,25 +29,54 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.type("html");
-  res.sendFile(path.join(__dirname, "index.html"));
+
+  res.sendFile(
+    path.join(
+      __dirname,
+      "index.html"
+    )
+  );
 });
 
 app.get("/auth.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "auth.html"));
+  res.type("html");
+
+  res.sendFile(
+    path.join(
+      __dirname,
+      "auth.html"
+    )
+  );
 });
 
-app.get("/dashboard.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dashboard.html"));
-});
+app.get(
+  "/dashboard.html",
+  (req, res) => {
+    res.type("html");
+
+    res.sendFile(
+      path.join(
+        __dirname,
+        "dashboard.html"
+      )
+    );
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
-| TRADING ENGINE
+| SERVICES
 |--------------------------------------------------------------------------
 */
 
-const engine = new TradingEngine();
-const market = new MarketData();
+const engine =
+  new TradingEngine();
+
+const market =
+  new MarketData();
+
+const binance =
+  new BinanceService();
 
 /*
 |--------------------------------------------------------------------------
@@ -50,24 +84,27 @@ const market = new MarketData();
 |--------------------------------------------------------------------------
 */
 
-market.setCandleCloseHandler((candle, candles) => {
-  try {
-    const result = engine.processCompletedCandle(
-      candle,
-      candles
-    );
+market.setCandleCloseHandler(
+  (candle, candles) => {
+    try {
+      const result =
+        engine.processCompletedCandle(
+          candle,
+          candles
+        );
 
-    console.log(
-      "Candle processed:",
-      JSON.stringify(result)
-    );
-  } catch (error) {
-    console.error(
-      "Trading engine error:",
-      error.message
-    );
+      console.log(
+        "Candle processed:",
+        JSON.stringify(result)
+      );
+    } catch (error) {
+      console.error(
+        "Trading engine error:",
+        error.message
+      );
+    }
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -75,7 +112,10 @@ market.setCandleCloseHandler((candle, candles) => {
 |--------------------------------------------------------------------------
 */
 
-market.connect("BTCUSDT", "1m");
+market.connect(
+  "BTCUSDT",
+  "1m"
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -83,16 +123,77 @@ market.connect("BTCUSDT", "1m");
 |--------------------------------------------------------------------------
 */
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    ok: true,
-    service: "AI MONSTER U",
-    mode: "demo",
-    tradingEngine: true,
-    marketData: market.getStatus(),
-    time: new Date().toISOString()
-  });
-});
+app.get(
+  "/api/health",
+  (req, res) => {
+    res.json({
+      ok: true,
+      service:
+        "AI MONSTER U",
+      mode: "demo",
+      tradingEngine: true,
+      marketData:
+        market.getStatus(),
+      time:
+        new Date().toISOString()
+    });
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| BINANCE STATUS
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/binance/status",
+  async (req, res) => {
+    try {
+      const status =
+        await binance.getStatus();
+
+      res.json({
+        ok: true,
+        ...status
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        connected: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| BINANCE USDT BALANCE
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  "/api/binance/balance",
+  async (req, res) => {
+    try {
+      const balance =
+        await binance.getUsdtBalance();
+
+      res.json({
+        ok: true,
+        ...balance
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -100,12 +201,15 @@ app.get("/api/health", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.get("/api/market/status", (req, res) => {
-  res.json({
-    ok: true,
-    ...market.getStatus()
-  });
-});
+app.get(
+  "/api/market/status",
+  (req, res) => {
+    res.json({
+      ok: true,
+      ...market.getStatus()
+    });
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -113,37 +217,48 @@ app.get("/api/market/status", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.post("/api/market/connect", (req, res) => {
-  try {
-    const symbol =
-      req.body.symbol || "BTCUSDT";
+app.post(
+  "/api/market/connect",
+  (req, res) => {
+    try {
+      const symbol =
+        req.body.symbol ||
+        "BTCUSDT";
 
-    const timeframe =
-      req.body.timeframe || "1m";
+      const timeframe =
+        req.body.timeframe ||
+        "1m";
 
-    market.connect(
-      symbol,
-      timeframe
-    );
+      market.connect(
+        symbol,
+        timeframe
+      );
 
-    engine.setSymbol(symbol);
-    engine.setTimeframe(timeframe);
+      engine.setSymbol(
+        symbol
+      );
 
-    res.json({
-      ok: true,
-      message:
-        "Market data connection started",
-      symbol:
-        symbol.toUpperCase(),
-      timeframe
-    });
-  } catch (error) {
-    res.status(400).json({
-      ok: false,
-      error: error.message
-    });
+      engine.setTimeframe(
+        timeframe
+      );
+
+      res.json({
+        ok: true,
+        message:
+          "Market data connection started",
+        symbol:
+          symbol.toUpperCase(),
+        timeframe
+      });
+    } catch (error) {
+      res.status(400).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -151,12 +266,15 @@ app.post("/api/market/connect", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.get("/api/trading/status", (req, res) => {
-  res.json({
-    ok: true,
-    ...engine.getStatus()
-  });
-});
+app.get(
+  "/api/trading/status",
+  (req, res) => {
+    res.json({
+      ok: true,
+      ...engine.getStatus()
+    });
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -164,18 +282,22 @@ app.get("/api/trading/status", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.post("/api/trading/start", (req, res) => {
-  try {
-    const result = engine.start();
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
+app.post(
+  "/api/trading/start",
+  (req, res) => {
+    try {
+      res.json(
+        engine.start()
+      );
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -183,18 +305,22 @@ app.post("/api/trading/start", (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.post("/api/trading/stop", (req, res) => {
-  try {
-    const result = engine.stop();
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
+app.post(
+  "/api/trading/stop",
+  (req, res) => {
+    try {
+      res.json(
+        engine.stop()
+      );
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        error:
+          error.message
+      });
+    }
   }
-});
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -237,7 +363,8 @@ app.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error: error.message
+        error:
+          error.message
       });
     }
   }
@@ -257,7 +384,9 @@ app.post(
         req.body.signal;
 
       const price =
-        Number(req.body.price);
+        Number(
+          req.body.price
+        );
 
       const candleTime =
         req.body.candleTime ||
@@ -280,7 +409,8 @@ app.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error: error.message
+        error:
+          error.message
       });
     }
   }
@@ -297,7 +427,9 @@ app.post(
   (req, res) => {
     try {
       const price =
-        Number(req.body.price);
+        Number(
+          req.body.price
+        );
 
       const reason =
         req.body.reason ||
@@ -309,11 +441,13 @@ app.post(
           reason
         );
 
-      res.json(result);
+      res.
+        json(result);
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error: error.message
+        error:
+          error.message
       });
     }
   }
@@ -341,7 +475,8 @@ app.post(
     } catch (error) {
       res.status(400).json({
         ok: false,
-        error: error.message
+        error:
+          error.message
       });
     }
   }
@@ -401,7 +536,11 @@ app.listen(
 
     console.log(
       "Website + Trading Engine"
-      );
+    );
+
+    console.log(
+      "Binance Integration"
+    );
 
     console.log(
       "Market Data"
