@@ -62,7 +62,7 @@ const BOT_CONFIG = {
   maxCandles: 300
 };
 
-const SUPPORTED_TIMEFRAMES = [
+const supported_TIMEFRAMES = [
   "1m",
   "5m",
   "15m",
@@ -214,7 +214,7 @@ function normalizeTimeframe(timeframe) {
     timeframe || BOT_CONFIG.timeframe
   ).trim();
 
-  if (SUPPORTED_TIMEFRAMES.includes(value)) {
+  if (supported_TIMEFRAMES.includes(value)) {
     return value;
   }
 
@@ -2136,51 +2136,39 @@ app.get(
 app.get(
   "/api/config",
   (req, res) => {
-    return res.json({
-      ok: true,
+    returnres.json({
+  ok: true,
+  service: "AI MONSTER U",
+  executionMode: botState.requestedMode,
+  liveExecution: true,
+  demoExecution: true,
 
-      service:
-        "AI MONSTER U",
+  symbol: BOT_CONFIG.symbol,
+  timeframe: BOT_CONFIG.timeframe,
 
-      executionMode:
-        botState.requestedMode,
+  minimumLot: BOT_CONFIG.minimumLot,
+  rewardRisk: BOT_CONFIG.rewardRisk,
 
-      liveExecution:
-        true,
+  supportedModes: [
+    "DEMO",
+    "LIVE"
+  ],
 
-      demoExecution:
-        true,
+  supportedTimeframes: [
+    "1m",
+    "5m",
+    "15m",
+    "30m",
+    "1h",
+    "4h"
+  ],
 
-      SYMBOL   :
-        BOT_CONFIG.SYMBOL   ,
+  supportedSymbols: [
+    "BTCUSDm"
+  ],
 
-      timeframe:
-        BOT_CONFIG.timeframe,
-
-      minimumLot:
-        BOT_CONFIG.minimumLot,
-
-      commandVolume:
-        BOT_CONFIG.minimumLot,
-
-      rewardRisk:
-        BOT_CONFIG.rewardRisk,
-
-      supportedModes: [
-        "DEMO",
-        "LIVE"
-      ],
-
-      supportedTimeframes:
-        SUPPORTED_TIMEFRAMES,
-
-      supportedSYMBOL   s: [
-        "BTCUSDm"
-      ],
-
-      maxCandles:
-        MAX_CANDLES
-    });
+  maxCandles: MAX_CANDLES
+});
   }
 );
 
