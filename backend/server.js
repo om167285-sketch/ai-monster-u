@@ -1111,7 +1111,7 @@ app.post(
           mt5command,
 
         message:
-          AI MONSTER U ${requestedMode} trading started.
+          COMMAND: `AI MONSTER U ${requestedMode}` trading started.
       });
     } catch (error) {
       console.error(
