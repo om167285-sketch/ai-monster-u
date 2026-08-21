@@ -612,29 +612,30 @@ app.post(
           Number(close),
 
         volume:
-          Number(volume) || 0,
+const candle = {
+  volume: Number(volume) || 0,
 
-        startTime:
-          Number(startTime) || Date.now(),
+  startTime:
+    Number(startTime) || Date.now(),
 
-        endTime:
-          Number(endTime) || Date.now(),
+  endTime:
+    Number(endTime) || Date.now(),
 
-        complete: true
-      };
+  complete: true
+};
 
-      const key =
-        ${candle.symbol}:${candle.timeframe};
+const key =
+  ${candle.symbol}:${candle.timeframe};
 
-      if (!candleHistory.has(key)) {
-        candleHistory.set(
-          key,
-          []
-        );
-      }
+if (!candleHistory.has(key)) {
+  candleHistory.set(
+    key,
+    []
+  );
+}
 
-      const candles =
-        candleHistory.get(key);
+const candles =
+  candleHistory.get(key);
 
       /*
       Prevent duplicate candles.
