@@ -1326,7 +1326,7 @@ app.listen(
     );
 
     console.log(
-      PORT: ${PORT}
+      'PORT: ${PORT}'
     );
 
     console.log(
