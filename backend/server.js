@@ -133,7 +133,7 @@ const lastProcessedCandle = new Map();
 */
 
 function getMarketKey(symbol, timeframe) {
-  return ${symbol}:${timeframe};
+return '${symbol}:${timeframe}';
 }
 function timeframeMilliseconds(timeframe) {
   const values = {
