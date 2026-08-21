@@ -612,7 +612,6 @@ const key =
   ${candle.symbol}:${candle.timeframe};
 
 if (!candleHistory.has(key)) {
-
   candleHistory.set(
     key,
     []
