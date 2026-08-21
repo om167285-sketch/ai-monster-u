@@ -39,10 +39,19 @@ app.get("/dashboard.html", (req, res) => {
    TRADING ENGINE
 ========================================================= */
 
-const engine = new TradingEngine();
+let engine = null;
+
+try {
+  engine = new TradingEngine();
+} catch (error) {
+  console.warn(
+    "TradingEngine could not be initialized:",
+    error?.message || error
+  );
+}
 
 /* =========================================================
-   GLOBAL BOT CONFIGURATION
+   GLOBAL CONFIG
 ========================================================= */
 
 const BOT_CONFIG = {
@@ -52,6 +61,15 @@ const BOT_CONFIG = {
   rewardRisk: 1.5,
   maxCandles: 300
 };
+
+const SUPPORTED_TIMEFRAMES = [
+  "1m",
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "4h"
+];
 
 /* =========================================================
    MT5 BRIDGE STATE
@@ -181,27 +199,40 @@ function getMarketKey(symbol, timeframe) {
   return `${symbol}:${timeframe}`;
 }
 
-function getCandleKey(symbol, timeframe) {
-  return getMarketKey(symbol, timeframe);
-}
-
-function timeframeMilliseconds(timeframe) {
-  const values = {
-    "1m": 60 * 1000,
-    "5m": 5 * 60 * 1000,
-    "15m": 15 * 60 * 1000,
-    "30m": 30 * 60 * 1000,
-    "1h": 60 * 60 * 1000,
-    "4h": 4 * 60 * 60 * 1000
-  };
-
-  return values[timeframe] || 60 * 1000;
-}
-
 function normalizeMode(mode) {
-  const value = String(mode || "DEMO").toUpperCase();
+  const value = String(mode || "DEMO").trim().toUpperCase();
 
-  return value === "LIVE" ? "LIVE" : "DEMO";
+  if (value === "LIVE") {
+    return "LIVE";
+  }
+
+  return "DEMO";
+}
+
+function normalizeTimeframe(timeframe) {
+  const value = String(
+    timeframe || BOT_CONFIG.timeframe
+  ).trim();
+
+  if (SUPPORTED_TIMEFRAMES.includes(value)) {
+    return value;
+  }
+
+  return BOT_CONFIG.timeframe;
+}
+
+function normalizeSymbol(symbol) {
+  const value = String(
+     symbol || BOT_CONFIG.symbol
+  ).trim();
+
+  return value || BOT_CONFIG.symbol;
+}
+
+function createCommandId(prefix = "AMU") {
+  return `${prefix}-${Date.now()}-${Math.floor(
+    Math.random() * 1000000
+  )}`;
 }
 
 function isHeartbeatAlive() {
@@ -209,8 +240,10 @@ function isHeartbeatAlive() {
     return false;
   }
 
-  const heartbeatTime =
-    new Date(mt5Bridge.lastHeartbeat).getTime();
+  const heartbeatTime = new Date(
+    mt5Bridge.lastHeartbeat
+  ).getTime();
+
   if (!Number.isFinite(heartbeatTime)) {
     return false;
   }
@@ -226,9 +259,9 @@ function resetMT5Command(reason = null) {
 
     mode: botState.requestedMode,
 
-    symbol: BOT_CONFIG.symbol,
+    symbol: botState.symbol,
 
-    timeframe: BOT_CONFIG.timeframe,
+    timeframe: botState.timeframe,
 
     volume: BOT_CONFIG.minimumLot,
 
@@ -244,10 +277,12 @@ function resetMT5Command(reason = null) {
   };
 }
 
-function createCommandId(prefix = "AMU") {
-  return `${prefix}-${Date.now()}-${Math.floor(
-    Math.random() * 100000
-  )}`;
+function safeNumber(value, fallback = 0) {
+  const number = Number(value);
+
+  return Number.isFinite(number)
+    ? number
+    : fallback;
 }
 
 /* =========================================================
@@ -288,8 +323,7 @@ function calculateEMA(values, period) {
     i++
   ) {
     ema =
-      (numbers[i] - ema) *
-        multiplier +
+      (numbers[i] - ema) * multiplier +
       ema;
   }
 
@@ -319,7 +353,6 @@ function calculateRSI(values, period = 14) {
   }
 
   let gains = 0;
-
   let losses = 0;
 
   for (
@@ -363,15 +396,13 @@ function calculateRSI(values, period = 14) {
 
     averageGain =
       (
-        averageGain *
-          (period - 1) +
+        averageGain * (period - 1) +
         gain
       ) / period;
 
     averageLoss =
       (
-        averageLoss *
-          (period - 1) +
+        averageLoss * (period - 1) +
         loss
       ) / period;
   }
@@ -384,10 +415,7 @@ function calculateRSI(values, period = 14) {
     averageGain /
     averageLoss;
 
-  return (
-    100 -
-    100 / (1 + rs)
-  );
+  return 100 - 100 / (1 + rs);
 }
 
 /* =========================================================
@@ -412,17 +440,13 @@ function calculateATR(
     i < candles.length;
     i++
   ) {
-    const current =
-      candles[i];
+    const current = candles[i];
 
-    const previous =
-      candles[i - 1];
+    const previous = candles[i - 1];
 
-    const high =
-      Number(current.high);
+    const high = Number(current.high);
 
-    const low =
-      Number(current.low);
+    const low = Number(current.low);
 
     const previousClose =
       Number(previous.close);
@@ -435,25 +459,22 @@ function calculateATR(
       continue;
     }
 
-    const trueRange =
-      Math.max(
-        high - low,
+    const trueRange = Math.max(
+      high - low,
 
-        Math.abs(
-          high - previousClose
-        ),
+      Math.abs(
+        high - previousClose
+      ),
 
-        Math.abs(
-          low - previousClose
-        )
-      );
+      Math.abs(
+        low - previousClose
+      )
+    );
 
     trueRanges.push(trueRange);
   }
 
-  if (
-    trueRanges.length < period
-  ) {
+  if (trueRanges.length < period) {
     return null;
   }
 
@@ -463,7 +484,7 @@ function calculateATR(
   return (
     recent.reduce(
       (sum, value) =>
-        sum + value,
+         sum + value,
       0
     ) / recent.length
   );
@@ -477,7 +498,7 @@ function analyzeMT5Market(candles) {
   if (
     !Array.isArray(candles) ||
     candles.length < 55
-    ) {
+  ) {
     return {
       signal: "WAIT",
 
@@ -592,8 +613,8 @@ function analyzeMT5Market(candles) {
   }
 
   if (
-    last.close >
-    last.open
+    Number(last.close) >
+    Number(last.open)
   ) {
     buyScore += 1;
 
@@ -603,8 +624,8 @@ function analyzeMT5Market(candles) {
   }
 
   if (
-    last.close <
-    last.open
+    Number(last.close) <
+    Number(last.open)
   ) {
     sellScore += 1;
 
@@ -614,8 +635,8 @@ function analyzeMT5Market(candles) {
   }
 
   if (
-    last.close >
-    previous.high
+    Number(last.close) >
+    Number(previous.high)
   ) {
     buyScore += 2;
 
@@ -625,8 +646,8 @@ function analyzeMT5Market(candles) {
   }
 
   if (
-    last.close <
-    previous.low
+    Number(last.close) <
+    Number(previous.low)
   ) {
     sellScore += 2;
 
@@ -662,8 +683,7 @@ function analyzeMT5Market(candles) {
       ? 0
       : Math.min(
           95,
-          50 +
-            strongestScore * 7
+          50 + strongestScore * 7
         );
 
   return {
@@ -675,6 +695,13 @@ function analyzeMT5Market(candles) {
 
     sellScore,
 
+    reason:
+      signal === "WAIT"
+        ? "No valid trade signal"
+        : signal === "BUY"
+        ? "Bullish setup detected"
+        : "Bearish setup detected",
+
     ema20,
 
     ema50,
@@ -684,7 +711,7 @@ function analyzeMT5Market(candles) {
     atr,
 
     price:
-      Number(last.close),
+      safeNumber(last.close, null),
 
     reasons
   };
@@ -709,6 +736,14 @@ function createMT5TradeCommand(
   if (
     mt5Command.action !== "NONE"
   ) {
+    return null;
+  }
+
+  if (!isHeartbeatAlive()) {
+    console.log(
+      "Trade skipped: MT5 heartbeat offline."
+    );
+
     return null;
   }
 
@@ -748,16 +783,31 @@ function createMT5TradeCommand(
   const tp =
     signal === "BUY"
       ? price +
-        stopDistance *
-          rewardRisk
-      : price -
-        stopDistance *
-          rewardRisk;
+        stopDistance * rewardRisk
+     : price -
+        stopDistance * rewardRisk;
 
   const mode =
     normalizeMode(
       botState.requestedMode
     );
+
+  /*
+  LIVE safety check.
+  */
+
+  if (
+    mode === "LIVE" &&
+    normalizeMode(
+      mt5Bridge.mode
+    ) !== "LIVE"
+  ) {
+    console.log(
+      "LIVE trade blocked: MT5 heartbeat is not LIVE."
+    );
+
+    return null;
+  }
 
   mt5Command = {
     id:
@@ -769,13 +819,13 @@ function createMT5TradeCommand(
     mode,
 
     symbol:
-      String(
+      normalizeSymbol(
         candle.symbol ||
           BOT_CONFIG.symbol
       ),
 
     timeframe:
-      String(
+      normalizeTimeframe(
         candle.timeframe ||
           BOT_CONFIG.timeframe
       ),
@@ -798,6 +848,7 @@ function createMT5TradeCommand(
 
     payload: {
       signal,
+
       confidence:
         analysis.confidence,
 
@@ -811,7 +862,10 @@ function createMT5TradeCommand(
         analysis.rsi,
 
       atr:
-        analysis.atr
+        analysis.atr,
+
+      candleTime:
+        candle.startTime
     },
 
     createdAt:
@@ -885,49 +939,44 @@ app.post(
         );
 
       const requestedSymbol =
-        String(
+        normalizeSymbol(
           req.body?.symbol ||
             BOT_CONFIG.symbol
         );
 
       const requestedTimeframe =
-        String(
+        normalizeTimeframe(
           req.body?.timeframe ||
             BOT_CONFIG.timeframe
         );
 
       /*
-      Safety check:
-      LIVE can only be requested when
-      the MT5 bridge reports a REAL account.
+      LIVE requires a live MT5 heartbeat.
       */
 
       if (
         requestedMode === "LIVE"
       ) {
-        const accountMode =
-          String(
-            mt5Bridge.mode ||
-              ""
-          ).toUpperCase();
-
-        if (
-          !isHeartbeatAlive()
-        ) {
+        if (!isHeartbeatAlive()) {
           return res.status(400).json({
             ok: false,
 
+            running: false,
+
             error:
-              "MT5 is not connected. Connect the real MT5 account first."
+              "MT5 is not connected. Connect the MT5 account first."
           });
         }
 
         if (
-          accountMode !==
-          "LIVE"
+          normalizeMode(
+            mt5Bridge.mode
+          ) !== "LIVE"
         ) {
           return res.status(400).json({
             ok: false,
+
+            running: false,
 
             error:
               "LIVE mode selected, but MT5 is not reporting a LIVE account."
@@ -953,10 +1002,6 @@ app.post(
 
         stoppedAt: null
       };
-
-      /*
-      Send START command to EA.
-      */
 
       mt5Command = {
         id:
@@ -991,7 +1036,10 @@ app.post(
             requestedSymbol,
 
           timeframe:
-            requestedTimeframe
+            requestedTimeframe,
+
+          mode:
+            requestedMode
         },
 
         createdAt:
@@ -999,11 +1047,17 @@ app.post(
       };
 
       try {
-        engine.start();
+        if (
+           engine &&
+          typeof engine.start === "function"
+        ) {
+          engine.start();
+        }
       } catch (engineError) {
         console.warn(
           "Trading engine start warning:",
-          engineError.message
+          engineError?.message ||
+            engineError
         );
       }
 
@@ -1039,7 +1093,7 @@ app.post(
         "========================================"
       );
 
-      res.json({
+      return res.json({
         ok: true,
 
         running: true,
@@ -1057,7 +1111,7 @@ app.post(
           mt5Command,
 
         message:
-          AI MONSTER U ${requestedMode} trading started. Waiting for MT5 confirmation.
+          AI MONSTER U ${requestedMode} trading started.
       });
     } catch (error) {
       console.error(
@@ -1065,11 +1119,12 @@ app.post(
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         ok: false,
 
         error:
-          error.message
+          error?.message ||
+          "Failed to start trading"
       });
     }
   }
@@ -1089,11 +1144,17 @@ app.post(
         new Date().toISOString();
 
       try {
-        engine.stop();
+        if (
+          engine &&
+          typeof engine.stop === "function"
+        ) {
+          engine.stop();
+        }
       } catch (engineError) {
         console.warn(
           "Trading engine stop warning:",
-          engineError.message
+          engineError?.message ||
+            engineError
         );
       }
 
@@ -1137,7 +1198,7 @@ app.post(
         "AI MONSTER U STOP_BOT"
       );
 
-      res.json({
+      return res.json({
         ok: true,
 
         running: false,
@@ -1154,11 +1215,12 @@ app.post(
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         ok: false,
 
         error:
-          error.message
+          error?.message ||
+          "Failed to stop trading"
       });
     }
   }
@@ -1183,7 +1245,7 @@ app.post(
         startTime,
         endTime,
         complete
-      } = req.body;
+      } = req.body || {};
 
       if (
         !symbol ||
@@ -1216,13 +1278,13 @@ app.post(
 
       const candle = {
         symbol:
-          String(symbol),
+          normalizeSymbol(symbol),
 
         timeframe:
-          String(timeframe),
+          normalizeTimeframe(timeframe),
 
         open:
-          Number(open),
+           Number(open),
 
         high:
           Number(high),
@@ -1270,7 +1332,7 @@ app.post(
       }
 
       const key =
-        getCandleKey(
+        getMarketKey(
           candle.symbol,
           candle.timeframe
         );
@@ -1293,6 +1355,7 @@ app.post(
             item.startTime ===
             candle.startTime
         );
+
       if (!duplicate) {
         candles.push(candle);
       }
@@ -1349,19 +1412,9 @@ app.post(
 
       let command = null;
 
-      /*
-      Only generate trades when
-      the bot is actually running.
-      */
-
       if (
         botState.running
       ) {
-        /*
-        Make sure the candle belongs
-        to the configured symbol/timeframe.
-        */
-
         const correctSymbol =
           candle.symbol ===
           botState.symbol;
@@ -1374,11 +1427,6 @@ app.post(
           correctSymbol &&
           correctTimeframe
         ) {
-          /*
-          Do not create another trade
-          while one command is pending.
-          */
-
           if (
             mt5Command.action ===
             "NONE"
@@ -1435,7 +1483,7 @@ app.post(
         "----------------------------------------"
       );
 
-      res.json({
+      return res.json({
         ok: true,
 
         processed: true,
@@ -1461,11 +1509,12 @@ app.post(
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         ok: false,
 
         error:
-          error.message
+          error?.message ||
+          "Candle processing failed"
       });
     }
   }
@@ -1474,7 +1523,6 @@ app.post(
 /* =========================================================
    MT5 HEARTBEAT
 ========================================================= */
-
 app.post(
   "/api/mt5/heartbeat",
   (req, res) => {
@@ -1493,7 +1541,7 @@ app.post(
         timeframe,
         bid,
         ask
-      } = req.body;
+      } = req.body || {};
 
       if (
         account === undefined ||
@@ -1509,9 +1557,7 @@ app.post(
       }
 
       const reportedMode =
-        normalizeMode(
-          mode
-        );
+        normalizeMode(mode);
 
       mt5Bridge = {
         connected: true,
@@ -1537,44 +1583,52 @@ app.post(
             : null,
 
         balance:
-          Number(balance) || 0,
+          safeNumber(balance),
 
         equity:
-          Number(equity) || 0,
+          safeNumber(equity),
 
         margin:
-          Number(margin) || 0,
+          safeNumber(margin),
 
         freeMargin:
-          Number(freeMargin) || 0,
+          safeNumber(freeMargin),
 
         symbol:
           symbol
-            ? String(symbol)
+            ? normalizeSymbol(symbol)
             : BOT_CONFIG.symbol,
 
         timeframe:
           timeframe
-            ? String(timeframe)
+            ? normalizeTimeframe(timeframe)
             : BOT_CONFIG.timeframe,
 
         bid:
-          Number(bid) || 0,
+          safeNumber(bid),
 
         ask:
-          Number(ask) || 0,
+          safeNumber(ask),
 
         updatedAt:
           new Date().toISOString()
       };
 
-      res.json({
+      return res.json({
         ok: true,
 
         received: true,
 
+        connected: true,
+
         mode:
           mt5Bridge.mode,
+
+        account:
+          mt5Bridge.account,
+
+        broker:
+          mt5Bridge.broker,
 
         server:
           mt5Bridge.server,
@@ -1591,11 +1645,12 @@ app.post(
         error
       );
 
-      res.status(400).json({
+      return res.status(400).json({
         ok: false,
 
         error:
-          error.message
+          error?.message ||
+          "Heartbeat failed"
       });
     }
   }
@@ -1614,7 +1669,7 @@ app.get(
     mt5Bridge.connected =
       connected;
 
-    res.json({
+    return res.json({
       ok: true,
 
       connected,
@@ -1699,42 +1754,38 @@ app.get(
       });
     }
 
-    /*
-    If the bot is stopped, make sure
-    EA receives STOP_BOT.
-    */
-
     if (
-      !botState.running &&
-      mt5Command.action !==
-        "STOP_BOT"
+      mt5Command.action ===
+      "NONE"
     ) {
       return res.json({
         ok: true,
 
-        command: {
-          action:
-            "NONE"
-        },
+        command:
+          mt5Command,
+
+        botRunning:
+          botState.running,
+
+        requestedMode:
+          botState.requestedMode,
 
         reason:
-          "BOT_STOPPED"
+           "NO_PENDING_COMMAND"
       });
     }
 
     /*
-    LIVE safety:
-    The EA may only execute LIVE when
-    the backend heartbeat reports LIVE.
+    LIVE commands cannot be sent to
+    a DEMO MT5 account.
     */
 
     if (
-      mt5Command.action !==
-        "NONE" &&
       mt5Command.mode ===
         "LIVE" &&
-      mt5Bridge.mode !==
-        "LIVE"
+      normalizeMode(
+        mt5Bridge.mode
+      ) !== "LIVE"
     ) {
       return res.json({
         ok: true,
@@ -1749,7 +1800,7 @@ app.get(
       });
     }
 
-    res.json({
+    return res.json({
       ok: true,
 
       command:
@@ -1782,7 +1833,7 @@ app.post(
         price,
         profit,
         message
-      } = req.body;
+      } = req.body || {};
 
       if (
         !id ||
@@ -1820,13 +1871,13 @@ app.post(
             : null,
 
         volume:
-          Number(volume) || 0,
+          safeNumber(volume),
 
         price:
-          Number(price) || 0,
+          safeNumber(price),
 
         profit:
-          Number(profit) || 0,
+          safeNumber(profit),
 
         message:
           message !== undefined &&
@@ -1837,12 +1888,6 @@ app.post(
         executedAt:
           new Date().toISOString()
       };
-
-      /*
-      Command was received by EA.
-      Clear it so the next candle can
-      generate a new command.
-      */
 
       if (
         mt5Command.id ===
@@ -1862,7 +1907,7 @@ app.post(
         )
       );
 
-      res.json({
+      return res.json({
         ok: true,
 
         received: true,
@@ -1876,11 +1921,12 @@ app.post(
         error
       );
 
-      res.status(400).json({
+      return res.status(400).json({
         ok: false,
 
         error:
-          error.message
+          error?.message ||
+          "Acknowledgement failed"
       });
     }
   }
@@ -1896,16 +1942,23 @@ app.get(
     let engineStatus = {};
 
     try {
-      engineStatus =
-        engine.getStatus();
+      if (
+        engine &&
+        typeof engine.getStatus ===
+          "function"
+      ) {
+        engineStatus =
+          engine.getStatus();
+      }
     } catch (error) {
       engineStatus = {
         error:
-          error.message
+          error?.message ||
+          "Engine status unavailable"
       };
     }
 
-    res.json({
+    return res.json({
       ok: true,
 
       running:
@@ -1945,7 +1998,12 @@ app.get(
         mt5Execution,
 
       mt5:
-        mt5Bridge,
+        {
+          ...mt5Bridge,
+
+          connected:
+            isHeartbeatAlive()
+        },
 
       engine:
         engineStatus
@@ -1958,9 +2016,9 @@ app.get(
 ========================================================= */
 
 app.get(
-  "/api/mt5/execution",
+   "/api/mt5/execution",
   (req, res) => {
-    res.json({
+    return res.json({
       ok: true,
 
       execution:
@@ -1977,21 +2035,21 @@ app.get(
   "/api/mt5/analysis",
   (req, res) => {
     const symbol =
-      String(
+      normalizeSymbol(
         req.query.symbol ||
           mt5Bridge.symbol ||
           BOT_CONFIG.symbol
       );
 
     const timeframe =
-      String(
+      normalizeTimeframe(
         req.query.timeframe ||
           mt5Bridge.timeframe ||
           BOT_CONFIG.timeframe
       );
 
     const key =
-      getCandleKey(
+      getMarketKey(
         symbol,
         timeframe
       );
@@ -2000,7 +2058,7 @@ app.get(
       candleHistory.get(key) ||
       [];
 
-    res.json({
+    return res.json({
       ok: true,
 
       symbol,
@@ -2033,21 +2091,21 @@ app.get(
   "/api/mt5/candles",
   (req, res) => {
     const symbol =
-      String(
+      normalizeSymbol(
         req.query.symbol ||
           mt5Bridge.symbol ||
           BOT_CONFIG.symbol
       );
 
     const timeframe =
-      String(
+      normalizeTimeframe(
         req.query.timeframe ||
           mt5Bridge.timeframe ||
           BOT_CONFIG.timeframe
       );
 
     const key =
-      getCandleKey(
+      getMarketKey(
         symbol,
         timeframe
       );
@@ -2056,7 +2114,7 @@ app.get(
       candleHistory.get(key) ||
       [];
 
-    res.json({
+    return res.json({
       ok: true,
 
       symbol,
@@ -2078,7 +2136,7 @@ app.get(
 app.get(
   "/api/config",
   (req, res) => {
-    res.json({
+    return res.json({
       ok: true,
 
       service:
@@ -2113,14 +2171,8 @@ app.get(
         "LIVE"
       ],
 
-      supportedTimeframes: [
-        "1m",
-        "5m",
-        "15m",
-        "30m",
-        "1h",
-        "4h"
-      ],
+      supportedTimeframes:
+        SUPPORTED_TIMEFRAMES,
 
       supportedSymbols: [
         "BTCUSDm"
@@ -2139,7 +2191,7 @@ app.get(
 app.get(
   "/api/health",
   (req, res) => {
-    res.json({
+    return res.json({
       ok: true,
 
       service:
@@ -2170,8 +2222,83 @@ app.get(
         mt5Command.action !==
         "NONE",
 
+      command:
+        mt5Command,
+
+      lastExecution:
+        mt5Execution,
+
       time:
         new Date().toISOString()
+    });
+  }
+);
+
+/* =========================================================
+   ROOT API INFO
+========================================================= */
+
+app.get(
+  "/api",
+  (req, res) => {
+    return res.json({
+      ok: true,
+
+      service:
+        "AI MONSTER U Trading Backend",
+
+      version:
+        "1.0.0",
+
+      demo:
+        true,
+
+      live:
+        true,
+
+      mt5Connected:
+        isHeartbeatAlive(),
+
+      endpoints: {
+        health:
+          "/api/health",
+
+        config:
+          "/api/config",
+
+        mt5Status:
+          "/api/mt5/status",
+
+        mt5Heartbeat:
+           "/api/mt5/heartbeat",
+
+        mt5Candle:
+          "/api/mt5/candle",
+
+        mt5Command:
+          "/api/mt5/command",
+
+        mt5CommandAck:
+          "/api/mt5/command/ack",
+
+        mt5Execution:
+          "/api/mt5/execution",
+
+        tradingStart:
+          "/api/trading/start",
+
+        tradingStop:
+          "/api/trading/stop",
+
+        tradingStatus:
+          "/api/trading/status",
+
+        analysis:
+          "/api/mt5/analysis",
+
+        candles:
+          "/api/mt5/candles"
+      }
     });
   }
 );
@@ -2183,11 +2310,14 @@ app.get(
 app.use(
   "/api",
   (req, res) => {
-    res.status(404).json({
+    return res.status(404).json({
       ok: false,
 
       error:
-        "API endpoint not found"
+        "API endpoint not found",
+
+      path:
+        req.originalUrl
     });
   }
 );
@@ -2209,10 +2339,11 @@ app.use(
       return next(error);
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
 
       error:
+        error?.message ||
         "Internal server error"
     });
   }
@@ -2259,7 +2390,7 @@ app.listen(
     );
 
     console.log(
-      PORT: ${PORT}
+      `PORT: ${PORT}`
     );
 
     console.log(
