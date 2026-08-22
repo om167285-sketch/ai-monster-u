@@ -460,24 +460,23 @@ function calculateATR(
       continue;
     }
 
-    const trueRange = Math.
-       max(
-      high - low,
-      Math.abs(high - previousClose),
-      Math.abs(low - previousClose)
-    );
+   const trueRange = Math.max(
+  high - low,
+  Math.abs(high - previousClose),
+  Math.abs(low - previousClose)
+);
 
     trueRanges.push(trueRange);
   }
 
   if (trueRanges.length < period) {
-    return null;
+    returnnull;
   }
 
   const recent =
     trueRanges.slice(-period);
 
-  return (
+  return(
     recent.reduce(
       (sum, value) => sum + value,
       0
@@ -494,7 +493,7 @@ function calculateMACD(values) {
     !Array.isArray(values) ||
     values.length < 35
   ) {
-    return null;
+    returnnull;
   }
 
   const fast = calculateEMA(values, 12);
@@ -504,12 +503,12 @@ function calculateMACD(values) {
     fast === null ||
     slow === null
   ) {
-    return null;
+    returnnull;
   }
 
   const macd = fast - slow;
 
-  return {
+  return{
     macd,
     bullish: macd > 0,
     bearish: macd < 0
@@ -550,7 +549,7 @@ function analyzeMT5Market(candles) {
     !Array.isArray(candles) ||
     candles.length < 55
   ) {
-    return {
+    return{
       signal: "WAIT",
       confidence: 0,
 
@@ -613,7 +612,7 @@ function analyzeMT5Market(candles) {
     rsi === null ||
     macd === null
   ) {
-    return {
+    return{
       signal: "WAIT",
       confidence: 0,
 
@@ -785,7 +784,7 @@ if (
           50 + strongestScore * 7
         );
 
-  return {
+  return{
     signal,
 
     confidence:
@@ -830,13 +829,13 @@ function createMT5TradeCommand(
     signal !== "BUY" &&
     signal !== "SELL"
   ) {
-    return null;
+    returnnull;
   }
 
   if (
     mt5Command.action !== "NONE"
   ) {
-    return null;
+    returnnull;
   }
 
   if (!isHeartbeatAlive()) {
@@ -844,7 +843,7 @@ function createMT5TradeCommand(
       "Trade skipped: MT5 heartbeat offline."
     );
 
-    return null;
+    returnnull;
   }
 
   const price =
@@ -854,7 +853,7 @@ function createMT5TradeCommand(
     !Number.isFinite(price) ||
     price <= 0
   ) {
-    return null;
+    returnnull;
   }
 
   /*
@@ -915,7 +914,7 @@ function createMT5TradeCommand(
       "LIVE trade blocked: MT5 is not reporting LIVE."
     );
 
-    return null;
+    returnnull;
   }
 
   mt5Command = {
@@ -1033,7 +1032,7 @@ function createMT5TradeCommand(
     "========================================"
   );
 
-  return mt5Command;
+  returnmt5Command;
 }
 
 /* =========================================================
@@ -1071,7 +1070,7 @@ app.post(
         requestedMode === "LIVE"
       ) {
         if (!isHeartbeatAlive()) {
-          return res.status(400).json({
+          returnres.status(400).json({
             ok: false,
             running: false,
 
@@ -1085,7 +1084,7 @@ app.post(
             mt5Bridge.mode
           ) !== "LIVE"
         ) {
-          return res.status(400).json({
+          returnres.status(400).json({
             ok: false,
             running: false,
 
@@ -1198,7 +1197,7 @@ app.post(
         "========================================"
       );
 
-      return res.json({
+      returnres.json({
         ok: true,
 
         running: true,
@@ -1224,7 +1223,7 @@ app.post(
         error
       );
 
-      return res.status(500).json({
+     return res.status(500).json({
         ok: false,
 
         error:
@@ -2498,9 +2497,9 @@ app.listen(
       "LIVE EXECUTION SAFETY ENABLED"
     );
 
-    console.log(
-      RENDER BACKEND: https://ai-monster-u-1.onrender.com
-    );
+  console.log(
+  "RENDER BACKEND: https://ai-monster-u-1.onrender.com"
+);
 
     console.log(
       `SYMBOL: ${BOT_CONFIG.symbol}`
