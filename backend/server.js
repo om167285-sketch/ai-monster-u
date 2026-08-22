@@ -240,12 +240,12 @@ function normalizeTimeframe(timeframe) {
   return BOT_CONFIG.timeframe;
 }
 
-function normalizeSYMBOL    (SYMBOL    ) {
+function normalizeSYMBOL(symbol) {
   const value = String(
-     SYMBOL    || BOT_CONFIG.SYMBOL   
+    symbol || BOT_CONFIG.symbol
   ).trim();
 
-  return value || BOT_CONFIG.SYMBOL   ;
+  return value || BOT_CONFIG.symbol;
 }
 
 function createcommandId(prefix = "AMU") {
@@ -253,38 +253,27 @@ function createcommandId(prefix = "AMU") {
     Math.random() * 1000000
   )}`;
 }
+
 function isHeartbeatAlive() {
   const heartbeat = mt5Bridge?.lastHeartbeat;
 
-  IF (!heartbeat) {
-    return false;
-  }
-
-  const heartbeatTime = new Date(heartbeat).getTime();
-
-  IF (!Number.isFinite(heartbeatTime)) {
-    return false;
-  }
-
-  // MT5 EA must have sent a heartbeat within the last 30 seconds.
-  const age = Date.now() - heartbeatTime;
-
-  return age >= 0 && age <= 30000;
-}
-function isheartbeatAlive() {
-  IF (!mt5Bridge.lastheartbeat) {
+  if (!heartbeat) {
     return false;
   }
 
   const heartbeatTime = new Date(
-    mt5Bridge.lastheartbeat
+    heartbeat
   ).getTime();
 
-  IF (!Number.isFinite(heartbeatTime)) {
+  if (!Number.isFinite(heartbeatTime)) {
     return false;
   }
 
-  return Date.now() - heartbeatTime < 30000;
+  // MT5 EA must have sent a heartbeat
+  // within the last 30 seconds.
+  const age = Date.now() - heartbeatTime;
+
+  return age >= 0 && age <= 30000;
 }
 
 function resetMT5command(reason = null) {
@@ -295,7 +284,7 @@ function resetMT5command(reason = null) {
 
     MODE: botState.requestedMODE,
 
-    SYMBOL   : botState.SYMBOL   ,
+    SYMBOL: botState.SYMBOL,
 
     timeframe: botState.timeframe,
 
