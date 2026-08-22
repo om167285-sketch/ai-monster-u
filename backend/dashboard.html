@@ -4956,7 +4956,40 @@ async function saveMarketSymbols() {
 /* =========================================================
    MT5 BRIDGE STATUS
 ========================================================= */
+async function updateMT5Status() {
+  try {
+    const response = await fetch("/api/mt5/status");
 
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || "MT5 status unavailable");
+    }
+
+    const connected = Boolean(data.mt5Connected);
+
+    document.getElementById("dashboardAccountStatus").textContent =
+      connected ? "CONNECTED" : "DISCONNECTED";
+
+    document.getElementById("dashboardStatus").textContent =
+      connected ? "CONNECTED" : "DISCONNECTED";
+
+    document.getElementById("dashboardBot").textContent =
+      data.botRunning ? "ON" : "OFF";
+
+    document.getElementById("dashboardMode").textContent =
+      data.mt5Mode || "DEMO";
+
+    document.getElementById("dashboardAccountName").textContent =
+      data.mt5Account || "MT5";
+
+  } catch (error) {
+    console.error("MT5 website status:", error);
+  }
+}
+
+setInterval(updateMT5Status, 3000);
+updateMT5Status();
 async function loadMT5Status() {
 
   if (!demoAccount ||
