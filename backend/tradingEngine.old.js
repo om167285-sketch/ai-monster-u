@@ -1,219 +1,133 @@
+// ============================================================
 // AI MONSTER U
-// Professional MT5 Candle-Cycle Strategy Engine
+// PROFESSIONAL CANDLE-CYCLE TRADING ENGINE
 //
-// Strategy:
-// EMA 9 / EMA 21 / EMA 50
+// STRATEGY:
+// EMA 20 / EMA 50 / EMA 200
 // RSI 14
+// MACD 12 / 26
 // ATR 14
-// Momentum
-// Candle confirmation
 //
-// Execution:
-// The MT5 bridge is responsible for real broker execution.
-// This engine produces the trading decision and risk levels.
+// BEHAVIOR:
+// 1. Receive completed candle
+// 2. Close previous position at candle boundary
+// 3. Analyze completed candle data
+// 4. Generate BUY / SELL / WAIT
+// 5. If BUY/SELL -> open new DEMO position
+// 6. Continue according to selected timeframe
+//
+// SUPPORTED TIMEFRAMES:
+// 1m / 5m / 15m / 30m / 1h / 4h
+//
+// IMPORTANT:
+// No maximum-position restriction is added.
+// MT5 bridge is responsible for actual broker execution.
+// ============================================================
 
 class TradingEngine {
   constructor() {
-    // ================================================
+    // ----------------------------------------------------------
     // ENGINE STATE
-    // ================================================
+    // ----------------------------------------------------------
 
     this.running = false;
+    this.mode = "demo";
 
-    this.symbol = "BTCUSDm";
     this.timeframe = "1m";
+    this.symbol = "BTCUSDm";
 
-    this.lastProcessedCandle = null;
-    this.lastCandleTime = null;
-    this.lastSignal = "WAIT";
-    this.lastAnalysis = null;
+    this.balance = 50;
+    this.startingBalance = 50;
+
+    // Risk
+    this.riskPercent = 1;
+    this.maxDailyLossPercent = 3;
 
     this.position = null;
     this.trades = [];
 
-    this.totalTrades = 0;
-    this.totalSignals = 0;
+    this.dailyProfit = 0;
+    this.dailyLoss = 0;
+
+    this.lastCandleTime = null;
+    this.lastAnalysis = null;
+    this.lastSignal = "WAIT";
+
     this.totalCandlesProcessed = 0;
-
-    this.balance = 0;
-    this.startingBalance = 0;
-
-    // ================================================
-    // STRATEGY SETTINGS
-    // ================================================
+    this.totalSignals = 0;
+    this.totalTrades = 0;
 
     this.settings = {
-      // Risk
-      riskPercent: 0.5,
+      emaFast: 20,
+      emaMedium: 50,
+      emaSlow: 200,
 
-      // EMA
-      emaFast: 9,
-      emaMedium: 21,
-      emaSlow: 50,
-
-      // RSI
       rsiPeriod: 14,
       rsiBuyLevel: 55,
       rsiSellLevel: 45,
 
-      // ATR
+      macdFast: 12,
+      macdSlow: 26,
+
       atrPeriod: 14,
 
-      // Trade
-      rewardRisk: 1.5,
-      stopAtrMultiplier: 1.0,
-
-      // Signal quality
-      minimumConfidence: 60,
-
-      // MT5 volume
-      defaultVolume: 0.01,
-
-      // Candle-cycle
       closeAtCandleBoundary: true,
 
-      // ==============================================
-      // USER SL SETTINGS
-      // ==============================================
-
-      activateStopLoss: true,
-
-      // Decimal multiplier.
-      // Example:
-      // 0.001 = 0.1%
-      // 0.002 = 0.2%
-      stopLossDecimal: 0.001,
-
-      // ==============================================
-      // TRAILING STOP SETTINGS
-      // ==============================================
-
-      activateTrailingStopLoss: true,
-
-      // Distance from current price.
-      trailingStopDecimal: 0.0005,
-
-      // Only activate trailing after price
-      // moves in the profitable direction.
-      trailingActivationDecimal: 0.0005
+      minimumConfidence: 60
     };
   }
 
-  // ==================================================
-  // SETTINGS
-  // ==================================================
+  // ==========================================================
+  // STATUS
+  // ==========================================================
 
-  setSettings(newSettings = {}) {
-    this.settings = {
-      ...this.settings,
-      ...newSettings
-    };
-
+  getStatus() {
     return {
-      ok: true,
-      settings: this.settings
+      running: this.running,
+      mode: this.mode,
+
+      symbol: this.symbol,
+      timeframe: this.timeframe,
+
+      balance: Number(this.balance.toFixed(2)),
+      startingBalance: Number(
+        this.startingBalance.toFixed(2)
+      ),
+
+      riskPercent: this.riskPercent,
+      maxDailyLossPercent: this.maxDailyLossPercent,
+
+      dailyProfit: Number(
+        this.dailyProfit.toFixed(2)
+      ),
+
+      dailyLoss: Number(
+        this.dailyLoss.toFixed(2)
+      ),
+
+      openPosition: this.position,
+
+      tradesCount: this.trades.length,
+
+      totalTrades: this.totalTrades,
+      totalSignals: this.totalSignals,
+      totalCandlesProcessed:
+        this.totalCandlesProcessed,
+
+      lastCandleTime: this.lastCandleTime,
+
+      lastSignal: this.lastSignal,
+
+      lastAnalysis: this.lastAnalysis,
+
+      millisecondsUntilCandleClose:
+        this.getMillisecondsUntilClose()
     };
   }
 
-  setSymbol(symbol) {
-    if (!symbol) {
-      throw new Error("Symbol is required");
-    }
-
-    this.symbol = String(symbol).trim().toUpperCase();
-
-    return {
-      ok: true,
-      symbol: this.symbol
-    };
-  }
-
-  setTimeframe(timeframe) {
-    const allowed = [
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "4h"
-    ];
-
-    if (!allowed.includes(timeframe)) {
-      throw new Error(
-        Unsupported timeframe: ${timeframe}
-      );
-    }
-
-    this.timeframe = timeframe;
-
-    return {
-      ok: true,
-      timeframe: this.timeframe
-    };
-  }
-
-  // ==================================================
-  // TIMEFRAME
-  // ==================================================
-
-  getTimeframeMilliseconds() {
-    const values = {
-      "1m": 60 * 1000,
-      "5m": 5 * 60 * 1000,
-      "15m": 15 * 60 * 1000,
-      "30m": 30 * 60 * 1000,
-      "1h": 60 * 60 * 1000,
-      "4h": 4 * 60 * 60 * 1000
-    };
-
-    return values[this.timeframe] || 60 * 1000;
-  }
-
-  getCandleBoundary(timestamp = Date.now()) {
-    const duration = this.getTimeframeMilliseconds();
-
-    return (
-      Math.floor(timestamp / duration) *
-      duration
-    );
-  }
-
-  getMillisecondsUntilClose(
-    timestamp = Date.now()
-  ) {
-    const duration =
-      this.getTimeframeMilliseconds();
-
-    const boundary =
-      this.getCandleBoundary(timestamp);
-
-    return Math.max(
-      0,
-      boundary + duration - timestamp
-    );
-  }
-
-  isNewCandle(timestamp = Date.now()) {
-    const boundary =
-      this.getCandleBoundary(timestamp);
-
-    if (this.lastCandleTime === null) {
-      this.
-        lastCandleTime = boundary;
-      return true;
-    }
-
-    if (boundary > this.lastCandleTime) {
-      this.lastCandleTime = boundary;
-      return true;
-    }
-
-    return false;
-  }
-
-  // ==================================================
-  // ENGINE CONTROL
-  // ==================================================
+  // ==========================================================
+  // START
+  // ==========================================================
 
   start() {
     this.running = true;
@@ -221,12 +135,17 @@ class TradingEngine {
     return {
       ok: true,
       running: true,
+      mode: this.mode,
       symbol: this.symbol,
       timeframe: this.timeframe,
       message:
         "AI MONSTER U trading engine started"
     };
   }
+
+  // ==========================================================
+  // STOP
+  // ==========================================================
 
   stop() {
     this.running = false;
@@ -239,44 +158,204 @@ class TradingEngine {
     };
   }
 
-  // ==================================================
-  // EMA
-  // ==================================================
+  // ==========================================================
+  // SET MODE
+  // ==========================================================
 
-  calculateEMA(candles, period) {
+  setMode(mode) {
+    const value = String(
+      mode || "demo"
+    ).trim().toLowerCase();
+
     if (
-      !Array.isArray(candles) ||
-      candles.length < period
+      value !== "demo" &&
+      value !== "live"
+    ) {
+      throw new Error(
+        "Unsupported mode: " + mode
+      );
+    }
+
+    this.mode = value;
+
+    return {
+      ok: true,
+      mode: this.mode
+    };
+  }
+
+  // ==========================================================
+  // SET TIMEFRAME
+  // ==========================================================
+setTimeframe(timeframe) {
+    const allowed = [
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "4h"
+    ];
+
+    const value = String(
+      timeframe || ""
+    )
+      .trim()
+      .toLowerCase();
+
+    if (!allowed.includes(value)) {
+      throw new Error(
+        "Unsupported timeframe: " +
+          timeframe
+      );
+    }
+
+    this.timeframe = value;
+
+    return {
+      ok: true,
+      timeframe: this.timeframe
+    };
+  }
+
+  // ==========================================================
+  // SET SYMBOL
+  // ==========================================================
+
+  setSymbol(symbol) {
+    const value = String(
+      symbol || ""
+    )
+      .trim()
+      .toUpperCase();
+
+    if (!value) {
+      throw new Error(
+        "Symbol is required"
+      );
+    }
+
+    this.symbol = value;
+
+    return {
+      ok: true,
+      symbol: this.symbol
+    };
+  }
+
+  // ==========================================================
+  // TIMEFRAME MILLISECONDS
+  // ==========================================================
+
+  timeframeMilliseconds(
+    timeframe = this.timeframe
+  ) {
+    const values = {
+      "1m": 60 * 1000,
+      "5m": 5 * 60 * 1000,
+      "15m": 15 * 60 * 1000,
+      "30m": 30 * 60 * 1000,
+      "1h": 60 * 60 * 1000,
+      "4h": 4 * 60 * 60 * 1000
+    };
+
+    return (
+      values[timeframe] ||
+      60 * 1000
+    );
+  }
+
+  // ==========================================================
+  // CANDLE BOUNDARY
+  // ==========================================================
+
+  getCandleBoundary(
+    timestamp = Date.now()
+  ) {
+    const duration =
+      this.timeframeMilliseconds();
+
+    return (
+      Math.floor(
+        timestamp / duration
+      ) * duration
+    );
+  }
+
+  // ==========================================================
+  // TIME UNTIL CANDLE CLOSE
+  // ==========================================================
+
+  getMillisecondsUntilClose(
+    timestamp = Date.now()
+  ) {
+    const duration =
+      this.timeframeMilliseconds();
+
+    const boundary =
+      this.getCandleBoundary(
+        timestamp
+      );
+
+    return Math.max(
+      0,
+      boundary +
+        duration -
+        timestamp
+    );
+  }
+
+  // ==========================================================
+  // EMA
+  // ==========================================================
+
+  calculateEMA(
+    values,
+    period
+  ) {
+    if (
+      !Array.isArray(values) ||
+      values.length < period
     ) {
       return null;
     }
 
-    const closes = candles
-      .map(candle => Number(candle.close))
-      .filter(Number.isFinite);
+    const numbers =
+      values.map(Number);
 
-    if (closes.length < period) {
+    if (
+      numbers.some(
+        value =>
+          !Number.isFinite(value)
+      )
+    ) {
       return null;
     }
-
-    let ema = 0;
-
-    for (let i = 0; i < period; i++) {
-      ema += closes[i];
-    }
-
-    ema /= period;
 
     const multiplier =
       2 / (period + 1);
 
+    let ema = 0;
+
+    // Initial SMA
+    for (
+      let i = 0;
+      i < period;
+      i++
+    ) {
+      ema += numbers[i];
+    }
+
+    ema /= period;
+
+    // EMA calculation
     for (
       let i = period;
-      i < closes.length;
+      i < numbers.length;
       i++
     ) {
       ema =
-        (closes[i] - ema) *
+        (numbers[i] - ema) *
           multiplier +
         ema;
     }
@@ -284,28 +363,28 @@ class TradingEngine {
     return ema;
   }
 
-  // ==================================================
+  // ==========================================================
   // RSI
-  // ==================================================
+  // ==========================================================
 
   calculateRSI(
-    candles,
+    values,
     period = 14
   ) {
     if (
-      !Array.isArray(candles) ||
-      candles.length < period + 1
+      !Array.isArray(values) ||
+      values.length <= period
     ) {
       return null;
     }
 
-    const closes = candles.map(
-      candle => Number(candle.close)
-    );
+    const numbers =
+      values.map(Number);
 
     if (
-      closes.some(
-        value => !Number.isFinite(value)
+      numbers.some(
+        value =>
+          !Number.isFinite(value)
       )
     ) {
       return null;
@@ -320,12 +399,14 @@ class TradingEngine {
       i++
     ) {
       const change =
-        closes[i] - closes[i - 1];
+        numbers[i] -
+        numbers[i - 1];
 
       if (change > 0) {
         gains += change;
-      } else {
-        losses += Math.abs(change);
+      } else if (change < 0) {
+        losses +=
+          Math.abs(change);
       }
     }
 
@@ -337,14 +418,17 @@ class TradingEngine {
 
     for (
       let i = period + 1;
-      i < closes.length;
+      i < numbers.length;
       i++
     ) {
       const change =
-        closes[i] - closes[i - 1];
+        numbers[i] -
+        numbers[i - 1];
 
       const gain =
-        change > 0 ? change : 0;
+        change > 0
+      ? change
+          : 0;
 
       const loss =
         change < 0
@@ -371,14 +455,18 @@ class TradingEngine {
     }
 
     const rs =
-      averageGain / averageLoss;
+      averageGain /
+      averageLoss;
 
-    return 100 - 100 / (1 + rs);
+    return (
+      100 -
+      100 / (1 + rs)
+    );
   }
 
-  // ==================================================
+  // ==========================================================
   // ATR
-  // ==================================================
+  // ==========================================================
 
   calculateATR(
     candles,
@@ -386,23 +474,30 @@ class TradingEngine {
   ) {
     if (
       !Array.isArray(candles) ||
-      candles.length < period + 1
+      candles.length <= period
     ) {
       return null;
     }
 
-    const trueRanges = [];
+    const ranges = [];
 
     for (
       let i = 1;
       i < candles.length;
       i++
     ) {
-      const current = candles[i];
-      const previous = candles[i - 1];
+      const current =
+        candles[i];
 
-      const high = Number(current.high);
-      const low = Number(current.low);
+      const previous =
+        candles[i - 1];
+
+      const high =
+        Number(current.high);
+
+      const low =
+        Number(current.low);
+
       const previousClose =
         Number(previous.close);
 
@@ -414,633 +509,417 @@ class TradingEngine {
         continue;
       }
 
-      const tr = Math.max(
-        high - low,
-        Math.abs(high - previousClose),
-        Math.abs(low - previousClose)
-      );
+      const trueRange =
+        Math.max(
+          high - low,
+          Math.abs(
+            high -
+              previousClose
+          ),
+          Math.abs(
+            low -
+              previousClose
+          )
+        );
 
-      trueRanges.push(tr);
+      ranges.push(
+        trueRange
+      );
     }
 
-    if (trueRanges.length < period) {
+    const recent =
+      ranges.slice(-period);
+
+    if (
+      recent.length < period
+    ) {
       return null;
     }
 
-    let atr = 0;
-
-    for (let i = 0; i < period; i++) {
-      atr += trueRanges[i];
-    }
-
-    atr /= period;
-
-    for (
-      let i = period;
-      i < trueRanges.length;
-      i++
-    ) {
-      atr =
-        (
-          atr * (period - 1) +
-          trueRanges[i]
-        ) / period;
-    }
-
-    return atr;
-  }
-
-  // ==================================================
-  // MOMENTUM
-  // ==================================================
-
-  calculateMomentum(
-    candles,
-    lookback = 5
-  ) {
-    if (
-      !Array.isArray(candles) ||
-      candles.length <= lookback
-    ) {
-      return 0;
-    }
-
-    const current =
-      Number(
-        candles[candles.length - 1].close
-      );
-
-    const previous =
-      Number(
-        candles[
-          candles.length - 1 - lookback
-        ].close
-      );
-
-    if (
-      !Number.isFinite(current) ||
-      !Number.isFinite(previous) ||
-      previous === 0
-    ) {
-      return 0;
-    }
-
     return (
-      ((current - previous) / previous) *
-      100
+      recent.reduce(
+        (sum, value) =>
+          sum + value,
+        0
+      ) / period
     );
   }
 
-  // ==================================================
-  // CANDLE DIRECTION
-  // ==================================================
+  // ==========================================================
+  // MACD
+  // ==========================================================
 
-  getCandleDirection(candle) {
-    const open = Number(candle.open);
-    const close = Number(candle.close);
+  calculateMACD(
+    values
+  ) {
+    const minimum =
+      this.settings.macdSlow +
+      9;
 
-    if (close > open) {
-      return "BULLISH";
+    if (
+      !Array.isArray(values) ||
+      values.length < minimum
+    ) {
+      return null;
     }
 
-    if (close < open) {
-      return "BEARISH";
+    const fast =
+      this.calculateEMA(
+        values,
+        this.settings.macdFast
+      );
+
+    const slow =
+      this.calculateEMA(
+        values,
+        this.settings.macdSlow
+      );
+
+    if (
+      fast === null ||
+      slow === null
+    ) {
+      return null;
     }
 
-    return "NEUTRAL";
+    const macd =
+      fast - slow;
+
+    return {
+      macd,
+      bullish:
+        macd > 0,
+      bearish:
+        macd < 0
+    };
   }
 
-  // ==================================================
+  // ==========================================================
   // MARKET ANALYSIS
-  // ==================================================
+  // ==========================================================
 
-  analyzeMarket(data) {
-    if (!data) {
-      return {
-        signal: "WAIT",
-        confidence: 0,
-        buyScore: 0,
-        sellScore: 0,
-        reasons: ["No market data"]
-      };
-    }
-
+  analyzeMarket(
+    data = {}
+  ) {
     const candles =
-      Array.isArray(data.candles)
+      Array.isArray(
+        data.candles
+      )
         ? data.candles
         : [];
 
-    const current =
-      data.candle ||
-      candles[candles.length - 1];
-
-    if (!current) {
+    // EMA 200 requires at least
+    // 200 candles for the strategy.
+    if (
+      candles.length < 200
+    ) {
       return {
         signal: "WAIT",
         confidence: 0,
-        buyScore: 0,
-        sellScore: 0,
-        reasons: ["No completed candle"]
+        reason:
+          "Not enough candle data",
+        candlesRequired: 200,
+        candlesReceived:
+          candles.length
       };
     }
 
-    // Need enough candles for EMA 50.
-    if (candles.length < 55) {
-      return {
-        signal: "WAIT",
-        confidence: 0,
-        buyScore: 0,
-        sellScore: 0,
-        reasons: [
-          Waiting for candles: ${candles.length}/55
-        ]
-      };
-    }
-
-    const price =
-      Number(
-        data.price ?? current.close
+    const closes =
+      candles.map(
+        candle =>
+          Number(candle.close)
       );
 
-    const ema9 =
-      data.ema9 ??
+    if (
+      closes.some(
+        value =>
+          !Number.isFinite(value)
+      )
+    ) {
+      return {
+        signal: "WAIT",
+        confidence: 0,
+        reason:
+          "Invalid candle close data"
+      };
+    }
+
+    const ema20 =
       this.calculateEMA(
-        candles,
+        closes,
         this.settings.emaFast
       );
 
-    const ema21 =
-      data.ema21 ??
+    const ema50 =
       this.calculateEMA(
-        candles,
+        closes,
         this.settings.emaMedium
       );
 
-    const ema50 =
-      data.ema50 ??
+    const ema200 =
       this.calculateEMA(
-        candles,
+        closes,
         this.settings.emaSlow
       );
 
     const rsi =
-      data.rsi ??
       this.calculateRSI(
-        candles,
+        closes,
         this.settings.rsiPeriod
       );
 
+    const macd =
+      this.calculateMACD(
+        closes
+      );
+
     const atr =
-      data.atr ??
       this.calculateATR(
         candles,
-        this.settings.atrPeriod
+        this.
+        settings.atrPeriod
       );
 
-    const momentum =
-      data.momentum ??
-      this.calculateMomentum(
-        candles,
-        5
-      );
-
-    const candleDirection =
-      this.getCandleDirection(current);
-
-    let buyScore = 0;
-    let sellScore = 0;
-
-    const buyReasons = [];
-    const sellReasons = [];
-
-    // ================================================
-    // EMA 9 / 21
-    // ================================================
+    const currentPrice =
+      closes[
+        closes.length - 1
+      ];
 
     if (
-      ema9 !== null &&
-      ema21 !== null
+      !Number.isFinite(
+        currentPrice
+      ) ||
+      ema20 === null ||
+      ema50 === null ||
+      ema200 === null ||
+      rsi === null ||
+      macd === null
     ) {
-      if (ema9 > ema21) {
-        buyScore += 2;
-        buyReasons.push(
-          "EMA 9 above EMA 21"
-        );
-      } else if (ema9 < ema21) {
-        sellScore += 2;
-        sellReasons.push(
-          "EMA 9 below EMA 21"
-        );
-      }
+      return {
+        signal: "WAIT",
+        confidence: 0,
+        reason:
+          "Indicators are not ready",
+
+        price:
+          currentPrice,
+
+        indicators: {
+          ema20,
+          ema50,
+          ema200,
+          rsi,
+          macd:
+            macd
+              ? macd.macd
+              : null,
+          atr
+        }
+      };
     }
 
-    // ================================================
-    // EMA 21 / 50
-    // ================================================
+    // --------------------------------------------------------
+    // TREND
+    // --------------------------------------------------------
 
-    if (
-      ema21 !== null &&
-      ema50 !== null
-    ) {
-      if (ema21 > ema50) {
-        buyScore += 2;
-        buyReasons.push(
-          "EMA 21 above EMA 50"
-        );
-      } else if (ema21 < ema50) {
-        sellScore += 2;
-        sellReasons.push(
-          "EMA 21 below EMA 50"
-        );
-      }
-    }
-  // ================================================
-    // PRICE VS EMA 50
-    // ================================================
+    const bullishTrend =
+      ema20 > ema50 &&
+      ema50 > ema200 &&
+      currentPrice > ema20;
 
-    if (ema50 !== null) {
-      if (price > ema50) {
-        buyScore += 1;
-        buyReasons.push(
-          "Price above EMA 50"
-        );
-      } else if (price < ema50) {
-        sellScore += 1;
-        sellReasons.push(
-          "Price below EMA 50"
-        );
-      }
-    }
+    const bearishTrend =
+      ema20 < ema50 &&
+      ema50 < ema200 &&
+      currentPrice < ema20;
 
-    // ================================================
-    // RSI
-    // ================================================
-
-    if (rsi !== null) {
-      if (
-        rsi >= this.settings.rsiBuyLevel &&
-        rsi < 75
-      ) {
-        buyScore += 2;
-        buyReasons.push(
-          "RSI bullish momentum"
-        );
-      } else if (
-        rsi <= this.settings.rsiSellLevel &&
-        rsi > 25
-      ) {
-        sellScore += 2;
-        sellReasons.push(
-          "RSI bearish momentum"
-        );
-      }
-    }
-
-    // ================================================
+    // --------------------------------------------------------
     // MOMENTUM
-    // ================================================
+    // --------------------------------------------------------
 
-    if (momentum > 0) {
-      buyScore += 1;
-      buyReasons.push(
-        "Positive momentum"
-      );
-    } else if (momentum < 0) {
-      sellScore += 1;
-      sellReasons.push(
-        "Negative momentum"
-      );
-    }
+    const bullishMomentum =
+      rsi >=
+        this.settings.rsiBuyLevel &&
+      macd.bullish;
 
-    // ================================================
-    // CANDLE CONFIRMATION
-    // ================================================
-
-    if (
-      candleDirection === "BULLISH"
-    ) {
-      buyScore += 1;
-      buyReasons.push(
-        "Bullish candle confirmation"
-      );
-    } else if (
-      candleDirection === "BEARISH"
-    ) {
-      sellScore += 1;
-      sellReasons.push(
-        "Bearish candle confirmation"
-      );
-    }
-
-    // ================================================
-    // SIGNAL
-    // ================================================
+    const bearishMomentum =
+      rsi <=
+        this.settings.rsiSellLevel &&
+      macd.bearish;
 
     let signal = "WAIT";
+    let reason =
+      "No complete setup";
+
     let confidence = 0;
-    let reasons = [];
+
+    // --------------------------------------------------------
+    // BUY
+    // --------------------------------------------------------
 
     if (
-      buyScore >= 5 &&
-      buyScore > sellScore
+      bullishTrend &&
+      bullishMomentum
     ) {
       signal = "BUY";
 
-      confidence = Math.min(
-        95,
-        50 + buyScore * 7
-      );
+      reason =
+        "Bullish trend and momentum confirmed";
 
-      reasons = buyReasons;
-    } else if (
-      sellScore >= 5 &&
-      sellScore > buyScore
+      confidence =
+        Math.min(
+          95,
+          60 +
+            (rsi -
+              this.settings.rsiBuyLevel) +
+            (ema20 > ema50
+              ? 10
+              : 0) +
+            (ema50 > ema200
+              ? 10
+              : 0) +
+            (macd.bullish
+              ? 10
+              : 0)
+        );
+    }
+
+    // --------------------------------------------------------
+    // SELL
+    // --------------------------------------------------------
+
+    if (
+      bearishTrend &&
+      bearishMomentum
     ) {
       signal = "SELL";
 
-      confidence = Math.min(
-        95,
-        50 + sellScore * 7
-      );
+      reason =
+        "Bearish trend and momentum confirmed";
 
-      reasons = sellReasons;
-    } else {
-      reasons = [
-        "Signals are not sufficiently aligned"
-      ];
+      confidence =
+        Math.min(
+          95,
+          60 +
+            (
+              this.settings.rsiSellLevel -
+              rsi
+            ) +
+            (ema20 < ema50
+              ? 10
+              : 0) +
+            (ema50 < ema200
+              ? 10
+              : 0) +
+            (macd.bearish
+              ? 10
+              : 0)
+        );
     }
 
     return {
       signal,
-      confidence,
-      buyScore,
-      sellScore,
-      price,
-      ema9,
-      ema21,
-      ema50,
-      rsi,
-      atr,
-      momentum,
-      candleDirection,
-      reasons
+
+      reason,
+
+      confidence:
+        Number(
+          confidence.toFixed(2)
+        ),
+
+      price:
+        currentPrice,
+
+      indicators: {
+        ema20,
+        ema50,
+        ema200,
+        rsi,
+        macd:
+          macd.macd,
+        atr
+      },
+
+      conditions: {
+        bullishTrend,
+        bearishTrend,
+        bullishMomentum,
+        bearishMomentum
+      }
     };
   }
 
-  // ==================================================
+  // ==========================================================
   // RISK
-  // ==================================================
+  // ==========================================================
 
   calculateRiskAmount() {
-    if (
-      !Number.isFinite(this.balance) ||
-      this.balance <= 0
-    ) {
-      return 0;
-    }
-
     return (
       this.balance *
       (
-        this.settings.riskPercent /
+        this.riskPercent /
         100
       )
     );
   }
 
-  // ==================================================
-  // SL / TP
-  // ==================================================
+  // ==========================================================
+  // DAILY LOSS PERMISSION
+  // ==========================================================
 
-  calculateStops(
-    signal,
-    entryPrice,
-    atr
-  ) {
-    const price =
-      Number(entryPrice);
-
-    const atrValue =
-      Number(atr);
-
-    const decimalDistance =
-      price *
-      Number(
-        this.settings.stopLossDecimal
-      );
-
-    const atrDistance =
-      Number.isFinite(atrValue) &&
-      atrValue > 0
-        ? atrValue *
-          Number(
-            this.settings.stopAtrMultiplier
-          )
-        : 0;
-
-    const stopDistance =
-      Math.max(
-        decimalDistance,
-        atrDistance
-      );
-
-    let stopLoss = null;
-
-    let takeProfit = null;
-
-    if (
-      this.settings.activateStopLoss
-    ) {
-      stopLoss =
-        signal === "BUY"
-          ? price - stopDistance
-          : price + stopDistance;
-
-      takeProfit =
-        signal === "BUY"
-          ? price +
-            stopDistance *
-              this.settings.rewardRisk
-          : price -
-            stopDistance *
-              this.settings.
-        rewardRisk;
-    }
-
-    return {
-      stopLoss:
-        stopLoss === null
-          ? null
-          : Number(
-              stopLoss.toFixed(8)
-            ),
-
-      takeProfit:
-        takeProfit === null
-          ? null
-          : Number(
-              takeProfit.toFixed(8)
-            ),
-
-      stopDistance:
-        Number(
-          stopDistance.toFixed(8)
-        )
-    };
-  }
-
-  // ==================================================
-  // TRAILING STOP
-  // ==================================================
-
-  updateTrailingStop(currentPrice) {
-    if (
-      !this.position ||
-      !this.settings
-        .activateTrailingStopLoss
-    ) {
-      return null;
-    }
-
-    const price =
-      Number(currentPrice);
-
-    if (
-      !Number.isFinite(price) ||
-      price <= 0
-    ) {
-      return null;
-    }
-
-    const entry =
-      Number(this.position.entry);
-
-    const trailingDistance =
-      price *
-      Number(
-        this.settings
-          .trailingStopDecimal
-      );
-
-    const activationDistance =
-      entry *
-      Number(
-        this.settings
-          .trailingActivationDecimal
-      );
-
-    if (
-      this.position.side === "BUY"
-    ) {
-      const profitMove =
-        price - entry;
-
-      if (
-        profitMove <
-        activationDistance
-      ) {
-        return null;
-      }
-
-      const newStop =
-        price - trailingDistance;
-
-      if (
-        !this.position.stopLoss ||
-        newStop >
-          this.position.stopLoss
-      ) {
-        this.position.stopLoss =
-          Number(
-            newStop.toFixed(8)
-          );
-
-        return this.position.stopLoss;
-      }
-    }
-
-    if (
-      this.position.side === "SELL"
-    ) {
-      const profitMove =
-        entry - price;
-
-      if (
-        profitMove <
-        activationDistance
-      ) {
-        return null;
-      }
-
-      const newStop =
-        price + trailingDistance;
-
-      if (
-        !this.position.stopLoss ||
-        newStop <
-          this.position.stopLoss
-      ) {
-        this.position.stopLoss =
-          Number(
-            newStop.toFixed(8)
-          );
-
-        return this.position.stopLoss;
-      }
-    }
-
-    return null;
-  }
-
-  // ==================================================
-  // TRADE PERMISSION
-  // ==================================================
-
-  canTrade() {
+  canOpenPosition() {
     if (!this.running) {
       return {
-        allowed: false,
-        reason: "Bot is stopped"
+        ok: false,
+        reason:
+          "Trading engine is stopped"
       };
     }
 
+    if (this.balance <= 0) {
+      return {
+        ok: false,
+        reason:
+          "Account balance is zero"
+      };
+    }
+
+    const maxDailyLoss =
+      this.startingBalance *
+      (
+        this.maxDailyLossPercent /
+        100
+      );
+
     if (
-      this.position
+      this.dailyLoss >=
+      maxDailyLoss
     ) {
       return {
-        allowed: false,
+        ok: false,
         reason:
-          "Position already open"
+          "Daily loss limit reached"
       };
     }
 
     return {
-      allowed: true,
-      reason: "Trading permitted"
+      ok: true
     };
   }
 
-  // ==================================================
-  // OPEN POSITION
-  // ==================================================
+  // ==========================================================
+  // OPEN DEMO POSITION
+  // ==========================================================
 
   openDemoPosition(
     signal,
     price,
-    candleTime,
-    analysis = null
+    candleTime
   ) {
     const permission =
-      this.canTrade();
+      this.canOpenPosition();
 
-    if (
-      !permission.allowed
-    ) {
-      return {
-        ok: false,
-        error:
-          permission.reason
-      };
+    if (!permission.ok) {
+      return permission;
     }
 
     if (
@@ -1049,38 +928,32 @@ class TradingEngine {
     ) {
       return {
         ok: false,
-        error: "Invalid signal"
+        reason:
+          "Invalid trading signal"
       };
     }
 
-    const numericPrice =
+    const entry =
       Number(price);
 
     if (
-      !Number.isFinite(
-        numericPrice
-      ) ||
-      numericPrice <= 0
+      !Number.isFinite(entry) ||
+      entry <= 0
     ) {
       return {
         ok: false,
-        error: "Invalid price"
+        reason:
+          "Invalid entry price"
       };
     }
 
     const riskAmount =
       this.calculateRiskAmount();
 
-    const stops =
-      this.calculateStops(
-        signal,
-        numericPrice,
-        analysis?.atr
-      );
-
     this.position = {
       id:
-        AMU-${Date.now()},
+        "AMU-" +
+        Date.now(),
 
       symbol:
         this.symbol,
@@ -1088,35 +961,17 @@ class TradingEngine {
       side:
         signal,
 
-      entry:
-        numericPrice,
-
-      stopLoss:
-        stops.stopLoss,
-
-      takeProfit:
-        stops.takeProfit,
-
-      stopDistance:
-        stops.stopDistance,
+      entry,
 
       riskAmount:
         Number(
-          riskAmount.toFixed(2)
-        ),
-
-      volume:
-        Number(
-          this.settings.defaultVolume
+          riskAmount.toFixed(4)
         ),
 
       candleTime,
 
       timeframe:
-    this.timeframe,
-
-      confidence:
-        analysis?.confidence || 0,
+        this.timeframe,
 
       openedAt:
         new Date().toISOString()
@@ -1126,23 +981,28 @@ class TradingEngine {
 
     return {
       ok: true,
+
+      message:
+        "Demo position opened",
+
       position:
         this.position
     };
   }
 
-  // ==================================================
+  // ==========================================================
   // CLOSE POSITION
-  // ==================================================
+  // ==========================================================
 
   closeAtCandleBoundary(
     price,
     reason = "CANDLE_CLOSE"
   ) {
-    if (!this.position) {
+    if (
+      this.position === null
+    ) {
       return {
-        ok: true,
-        closed: false,
+        ok: false,
         reason:
           "No open position"
       };
@@ -1157,7 +1017,6 @@ class TradingEngine {
     ) {
       return {
         ok: false,
-        closed: false,
         reason:
           "Invalid exit price"
       };
@@ -1166,34 +1025,46 @@ class TradingEngine {
     const position =
       this.position;
 
-    let percentageMove;
+    let priceChange = 0;
 
     if (
       position.side === "BUY"
     ) {
-      percentageMove =
-        (
-          exit -
-          position.entry
-        ) /
+      priceChange =
+        exit -
         position.entry;
     } else {
-      percentageMove =
-        (
-          position.entry -
-          exit
-        ) /
-        position.entry;
+      priceChange =
+        position.entry -
+        exit;
     }
 
-    const profit =
-      position.riskAmount > 0
-        ? percentageMove *
-          position.riskAmount *
-          100
-        : 0;
+    const percentMove =
+      priceChange /
+      position.entry;
 
-    this.balance += profit;
+    // --------------------------------------------------------
+    // DEMO P/L MODEL
+    // 1% favorable movement =
+    // approximately one configured risk amount.
+    // --------------------------------------------------------
+
+    const pnl =
+      position.riskAmount *
+      (
+        percentMove /
+        0.01
+      );
+
+    this.balance += pnl;
+
+    if (pnl >= 0) {
+      this.dailyProfit +=
+        pnl;
+    } else {
+      this.dailyLoss +=
+        Math.abs(pnl);
+    }
 
     const trade = {
       id:
@@ -1202,40 +1073,23 @@ class TradingEngine {
       symbol:
         position.symbol,
 
-      date:
-        new Date()
-          .toISOString()
-          .slice(0, 10),
-
       side:
         position.side,
 
-      volume:
-        position.volume,
+      timeframe:
+        position.timeframe,
 
       entry:
         position.entry,
 
       exit,
 
-      stopLoss:
-        position.stopLoss,
-
-      takeProfit:
-        position.takeProfit,
-
-      profit:
+      pnl:
         Number(
-          profit.toFixed(2)
+          pnl.toFixed(4)
         ),
 
       reason,
-
-      timeframe:
-        position.timeframe,
-
-      confidence:
-        position.confidence,
 
       openedAt:
         position.openedAt,
@@ -1244,14 +1098,20 @@ class TradingEngine {
         new Date().toISOString()
     };
 
-    this.trades.push(trade);
+    this.trades.push(
+      trade
+    );
 
     this.position = null;
 
     return {
       ok: true,
-      closed: true,
+
+      message:
+        "Demo position closed",
+
       trade,
+
       balance:
         Number(
           this.balance.toFixed(2)
@@ -1259,55 +1119,123 @@ class TradingEngine {
     };
   }
 
-  // ==================================================
-  // COMPLETED CANDLE
-  // ==================================================
+  // ==========================================================
+  // GET TRADES
+  // ==========================================================
+
+  getTrades() {
+    return [
+      ...this.trades
+    ];
+  }
+
+  // ==========================================================
+  // RESET DAILY STATS
+  // ==========================================================
+
+  resetDailyStats() {
+    this.dailyProfit = 0;
+    this.dailyLoss = 0;
+
+    return {
+      ok: true,
+      dailyProfit: 0,
+      dailyLoss: 0
+    };
+  }
+
+  // ==========================================================
+  // PROCESS COMPLETED CANDLE
+  // ==========================================================
 
   processCompletedCandle(
     candle,
-    candles
+    candles = []
   ) {
     if (!candle) {
       return {
         ok: false,
-        action: "WAIT",
         reason:
-          "Invalid candle"
+          "No candle supplied"
       };
     }
 
-    this.totalCandlesProcessed++;
-    this.lastProcessedCandle = candle;
+    const candleTime =
+      candle.startTime;
 
-    const closePrice =
+    const close =
       Number(candle.close);
 
-    // Update trailing stop first.
-    this.updateTrailingStop(
-      closePrice
-    );
+    if (
+      candleTime ===
+        undefined ||
+      candleTime === null
+    ) {
+      return {
+        ok: false,
+        reason:
+          "Candle has no startTime"
+      };
+    }
 
-    // Candle-cycle close.
+    if (
+      !Number.isFinite(close) ||
+      close <= 0
+    ) {
+      return {
+        ok: false,
+        reason:
+          "Invalid candle close price"
+      };
+    }
+
+    // --------------------------------------------------------
+    // PREVENT DUPLICATE CANDLE PROCESSING
+    // --------------------------------------------------------
+
+    if (
+      this.lastCandleTime ===
+      candleTime
+    ) {
+      return {
+        ok: true,
+        action: "IGNORED",
+        reason:
+          "Candle already processed"
+      };
+    }
+
+    this.lastCandleTime =
+      candleTime;
+
+    this.totalCandlesProcessed++;
+
+    // --------------------------------------------------------
+    // CLOSE PREVIOUS POSITION
+    // --------------------------------------------------------
+
     let closedTrade = null;
 
     if (
-      this.position &&
+      this.position !== null &&
       this.settings
         .closeAtCandleBoundary
     ) {
-      const closeResult =
+      const closed =
         this.closeAtCandleBoundary(
-          closePrice,
+          close,
           "CANDLE_CLOSE"
         );
 
-      if (
-        closeResult.closed
-      ) {
+      if (closed.ok) {
         closedTrade =
-          closeResult.trade;
+          closed.trade;
       }
     }
+
+    // --------------------------------------------------------
+    // ENGINE STOPPED
+    // --------------------------------------------------------
 
     if (!this.running) {
       return {
@@ -1319,11 +1247,16 @@ class TradingEngine {
       };
     }
 
+    // --------------------------------------------------------
+    // ANALYZE
+    // --------------------------------------------------------
+
     const analysis =
       this.analyzeMarket({
-        candle,
-        candles,
-        price: closePrice
+        candles:
+          Array.isArray(candles)
+            ? candles
+            : []
       });
 
     this.lastAnalysis =
@@ -1332,18 +1265,28 @@ class TradingEngine {
     this.lastSignal =
       analysis.signal;
 
+    // --------------------------------------------------------
+    // WAIT
+    // --------------------------------------------------------
+
     if (
-      analysis.signal === "WAIT"
+      analysis.signal !== "BUY" &&
+      analysis.signal !== "SELL"
     ) {
       return {
         ok: true,
         action: "WAIT",
-        reason:
-          "No sufficiently strong signal",
         analysis,
-        closedTrade
+        closedTrade,
+        reason:
+          analysis.reason ||
+          "No trading signal"
       };
     }
+
+    // --------------------------------------------------------
+    // CONFIDENCE FILTER
+    // --------------------------------------------------------
 
     if (
       analysis.confidence <
@@ -1352,32 +1295,33 @@ class TradingEngine {
       return {
         ok: true,
         action: "WAIT",
-        reason:
-          "Confidence below threshold",
-        confidence:
-          analysis.confidence,
         analysis,
-        closedTrade
+        closedTrade,
+        reason:
+          "Signal confidence below threshold"
       };
     }
 
-    const openResult =
+    // --------------------------------------------------------
+    // OPEN NEW DEMO POSITION
+    // --------------------------------------------------------
+
+    const opened =
       this.openDemoPosition(
-        analysis.
-        signal,
-        closePrice,
-        candle.startTime,
-        analysis
+        analysis.signal,
+        close,
+        candleTime
       );
 
-    if (!openResult.ok) {
+    if (!opened.ok) {
       return {
         ok: true,
         action: "WAIT",
-        reason:
-          openResult.error,
         analysis,
-        closedTrade
+        closedTrade,
+        reason:
+          opened.reason ||
+          "Position could not be opened"
       };
     }
 
@@ -1385,210 +1329,85 @@ class TradingEngine {
 
     return {
       ok: true,
-      action:
+
+      action: "OPEN",
+
+      signal:
         analysis.signal,
-      reason:
-        "AI MONSTER U signal generated",
+
       analysis,
+
       position:
-        openResult.position,
-      closedTrade
+        opened.position,
+
+      closedTrade,
+
+      reason:
+        "AI MONSTER U signal generated"
     };
   }
 
-  // ==================================================
-  // BALANCE
-  // ==================================================
+  // ==========================================================
+  // UPDATE BALANCE FROM MT5
+  // ==========================================================
 
-  setBalance(balance) {
+  updateAccountBalance(
+    balance
+  ) {
     const value =
       Number(balance);
 
     if (
       !Number.isFinite(value) ||
       value < 0
-    ) {
+      ) {
       return {
         ok: false,
-        error:
-          "Invalid balance"
+        reason:
+          "Invalid account balance"
       };
     }
 
     this.balance = value;
 
-    if (
-      this.startingBalance === 0
-    ) {
-      this.startingBalance =
-        value;
-    }
-
     return {
       ok: true,
       balance:
-        this.balance
-    };
-  }
-
-  // ==================================================
-  // TODAY PROFIT
-  // ==================================================
-
-  getTodayProfit() {
-    const today =
-      new Date()
-        .toISOString()
-        .slice(0, 10);
-
-    return this.trades
-      .filter(
-        trade =>
-          trade.date === today
-      )
-      .reduce(
-        (
-          total,
-          trade
-        ) =>
-          total +
-          Number(trade.profit || 0),
-        0
-      );
-  }
-
-  // ==================================================
-  // DRAWDOWN
-  // ==================================================
-
-  getDrawdownPercent() {
-    if (
-      this.startingBalance <= 0
-    ) {
-      return 0;
-    }
-
-    return Math.max(
-      0,
-      (
-        (
-          this.startingBalance -
-          this.balance
-        ) /
-        this.startingBalance
-      ) * 100
-    );
-  }
-
-  // ==================================================
-  // CONSECUTIVE LOSSES
-  // ==================================================
-
-  getConsecutiveLosses() {
-    let losses = 0;
-
-    for (
-      let i = this.trades.length - 1;
-      i >= 0;
-      i--
-    ) {
-      if (
-        Number(
-          this.trades[i].profit
-        ) < 0
-      ) {
-        losses++;
-      } else {
-        break;
-      }
-    }
-
-    return losses;
-  }
-
-  // ==================================================
-  // STATUS
-  // ==================================================
-
-  getStatus() {
-    return {
-      running:
-        this.running,
-
-      symbol:
-        this.symbol,
-
-      timeframe:
-        this.timeframe,
-
-      balance:
         Number(
           this.balance.toFixed(2)
-        ),
-
-      startingBalance:
-        Number(
-          this.startingBalance.toFixed(2)
-        ),
-
-      dailyProfit:
-        Number(
-          this.getTodayProfit()
-            .toFixed(2)
-        ),
-
-      drawdownPercent:
-        Number(
-          this.getDrawdownPercent()
-            .toFixed(2)
-        ),
-
-      consecutiveLosses:
-        this.getConsecutiveLosses(),
-
-      openPosition:
-        this.position,
-
-      lastSignal:
-        this.lastSignal,
-
-      lastAnalysis:
-        this.lastAnalysis,
-
-      tradesToday:
-        this.trades.filter(
-          trade =>
-            trade.date ===
-            new Date()
-              .toISOString()
-              .slice(0, 10)
-        ).length,
-
-      totalTrades:
-        this.totalTrades,
-
-      totalCandlesProcessed:
-        this.totalCandlesProcessed,
-
-      totalSignals:
-        this.totalSignals,
-
-      settings:
-        this.settings,
-
-      millisecondsUntilCandleClose:
-        this.getMillisecondsUntilClose()
+        )
     };
   }
 
-  // ==================================================
-  // HISTORY
-  // ==================================================
+  // ==========================================================
+  // RESET ENGINE
+  // ==========================================================
 
-  getTrades() {
-    return [
-      ...this.trades
-    ].reverse();
+  reset() {
+    this.running = false;
+
+    this.position = null;
+    this.trades = [];
+
+    this.dailyProfit = 0;
+    this.dailyLoss = 0;
+
+    this.lastCandleTime = null;
+    this.lastAnalysis = null;
+    this.lastSignal = "WAIT";
+
+    this.totalCandlesProcessed = 0;
+    this.totalSignals = 0;
+    this.totalTrades = 0;
+
+    this.balance =
+      this.startingBalance;
+
+    return {
+      ok: true,
+      message:
+        "AI MONSTER U engine reset"
+    };
   }
 }
 
