@@ -53,8 +53,8 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
-function normalizeMode(mode) {
-  const value = String(mode || "DEMO").toUpperCase();
+function normalizeMODE(MODE) {
+  const value = String(MODE || "DEMO").toUpperCase();
 
   return value === "LIVE" ? "LIVE" : "DEMO";
 }
@@ -206,7 +206,7 @@ function getMarketKey(SYMBOL    , timeframe) {
 function normalizeMODE(MODE) {
   const value = String(MODE || "DEMO").trim().toUpperCase();
 
-  if (value === "LIVE") {
+  IF (value === "LIVE") {
     return "LIVE";
   }
 
@@ -218,7 +218,7 @@ function normalizeTimeframe(timeframe) {
     timeframe || BOT_CONFIG.timeframe
   ).trim();
 
-  if (supported_TIMEFRAMES.includes(value)) {
+  IF (supported_TIMEFRAMES.includes(value)) {
     return value;
   }
 
@@ -241,13 +241,13 @@ function createcommandId(prefix = "AMU") {
 function isHeartbeatAlive() {
   const heartbeat = mt5Bridge?.lastHeartbeat;
 
-  if (!heartbeat) {
+  IF (!heartbeat) {
     return false;
   }
 
   const heartbeatTime = new Date(heartbeat).getTime();
 
-  if (!Number.isFinite(heartbeatTime)) {
+  IF (!Number.isFinite(heartbeatTime)) {
     return false;
   }
 
@@ -257,7 +257,7 @@ function isHeartbeatAlive() {
   return age >= 0 && age <= 30000;
 }
 function isheartbeatAlive() {
-  if (!mt5Bridge.lastheartbeat) {
+  IF (!mt5Bridge.lastheartbeat) {
     return false;
   }
 
@@ -265,7 +265,7 @@ function isheartbeatAlive() {
     mt5Bridge.lastheartbeat
   ).getTime();
 
-  if (!Number.isFinite(heartbeatTime)) {
+  IF (!Number.isFinite(heartbeatTime)) {
     return false;
   }
 
@@ -311,7 +311,7 @@ function safeNumber(value, fallback = 0) {
 ========================================================= */
 
 function calculateEMA(values, period) {
-  if (
+  IF (
     !Array.isArray(values) ||
     values.length < period
   ) {
@@ -320,7 +320,7 @@ function calculateEMA(values, period) {
 
   const numbers = values.map(Number);
 
-  if (
+  IF (
     numbers.some(
       (value) => !Number.isFinite(value)
     )
@@ -356,7 +356,7 @@ function calculateEMA(values, period) {
 ========================================================= */
 
 function calculateRSI(values, period = 14) {
-  if (
+  IF (
     !Array.isArray(values) ||
     values.length < period + 1
   ) {
@@ -365,7 +365,7 @@ function calculateRSI(values, period = 14) {
 
   const numbers = values.map(Number);
 
-  if (
+  IF (
     numbers.some(
       (value) => !Number.isFinite(value)
     )
@@ -385,9 +385,9 @@ function calculateRSI(values, period = 14) {
       numbers[i] -
       numbers[i - 1];
 
-    if (change > 0) {
+    IF (change > 0) {
       gains += change;
-    } else if (change < 0) {
+    } else IF (change < 0) {
       losses += Math.abs(change);
     }
   }
@@ -428,7 +428,7 @@ function calculateRSI(values, period = 14) {
       ) / period;
   }
 
-  if (averageLoss === 0) {
+  IF (averageLoss === 0) {
     return 100;
   }
 
@@ -447,7 +447,7 @@ function calculateATR(
   candles,
   period = 14
 ) {
-  if (
+  IF (
     !Array.isArray(candles) ||
     candles.length < period + 1
   ) {
@@ -472,7 +472,7 @@ function calculateATR(
     const previousClose =
       Number(previous.close);
 
-    if (
+    IF (
       !Number.isFinite(high) ||
       !Number.isFinite(low) ||
       !Number.isFinite(previousClose)
@@ -495,7 +495,7 @@ function calculateATR(
     trueRanges.push(trueRange);
   }
 
-  if (trueRanges.length < period) {
+  IF (trueRanges.length < period) {
     return null;
   }
 
@@ -516,7 +516,7 @@ function calculateATR(
 ========================================================= */
 
 function analyzeMT5Market(candles) {
-  if (
+  IF (
     !Array.isArray(candles) ||
     candles.length < 55
   ) {
@@ -588,11 +588,11 @@ function analyzeMT5Market(candles) {
 
   const reasons = [];
 
-  if (
+  IF (
     ema20 !== null &&
     ema50 !== null
   ) {
-    if (ema20 > ema50) {
+    IF (ema20 > ema50) {
       buyScore += 2;
 
       reasons.push(
@@ -600,7 +600,7 @@ function analyzeMT5Market(candles) {
       );
     }
 
-    if (ema20 < ema50) {
+    IF (ema20 < ema50) {
       sellScore += 2;
 
       reasons.push(
@@ -609,8 +609,8 @@ function analyzeMT5Market(candles) {
     }
   }
 
-  if (rsi !== null) {
-    if (
+  IF (rsi !== null) {
+    IF (
       rsi >= 52 &&
       rsi <= 70
     ) {
@@ -621,7 +621,7 @@ function analyzeMT5Market(candles) {
       );
     }
 
-    if (
+    IF (
       rsi <= 48 &&
       rsi >= 30
     ) {
@@ -633,7 +633,7 @@ function analyzeMT5Market(candles) {
     }
   }
 
-  if (
+  IF (
     Number(last.close) >
     Number(last.open)
   ) {
@@ -644,7 +644,7 @@ function analyzeMT5Market(candles) {
     );
   }
 
-  if (
+  IF (
     Number(last.close) <
     Number(last.open)
   ) {
@@ -655,7 +655,7 @@ function analyzeMT5Market(candles) {
     );
   }
 
-  if (
+  IF (
     Number(last.close) >
     Number(previous.high)
   ) {
@@ -666,7 +666,7 @@ function analyzeMT5Market(candles) {
     );
   }
 
-  if (
+  IF (
     Number(last.close) <
     Number(previous.low)
   ) {
@@ -679,14 +679,14 @@ function analyzeMT5Market(candles) {
 
   let signal = "WAIT";
 
-  if (
+  IF (
     buyScore >= 3 &&
     buyScore > sellScore
   ) {
     signal = "BUY";
   }
 
-  if (
+  IF (
     sellScore >= 3 &&
     sellScore > buyScore
   ) {
@@ -747,20 +747,20 @@ function createMT5Tradecommand(
   candle,
   analysis
 ) {
-  if (
+  IF (
     signal !== "BUY" &&
     signal !== "SELL"
   ) {
     return null;
   }
 
-  if (
+  IF (
     mt5command.action !== "NONE"
   ) {
     return null;
   }
 
-  if (!isheartbeatAlive()) {
+  IF (!isheartbeatAlive()) {
     console.log(
       "Trade skipped: MT5 heartbeat offline."
     );
@@ -771,7 +771,7 @@ function createMT5Tradecommand(
   const price =
     Number(candle.close);
 
-  if (
+  IF (
     !Number.isFinite(price) ||
     price <= 0
   ) {
@@ -817,7 +817,7 @@ function createMT5Tradecommand(
   LIVE safety check.
   */
 
-  if (
+  IF (
     MODE === "LIVE" &&
     normalizeMODE(
       mt5Bridge.MODE
@@ -975,10 +975,10 @@ app.post(
       LIVE requires a live MT5 heartbeat.
       */
 
-      if (
+      IF (
         requestedMODE === "LIVE"
       ) {
-        if (!isHeartbeatAlive()) {
+        IF (!isHeartbeatAlive()) {
           return res.status(400).json({
             ok: false,
 
@@ -989,7 +989,7 @@ app.post(
           });
         }
 
-        if (
+        IF (
           normalizeMODE(
             mt5Bridge.MODE
           ) !== "LIVE"
@@ -1050,7 +1050,7 @@ mt5command = {
 };
 
 try {
-  if (
+  IF (
     engine &&
     typeof engine.start === "function"
   ) {
@@ -1072,7 +1072,36 @@ console.log(
 );
 
 console.log(
-  `MODE: ${requestedMODE}`
+  "========================================"
+);
+
+console.log(
+  "AI MONSTER U START_BOT"
+);
+
+console.log(
+  MODE: ${requestedMODE}
+);
+
+console.log(
+  SYMBOL: ${requestedSYMBOL}
+);
+
+console.log(
+  TIMEFRAME: ${requestedTimeframe}
+);
+
+console.log(
+  "BOT RUNNING: TRUE"
+);
+
+console.log(
+  COMMAND: ${mt5command.id}
+);
+
+console.log(
+  "========================================"
+);
 );
 
 console.log(
@@ -1146,7 +1175,7 @@ app.post(
         new Date().toISOString();
 
       try {
-        if (
+        IF (
           engine &&
           typeof engine.stop === "function"
         ) {
@@ -1249,7 +1278,7 @@ app.post(
         complete
       } = req.body || {};
 
-      if (
+      IF (
         !SYMBOL    ||
         !timeframe ||
         open === undefined ||
@@ -1265,7 +1294,7 @@ app.post(
         });
       }
 
-      if (
+      IF (
         complete !== true
       ) {
         return res.json({
@@ -1311,7 +1340,7 @@ app.post(
         complete: true
       };
 
-      if (
+      IF (
         !Number.isFinite(
           candle.open
         ) ||
@@ -1339,7 +1368,7 @@ app.post(
           candle.timeframe
         );
 
-      if (
+      IF (
         !candleHistory.has(key)
       ) {
         candleHistory.set(
@@ -1358,7 +1387,7 @@ app.post(
             candle.startTime
         );
 
-      if (!duplicate) {
+      IF (!duplicate) {
         candles.push(candle);
       }
 
@@ -1366,7 +1395,7 @@ app.post(
         candles.length >
         MAX_CANDLES
       ) {
-        candles.shift();
+        candles.shIFt();
       }
 
       const previousProcessed =
@@ -1374,7 +1403,7 @@ app.post(
           key
         );
 
-      if (
+      IF (
         previousProcessed ===
         candle.startTime
       ) {
@@ -1414,7 +1443,7 @@ app.post(
 
       let command = null;
 
-      if (
+      IF (
         botState.running
       ) {
         const correctSYMBOL    =
@@ -1425,11 +1454,11 @@ app.post(
           candle.timeframe ===
           botState.timeframe;
 
-        if (
+        IF (
           correctSYMBOL    &&
           correctTimeframe
         ) {
-          if (
+          IF (
             mt5command.action ===
             "NONE"
           ) {
@@ -1545,7 +1574,7 @@ app.post(
         ask
       } = req.body || {};
 
-      if (
+      IF (
         account === undefined ||
         broker === undefined ||
         server === undefined
@@ -1742,9 +1771,31 @@ app.get(
     const connected =
       isHeartbeatAlive();
 
-    if (!connected) {
-      return res.json({
-        ok: true,
+    IF (!connected) {
+    return res.json({
+  ok: true,
+
+  botRunning: Boolean(botState.running),
+
+  mt5Connected: isHeartbeatAlive(),
+
+  mt5Account: mt5Bridge?.account || null,
+
+  mt5Mode: mt5Bridge?.mode || null,
+
+  SYMBOL: botState.SYMBOL,
+
+  timeframe: botState.timeframe,
+
+  pendingcommand:
+    mt5command?.action !== "NONE",
+
+  command: mt5command,
+
+  lastExecution: mt5Execution,
+
+  time: new Date().toISOString()
+});
 
         command: {
           action:
@@ -1756,7 +1807,7 @@ app.get(
       });
     }
 
-    if (
+    IF (
       mt5command.action ===
       "NONE"
     ) {
@@ -1782,7 +1833,7 @@ app.get(
     a DEMO MT5 account.
     */
 
-    if (
+    IF (
       mt5command.mode ===
         "LIVE" &&
       normalizeMode(
@@ -1837,7 +1888,7 @@ app.post(
         MESSAGE
       } = req.body || {};
 
-      if (
+      IF (
         !id ||
         !status
       ) {
@@ -1891,7 +1942,7 @@ app.post(
           new Date().toISOString()
       };
 
-      if (
+      IF (
         mt5command.id ===
         String(id)
       ) {
@@ -1904,7 +1955,7 @@ app.post(
 
       console.log(
         "MT5 command ACK:",
-        JSON.stringify(
+        JSON.stringIFy(
           mt5Execution
         )
       );
@@ -1944,7 +1995,7 @@ app.get(
     let engineStatus = {};
 
     try {
-      if (
+      IF (
         engine &&
         typeof engine.getStatus ===
           "function"
@@ -2323,7 +2374,7 @@ app.use(
       error
     );
 
-    if (
+    IF (
       res.headersSent
     ) {
       return next(error);
