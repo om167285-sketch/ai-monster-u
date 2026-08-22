@@ -238,7 +238,7 @@ function getMarketKey(SYMBOL    , timeframe) {
 function normalizeMODE(MODE) {
   const value = String(MODE || "DEMO").trim().toUpperCase();
 
-  IF (value === "LIVE") {
+  if (value === "LIVE") {
     return "LIVE";
   }
 
