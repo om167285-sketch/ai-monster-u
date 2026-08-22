@@ -244,8 +244,6 @@ function createcommandId(prefix = "AMU") {
   }
 
   const age = Date.now() - heartbeatTime;
-
-  return age >= 0 && age <= 30000;
 }
 function resetMT5command(reason = null) {
   mt5command = {
