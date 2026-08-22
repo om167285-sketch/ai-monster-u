@@ -82,7 +82,7 @@ const supported_TIMEFRAMES = [
 let mt5Bridge = {
   connected: false,
 
-  lastHeartbeat: null,
+  lastheartbeat: null,
 
   MODE: "DEMO",
 
@@ -239,13 +239,13 @@ function createcommandId(prefix = "AMU") {
   )}`;
 }
 
-function isHeartbeatAlive() {
-  if (!mt5Bridge.lastHeartbeat) {
+function isheartbeatAlive() {
+  if (!mt5Bridge.lastheartbeat) {
     return false;
   }
 
   const heartbeatTime = new Date(
-    mt5Bridge.lastHeartbeat
+    mt5Bridge.lastheartbeat
   ).getTime();
 
   if (!Number.isFinite(heartbeatTime)) {
@@ -743,7 +743,7 @@ function createMT5Tradecommand(
     return null;
   }
 
-  if (!isHeartbeatAlive()) {
+  if (!isheartbeatAlive()) {
     console.log(
       "Trade skipped: MT5 heartbeat offline."
     );
@@ -988,114 +988,95 @@ app.post(
         }
       }
 
-      botState = {
-        ...botState,
+    botState = {
+  ...botState,
 
-        running: true,
+  running: true,
 
-        requestedMODE,
+  requestedMODE,
 
-        SYMBOL   :
-          requestedSYMBOL   ,
+  SYMBOL: requestedSYMBOL,
 
-        timeframe:
-          requestedTimeframe,
+  timeframe: requestedTimeframe,
 
-        startedAt:
-          new Date().toISOString(),
+  startedAt: new Date().toISOString(),
 
-        stoppedAt: null
-      };
+  stoppedAt: null
+};
 
-      mt5command = {
-        id:
-          createcommandId(
-            "START"
-          ),
+mt5command = {
+  id: createcommandId("START"),
 
-        action:
-          "START_BOT",
+  action: "START_BOT",
 
-        MODE:
-          requestedMODE,
+  MODE: requestedMODE,
 
-        SYMBOL   :
-          requestedSYMBOL   ,
+  SYMBOL: requestedSYMBOL,
 
-        timeframe:
-          requestedTimeframe,
+  timeframe: requestedTimeframe,
 
-        volume:
-          BOT_CONFIG.minimumLot,
+  volume: BOT_CONFIG.minimumLot,
 
-        sl: 0,
+  sl: 0,
 
-        tp: 0,
+  tp: 0,
 
-        reason:
-          "USER_START_BOT",
+  reason: "USER_START_BOT",
 
-        payload: {
-          SYMBOL   :
-            requestedSYMBOL   ,
+  payload: {
+    SYMBOL: requestedSYMBOL,
+    timeframe: requestedTimeframe,
+    MODE: requestedMODE
+  },
 
-          timeframe:
-            requestedTimeframe,
+  createdAt: new Date().toISOString()
+};
 
-          MODE:
-            requestedMODE
-        },
+try {
+  if (
+    engine &&
+    typeof engine.start === "function"
+  ) {
+    engine.start();
+  }
+} catch (engineError) {
+  console.warn(
+    "Trading engine start warning:",
+    engineError?.message || engineError
+  );
+}
 
-        createdAt:
-          new Date().toISOString()
-      };
+console.log(
+  "========================================"
+);
 
-      try {
-        if (
-           engine &&
-          typeof engine.start === "function"
-        ) {
-          engine.start();
-        }
-      } catch (engineError) {
-        console.warn(
-          "Trading engine start warning:",
-          engineError?.MESSAGE ||
-            engineError
-        );
-      }
+console.log(
+  "AI MONSTER U START_BOT"
+);
 
-      console.log(
-        "========================================"
-      );
+console.log(
+  `MODE: ${requestedMODE}`
+);
 
-      console.log(
-        "AI MONSTER U START_BOT"
-      );
+console.log(
+  `SYMBOL: ${requestedSYMBOL}`
+);
 
-      console.log(
-        `MODE: ${requestedMode}`
-      );
+console.log(
+  `TIMEFRAME: ${requestedTimeframe}`
+);
 
-      console.log(
-        `SYMBOL   : ${requestedSYMBOL   }`
-      );
+console.log(
+  "BOT RUNNING: TRUE"
+);
 
-      console.log(
-        `TIMEFRAME: ${requestedTimeframe}`
-      );
+console.log(
+  `COMMAND: ${mt5command.id}`
+);
 
-      console.log(
-        "BOT RUNNING: TRUE"
-      );
-
-      console.log(
-        `COMMAND: ${mt5Command.id}`
-      );
-
-      console.log(
-        "========================================"
-      );
+console.log(
+  "========================================"
+);
 
       return res.json({
         ok: true,
