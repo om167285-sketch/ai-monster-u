@@ -634,7 +634,7 @@ class TradingEngine {
       this.calculateRiskAmount();
 
     this.position = {
-      id: AMU-${Date.now()},
+      id: `AMU-${Date.now()}`,
       symbol: this.symbol,
       side: signal,
       entry,
