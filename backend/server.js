@@ -53,23 +53,7 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
-function isHeartbeatAlive() {
-  const heartbeat = mt5Bridge?.lastHeartbeat;
-
-  if (!heartbeat) {
-    return false;
-  }
-
-  const heartbeatTime = new Date(heartbeat).getTime();
-
-  if (!Number.isFinite(heartbeatTime)) {
-    return false;
-  }
-
-  const age = Date.now() - heartbeatTime;
-
-  return age >= 0 && age <= 15000;
-}
+f
 const BOT_CONFIG = {
   SYMBOL    : "BTCUSDm",
   timeframe: "1m",
