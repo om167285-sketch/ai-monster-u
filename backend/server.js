@@ -68,28 +68,23 @@ function normalizeMode(mode) {
 }
 
 function isHeartbeatAlive() {
-
   const lastHeartbeat = mt5Bridge?.lastHeartbeat;
 
   if (!lastHeartbeat) {
-
     return false;
-
   }
 
   const heartbeatTime = new Date(lastHeartbeat).getTime();
 
   if (!Number.isFinite(heartbeatTime)) {
-
     return false;
-
   }
 
   const age = Date.now() - heartbeatTime;
 
   return age >= 0 && age <= 15000;
-
 }
+
 const BOT_CONFIG = {
   SYMBOL    : "BTCUSDm",
   timeframe: "1m",
