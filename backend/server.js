@@ -22,15 +22,18 @@ app.use(express.json({ limit: "2mb" }));
 /* =========================================================
    FRONTEND
 ========================================================= */
+app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
-  res.json({
-    ok: true,
-    service: "AI MONSTER U",
-    message: "AI MONSTER U backend is running",
-    backend: true,
-    render: true
-  });
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/auth.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "auth.html"));
+});
+
+app.get("/dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "dashboard.html"));
 });
 
 /* =========================================================
