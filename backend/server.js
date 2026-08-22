@@ -250,7 +250,7 @@ function normalizeTimeframe(timeframe) {
     timeframe || BOT_CONFIG.timeframe
   ).trim();
 
-  IF (supported_TIMEFRAMES.includes(value)) {
+  if (supported_TIMEFRAMES.includes(value)) {
     return value;
   }
 
