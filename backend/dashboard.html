@@ -1,1617 +1,1126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AI MONSTER U | Trading Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-:root{
-  --bg:#050708;
-  --panel:#0b0f12;
-  --panel2:#0f1418;
-  --border:rgba(255,255,255,.08);
-  --text:#f4f7f8;
-  --muted:#78838c;
-  --green:#00ffa6;
-  --blue:#00c8ff;
-  --red:#ff5f6d;
-  --yellow:#ffd166;
-}
-
-body{
-  min-height:100vh;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,Arial,Helvetica,sans-serif;
-}
-
-button,input,select{font:inherit}
-button{cursor:pointer}
-
-.topbar{
-  height:70px;
-  padding:0 28px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#080b0d;
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:20;
-}
-
-.brand{
-  font-size:18px;
-  font-weight:900;
-}
-
-.brand span{color:var(--green)}
-
-.user-area{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.email{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.avatar{
-  width:36px;
-  height:36px;
-  border-radius:10px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,var(--green),var(--blue));
-  color:#00130d;
-  font-weight:900;
-}
-
-.logout{
-  padding:9px 13px;
-  border-radius:8px;
-  border:1px solid rgba(255,95,109,.25);
-  background:rgba(255,95,109,.08);
-  color:#ff9aa2;
-  font-size:11px;
-  font-weight:800;
-}
-
-.layout{
-  display:flex;
-  min-height:calc(100vh - 70px);
-}
-
-.sidebar{
-  width:235px;
-  flex-shrink:0;
-  padding:22px 14px;
-  background:#080b0d;
-  border-right:1px solid var(--border);
-}
-
-.section{
-  margin:19px 10px 8px;
-  color:#4f5a62;
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:1.5px;
-}
-
-.menu a{
-  display:flex;
-  align-items:center;
-  padding:11px 12px;
-  margin:3px 0;
-  border-radius:9px;
-  color:#7c878f;
-  text-decoration:none;
-  font-size:12px;
-  font-weight:700;
-}
-
-.menu a:hover,
-.menu a.active{
-  color:#fff;
-  background:rgba(0,255,166,.08);
-}
-
-.menu a.active{
-  box-shadow:inset 2px 0 var(--green);
-}
-
-.main{
-  flex:1;
-  min-width:0;
-  padding:30px;
-  overflow-x:hidden;
-}
-
-.page-section{display:none}
-.page-section.active{display:block}
-
-.heading{
-  margin-bottom:24px;
-}
-
-.heading h1{
-  font-size:25px;
-  margin-bottom:6px;
-}
-
-.heading p{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.badge{
-  display:inline-flex;
-  margin-top:13px;
-  padding:7px 11px;
-  border-radius:20px;
-  background:rgba(0,255,166,.06);
-  border:1px solid rgba(0,255,166,.17);
-  color:var(--green);
-  font-size:9px;
-  font-weight:900;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-}
-
-.card,.panel{
-  background:linear-gradient(
-    145deg,
-    rgba(255,255,255,.035),
-    rgba(255,255,255,.018)
-  );
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:20px;
-}
-
-.label{
-  color:#69747c;
-  font-size:9px;
-  text-transform:uppercase;
-  letter-spacing:.5px;
-}
-
-.value{
-  margin-top:10px;
-  font-size:23px;
-  font-weight:900;
-}
-
-.muted{
-  margin-top:6px;
-  color:#505a62;
-  font-size:10px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1.45fr 1fr;
-  gap:17px;
-  margin-top:17px;
-}
-
-.panel-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
-}
-
-.panel-title h2{
-  font-size:14px;
-}
-
-.live{
-  color:var(--green);
-  font-size:9px;
-  font-weight:900;
-}
-
-.chart{
-  height:270px;
-  border-radius:11px;
-  overflow:hidden;
-  background:
-    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-  background-size:45px 45px;
-}
-
-.chart svg{
-  width:100%;
-  height:100%;
-}
-
-.row{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-
-.row4{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-}
-
-.stat{
-  padding:16px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:rgba(255,255,255,.018);
-}
-
-.stat span{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-}
-
-.stat strong{
-  display:block;
-  margin-top:8px;
-  font-size:17px;
-}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
-
-.field{
-  margin-bottom:15px;
-}
-
-.field label{
-  display:block;
-  margin-bottom:7px;
-  color:#89939b;
-  font-size:10px;
-  font-weight:800;
-}
-
-input,select{
-  width:100%;
-  padding:12px;
-  color:#fff;
-  background:#080c0f;
-  border:1px solid var(--border);
-  border-radius:8px;
-  outline:none;
-}
-
-input:focus,
-select:focus{
-  border-color:rgba(0,255,166,.4);
-}
-
-.primary{
-  width:100%;
-  padding:13px;
-  border:0;
-  border-radius:9px;
-  background:linear-gradient(135deg,var(--green),var(--blue));
-  color:#00130d;
-  font-weight:900;
-  font-size:11px;
-}
-
-.secondary{
-  padding:11px 14px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#11161a;
-  color:#fff;
-  font-size:11px;
-  font-weight:800;
-}
-
-.danger{
-  padding:11px 14px;
-  border:1px solid rgba(255,95,109,.25);
-  border-radius:8px;
-  background:rgba(255,95,109,.08);
-  color:#ff929a;
-  font-size:11px;
-  font-weight:800;
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.message{
-  margin-top:12px;
-  color:#7f8991;
-  font-size:11px;
-}
-
-.success{color:var(--green)}
-.error{color:#ff8b94}
-
-.account-list{
-  display:grid;
-  gap:12px;
-}
-
-.account{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  padding:17px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:#0a0e11;
-}
-
-.account h3{font-size:13px}
-
-.account p{
-  margin-top:5px;
-  color:var(--muted);
-  font-size:10px;
-}
-
-.account-right{text-align:right}
-
-.mode{
-  display:inline-block;
-  padding:5px 8px;
-  border-radius:15px;
-  font-size:8px;
-  font-weight:900;
-}
-
-.demo{
-  color:var(--blue);
-  background:rgba(0,200,255,.08);
-}
-
-.live-mode{
-  color:var(--green);
-  background:rgba(0,255,166,.08);
-}
-
-.connected{color:var(--green)}
-.disconnected{color:var(--red)}
-
-.table-wrap{
-  overflow:auto;
-  border:1px solid var(--border);
-  border-radius:12px;
-}
-
-table{
-  width:100%;
-  min-width:700px;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:13px 14px;
-  text-align:left;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  font-size:10px;
-}
-
-th{
-  color:#68737b;
-  font-size:9px;
-  text-transform:uppercase;
-}
-
-td{color:#c5cdd2}
-
-.empty{
-  padding:40px 20px;
-  text-align:center;
-  color:#5f6971;
-  font-size:11px;
-}
-
-.notice{
-  margin-top:14px;
-  padding:12px;
-  border-radius:9px;
-  background:rgba(255,209,102,.05);
-  border:1px solid rgba(255,209,102,.12);
-  color:#a79a74;
-  font-size:10px;
-  line-height:1.5;
-}
-
-.engine{
-  text-align:center;
-}
-
-.engine-circle{
-  width:105px;
-  height:105px;
-  margin:12px auto 18px;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-  border:1px solid rgba(0,255,166,.3);
-  background:rgba(0,255,166,.05);
-  color:var(--green);
-  font-size:11px;
-  font-weight:900;
-}
-
-.setting{
-  display:flex;
-  justify-content:space-between;
-  padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  font-size:11px;
-}
-
-.setting span:first-child{
-  color:#78828a;
-}
-
-.candle{
-  margin-top:15px;
-  padding:16px;
-  border:1px solid var(--border);
-  border-radius:11px;
-  background:#080c0f;
-}
-
-.candle strong{
-  display:block;
-  margin-top:6px;
-  font-size:16px;
-}
-
-.ai-actions{
-  display:flex;
-  gap:10px;
-  margin-top:18px;
-}
-
-.ai-actions button{
-  flex:1;
-}
-
-.switch{
-  width:42px;
-  height:23px;
-  border-radius:20px;
-  border:0;
-  background:#242b30;
-  position:relative;
-}
-
-.switch:after{
-  content:"";
-  position:absolute;
-  width:17px;
-  height:17px;
-  top:3px;
-  left:3px;
-  border-radius:50%;
-  background:#89939b;
-  transition:.2s;
-}
-
-.switch.on{
-  background:rgba(0,255,166,.3);
-}
-
-.switch.on:after{
-  left:22px;
-  background:var(--green);
-}
-
-.risk-option{
-  padding:15px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:#080c0f;
-  cursor:pointer;
-}
-
-.risk-option.active{
-  border-color:rgba(0,255,166,.5);
-  background:rgba(0,255,166,.06);
-}
-
-.risk-option strong{
-  display:block;
-  font-size:14px;
-}
-
-.risk-option span{
-  display:block;
-  margin-top:5px;
-  color:var(--muted);
-  font-size:9px;
-}
-
-.symbol-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-}
-
-.symbol-btn{
-  padding:11px 8px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#080c0f;
-  color:#9ca6ad;
-  font-size:10px;
-  font-weight:800;
-}
-
-.symbol-btn.active{
-  border-color:rgba(0,255,166,.45);
-  background:rgba(0,255,166,.08);
-  color:var(--green);
-}
-
-.small-note{
-  margin-top:8px;
-  color:#566169;
-  font-size:9px;
-  line-height:1.5;
-}
-
-.green{color:var(--green)}
-.red{color:var(--red)}
-
-.wallet-address{
-  padding:13px;
-  word-break:break-all;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#070a0c;
-  color:#aab4bb;
-  font-size:10px;
-}
-
-.qr{
-  width:150px;
-  height:150px;
-  margin:15px auto;
-  display:grid;
-  place-items:center;
-  border-radius:10px;
-  background:#fff;
-  color:#111;
-  font-size:13px;
-  font-weight:900;
-}
-
-@media(max-width:1100px){
-  .cards{grid-template-columns:repeat(2,1fr)}
-  .row4{grid-template-columns:repeat(2,1fr)}
-}
-
-@media(max-width:850px){
-  .sidebar{width:205px}
-  .main{padding:20px}
-  .grid{grid-template-columns:1fr}
-  .form-grid{grid-template-columns:1fr}
-}
-
-@media(max-width:650px){
-  .sidebar{display:none}
-  .topbar{padding:0 16px}
-  .email{display:none}
-  .main{padding:16px}
-  .cards,.row,.row4{grid-template-columns:1fr}
-  .symbol-grid{grid-template-columns:repeat(2,1fr)}
-}
-</style>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>AI MONSTER U — Trading Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #070b12;
+      color: #f4f7fb;
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+      width: 240px;
+      background: #0b111b;
+      border-right: 1px solid #1c2635;
+      padding: 24px 14px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      padding: 10px 12px 28px;
+    }
+
+    .brand h1 {
+      font-size: 21px;
+      letter-spacing: 1px;
+    }
+
+    .brand span {
+      color: #35e889;
+    }
+
+    .brand small {
+      display: block;
+      color: #7d8a9d;
+      margin-top: 6px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #aab5c5;
+      padding: 12px 14px;
+      border-radius: 9px;
+      display: block;
+      transition: .2s;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: #131d2a;
+      color: #fff;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      margin-left: 240px;
+      width: calc(100% - 240px);
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      gap: 15px;
+    }
+
+    .topbar h2 {
+      font-size: 25px;
+    }
+
+    .user-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #aab5c5;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #182535;
+      color: #35e889;
+      font-weight: bold;
+    }
+
+    /* =========================
+       CARDS
+    ========================= */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #0d141f;
+      border: 1px solid #1d2938;
+      border-radius: 13px;
+      padding: 20px;
+    }
+
+    .card-label {
+      color: #7f8ca0;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .green {
+      color: #35e889;
+    }
+
+    .red {
+      color: #ff5d6c;
+    }
+
+    .muted {
+      color: #7f8ca0;
+    }
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status-panel {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .status-item {
+      background: #0d141f;
+      border: 1px solid #1d2938;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .status-item small {
+      display: block;
+      color: #7f8ca0;
+      margin-bottom: 7px;
+    }
+
+    .status-item strong {
+      font-size: 14px;
+    }
+
+    /* =========================
+       SECTIONS
+    ========================= */
+
+    .page-section {
+      display: none;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    .section {
+      background: #0d141f;
+      border: 1px solid #1d2938;
+      border-radius: 13px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section h3 {
+      margin-bottom: 18px;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 18px;
+      color: #fff;
+      background: #1a2737;
+    }
+
+    .btn:hover {
+      opacity: .88;
+    }
+
+    .btn-green {
+      background: #168c50;
+    }
+
+    .btn-red {
+      background: #b9283b;
+    }
+
+    .btn-blue {
+      background: #235ea8;
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* =========================
+       FORMS
+    ========================= */
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #8d99aa;
+      margin-bottom: 7px;
+      font-size: 13px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      background: #080e17;
+      color: #fff;
+      border: 1px solid #263345;
+      border-radius: 8px;
+      padding: 11px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #35e889;
+    }
+
+    /* =========================
+       TABLE
+    ========================= */
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #1d2938;
+      font-size: 13px;
+    }
+
+    th {
+      color: #7f8ca0;
+      font-weight: 500;
+    }
+
+    /* =========================
+       MESSAGE
+    ========================= */
+
+    .message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      display: none;
+      font-size: 13px;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      background: rgba(53, 232, 137, .1);
+      color: #35e889;
+    }
+
+    .message.error {
+      background: rgba(255, 93, 108, .1);
+      color: #ff5d6c;
+    }
+
+    /* =========================
+       SYMBOLS
+    ========================= */
+
+    .symbol-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .symbol-option {
+      border: 1px solid #263345;
+      background: #080e17;
+      color: #fff;
+      border-radius: 9px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .symbol-option.selected {
+      border-color: #35e889;
+      background: rgba(53, 232, 137, .08);
+    }
+
+    .symbol-option strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .symbol-option small {
+      color: #7f8ca0;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media(max-width: 1000px) {
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .status-panel {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .symbol-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+    }
+
+    @media(max-width: 700px) {
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: 0;
+        border-bottom: 1px solid #1c2635;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+      }
+
+      .menu {
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .grid,
+      .form-grid,
+      .status-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .symbol-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+    }
+
+  </style>
 </head>
 
 <body>
 
-<header class="topbar">
-  <div class="brand">AI <span>MONSTER U</span></div>
+<div class="app">
 
-  <div class="user-area">
-    <span id="userEmail" class="email">Loading...</span>
-    <div id="avatar" class="avatar">U</div>
-    <button id="logoutButton" type="button">
-  Logout
-</button>
-  </div>
-</header>
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
 
-<div class="layout">
+  <aside class="sidebar">
 
-<aside class="sidebar">
-
-  <div class="section">WORKSPACE</div>
-
-  <nav class="menu">
-    <a href="#dashboard" data-page="dashboard" class="active">Dashboard</a>
-    <a href="#markets" data-page="markets">Markets</a>
-    <a href="#ai-trading" data-page="ai-trading">AI Trading</a>
-    <a href="#accounts" data-page="accounts">My Accounts</a>
-    <a href="#positions" data-page="positions">Positions</a>
-    <a href="#trade-history" data-page="trade-history">Trade History</a>
-  </nav>
-
-  <div class="section">FINANCE</div>
-
-  <nav class="menu">
-    <a href="#deposits" data-page="deposits">Deposits</a>
-    <a href="#withdrawals" data-page="withdrawals">Withdrawals</a>
-  </nav>
-
-  <div class="section">ACCOUNT</div>
-
-  <nav class="menu">
-    <a href="#risk-management" data-page="risk-management">Risk Management</a>
-    <a href="#settings" data-page="settings">Settings</a>
-    <a href="#security" data-page="security">Security</a>
-  </nav>
-
-</aside>
-
-<main class="main">
-
-<!-- DASHBOARD -->
-
-<section id="dashboard" class="page-section">
-
-  <div class="heading">
-    <h1>Trading Dashboard</h1>
-    <p>AI MONSTER U automated trading terminal</p>
-    <div class="badge">● SYSTEM ONLINE</div>
-  </div>
-
-  <section class="cards">
-
-    <div class="card">
-      <div class="label">Platform Balance</div>
-      <div id="balance" class="value">$0.00</div>
-      <div id="currencyText" class="muted">Wallet balance</div>
+    <div class="brand">
+      <h1>AI MONSTER <span>U</span></h1>
+      <small>AI Trading Platform</small>
     </div>
 
-    <div class="card">
-      <div class="label">Trading Equity</div>
-      <div id="equity" class="value">$0.00</div>
-      <div id="accountModeText" class="muted">No trading account</div>
-    </div>
+    <nav class="menu">
 
-    <div class="card">
-      <div class="label">Today's P/L</div>
-      <div id="todayProfit" class="value">$0.00</div>
-      <div class="muted">Trading performance</div>
-    </div>
+      <a href="#dashboard"
+         data-page="dashboard"
+         class="active">
+        Dashboard
+      </a>
 
-    <div class="card">
-      <div class="label">Open Positions</div>
-      <div id="openPositions" class="value">0</div>
-      <div class="muted">Currently active</div>
-    </div>
+      <a href="#trading"
+         data-page="trading">
+        AI Trading
+      </a>
 
-  </section>
+      <a href="#positions"
+         data-page="positions">
+        Positions
+      </a>
 
-  <section class="grid">
+      <a href="#history"
+         data-page="history">
+        Trade History
+      </a>
 
-    <div class="panel">
+      <a href="#settings"
+         data-page="settings">
+        Settings
+      </a>
 
-      <div class="panel-title">
-        <h2>Market Overview</h2>
-        <span class="live">● LIVE</span>
+    </nav>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+
+  <main class="main">
+
+    <div class="topbar">
+
+      <div>
+        <h2>AI MONSTER U</h2>
+        <div class="muted">
+          MT5 AI Trading Dashboard
+        </div>
       </div>
 
-      <div class="chart">
-        <svg viewBox="0 0 800 270" preserveAspectRatio="none">
-          <polyline
-            points="0,210 60,190 110,205 160,160 210,180 260,135 310,155 360,108 410,125 460,91 510,110 560,65 610,82 660,47 720,65 800,30"
-            fill="none"
-            stroke="#00ffa6"
-            stroke-width="3"/>
-        </svg>
-      </div>
-
-    </div>
-
-    <div class="panel engine">
-
-      <div class="panel-title">
-        <h2>AI MONSTER ENGINE</h2>
-        <span id="engineStatus" class="live">READY</span>
-      </div>
-
-      <div id="engineMode" class="engine-circle">DEMO</div>
-
-      <h2 id="engineTitle">Trading Engine Ready</h2>
-      <p class="muted">Automated execution status</p>
-
-      <div class="setting">
-        <span>Risk Per Trade</span>
-        <span id="dashboardRisk" class="green">2%</span>
-      </div>
-
-      <div class="setting">
-        <span>Automatic Lot Size</span>
-        <span class="green">ON</span>
-      </div>
-
-      <div class="setting">
-        <span>Automatic SL</span>
-        <span class="green">ON</span>
-      </div>
-
-      <div class="setting">
-        <span>Automatic TP</span>
-        <span class="green">ON</span>
-      </div>
-
-      <div class="setting">
-        <span>Risk Mode</span>
-        <span id="dashboardRiskMode" class="green">STANDARD</span>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="panel" style="margin-top:17px">
-
-    <div class="panel-title">
-      <h2>Account Status</h2>
-      <span id="dashboardAccountStatus" class="live">CHECKING</span>
-    </div>
-
-    <div class="row4">
-
-      <div class="stat">
-        <span>Account</span>
-        <strong id="dashboardAccountName">—</strong>
-      </div>
-
-      <div class="stat">
-        <span>Mode</span>
-        <strong id="dashboardMode">—</strong>
-      </div>
-
-      <div class="stat">
-        <span>Status</span>
-        <strong id="dashboardStatus">—</strong>
-      </div>
-
-      <div class="stat">
-        <span>Bot</span>
-        <strong id="dashboardBot">OFF</strong>
-      </div>
-
-    </div>
-
-  </section>
-
-</section>
-
-
-<!-- MARKETS -->
-
-<section id="markets" class="page-section">
-
-  <div class="heading">
-    <h1>Markets</h1>
-    <p>Select the instruments the AI MONSTER engine is allowed to trade.</p>
-  </div>
-
-  <div class="panel">
-
-    <div class="panel-title">
-      <h2>Trading Symbols</h2>
-      <span id="selectedSymbolCount" class="live">0 SELECTED</span>
-    </div>
-
-    <div id="marketSymbolGrid" class="symbol-grid"></div>
-
-    <div class="small-note">
-      Select one or more symbols. The exact symbol name used by your MT5 broker must be mapped by the EA bridge.
-      For example, some brokers use XAUUSDm, BTCUSDm or EURUSDm.
-    </div>
-
-    <button id="saveMarketSymbols" class="primary" style="margin-top:18px">
-      SAVE SYMBOLS
-    </button>
-
-    <div id="marketMessage" class="message"></div>
-
-  </div>
-
-  <div class="cards" style="margin-top:17px">
-
-    <div class="card">
-      <div class="label">XAUUSD</div>
-      <div id="goldPrice" class="value">—</div>
-      <div class="muted">Gold / US Dollar</div>
-    </div>
-
-    <div class="card">
-      <div class="label">EURUSD</div>
-      <div id="eurPrice" class="value">—</div>
-      <div class="muted">Euro / US Dollar</div>
-    </div>
-
-    <div class="card">
-      <div class="label">BTCUSD</div>
-      <div id="btcPrice" class="value">—</div>
-      <div class="muted">Bitcoin / US Dollar</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Market Feed</div>
-      <div class="value" style="font-size:17px">READY</div>
-      <div class="muted">Waiting for MT5 bridge</div>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- AI TRADING -->
-
-<section id="ai-trading" class="page-section">
-
-  <div class="heading">
-    <h1>AI Trading</h1>
-    <p>Configure and control the AI MONSTER trading engine.</p>
-    <div id="aiModeBadge" class="badge">DEMO MODE</div>
-  </div>
-
-  <div class="panel">
-
-    <div class="row4">
-
-      <div class="stat">
-        <span>Account</span>
-        <strong id="aiAccountName">—</strong>
-      </div>
-
-      <div class="stat">
-        <span>Mode</span>
-        <strong id="aiAccountMode">DEMO</strong>
-      </div>
-
-      <div class="stat">
-        <span>Bot Status</span>
-        <strong id="aiBotStatus">OFF</strong>
-      </div>
-
-      <div class="stat">
-        <span>Current Signal</span>
-        <strong id="aiSignal">WAIT</strong>
-      </div>
-
-    </div>
-
-
-    <div style="margin-top:22px" class="form-grid">
-
-      <div class="field">
-        <label>STRATEGY</label>
-
-        <select id="aiStrategy">
-          <option value="AI Scalping">AI Scalping</option>
-          <option value="EMA Trend">EMA Trend</option>
-        </select>
-      </div>
-
-
-      <div class="field">
-        <label>TIMEFRAME</label>
-
-        <select id="aiTimeframe">
-          <option value="1m">1 Minute</option>
-          <option value="5m">5 Minutes</option>
-          <option value="15m">15 Minutes</option>
-          <option value="30m">30 Minutes</option>
-          <option value="1h">1 Hour</option>
-          <option value="4h">4 Hours</option>
-          <option value="1d">1 Day</option>
-        </select>
-      </div>
-
-
-      <div class="field">
-        <label>RISK MODE</label>
-
-        <select id="aiRiskMode">
-          <option value="standard">STANDARD — 2%</option>
-          <option value="aggressive">AGGRESSIVE — 3.5%</option>
-        </select>
-      </div>
-
-
-      <div class="field">
-        <label>RISK PER TRADE</label>
-
-        <input
-          id="aiRiskInput"
-          type="number"
-          min="2"
-          max="3.5"
-          step="0.1"
-          value="2">
-      </div>
-
-    </div>
-
-
-    <div class="field" style="margin-top:8px">
-
-      <label>TRADING SYMBOLS</label>
-
-      <div id="aiSymbolGrid" class="symbol-grid"></div>
-
-      <div class="small-note">
-        The EA bridge receives this list and trades only symbols selected here.
-      </div>
-
-    </div>
-
-
-    <div class="ai-actions">
-
-      <button id="startAiBot" class="primary">
-        START AI BOT
-      </button>
-
-      <button id="stopAiBot" class="secondary">
-        STOP AI BOT
-      </button>
-
-      <button id="emergencyClose" class="danger">
-        EMERGENCY CLOSE
-      </button>
-
-    </div>
-
-
-    <div class="candle">
-
-      <span class="muted">
-        CURRENT CANDLE / TIMEFRAME
-      </span>
-
-      <strong id="currentCandle">
-        Waiting for market data
-      </strong>
-
-      <span
-        class="muted"
-        style="display:block;margin-top:12px">
-        NEXT CANDLE CLOSE
-      </span>
-
-      <strong id="nextCandleClose">
-        --:--:--
-      </strong>
-
-    </div>
-
-
-    <div id="aiMessage" class="message"></div>
-
-    <div class="notice">
-      The dashboard controls the trading configuration. Actual MT5 execution must be performed by the connected EA bridge.
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ACCOUNTS -->
-
-<section id="accounts" class="page-section">
-
-  <div class="heading">
-    <h1>My Accounts</h1>
-    <p>Manage your connected trading accounts.</p>
-  </div>
-
-  <div id="accountsList" class="account-list">
-    <div class="empty">Loading trading accounts...</div>
-  </div>
-
-</section>
-
-
-<!-- POSITIONS -->
-
-<section id="positions" class="page-section">
-
-  <div class="heading">
-    <h1>Positions</h1>
-    <p>Monitor currently open trading positions.</p>
-  </div>
-
-  <div class="panel">
-
-    <div class="panel-title">
-      <h2>Open Positions</h2>
-      <span id="positionsCount" class="live">
-        0 ACTIVE
-      </span>
-    </div>
-
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Side</th>
-            <th>Volume</th>
-            <th>Entry</th>
-            <th>Current</th>
-            <th>SL</th>
-            <th>TP</th>
-            <th>Floating P/L</th>
-          </tr>
-        </thead>
-
-        <tbody id="positionsBody"></tbody>
-
-      </table>
-
-    </div>
-
-    <div id="positionsEmpty" class="empty">
-      No open positions.
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- TRADE HISTORY -->
-
-<section id="trade-history" class="page-section">
-
-  <div class="heading">
-    <h1>Trade History</h1>
-    <p>Review completed trades and results.</p>
-  </div>
-
-  <div class="panel">
-
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Side</th>
-            <th>Volume</th>
-            <th>Entry</th>
-            <th>Exit</th>
-            <th>Result</th>
-            <th>Opened</th>
-            <th>Closed</th>
-          </tr>
-        </thead>
-
-        <tbody id="tradesBody"></tbody>
-
-      </table>
-
-    </div>
-
-    <div id="tradesEmpty" class="empty">
-      No completed trades yet.
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- DEPOSITS -->
-
-<section id="deposits" class="page-section">
-
-  <div class="heading">
-    <h1>Deposits</h1>
-    <p>Fund your platform account using supported cryptocurrency.</p>
-  </div>
-
-  <div class="grid">
-
-    <div class="panel">
-
-      <div class="panel-title">
-        <h2>Make a Deposit</h2>
-        <span class="live">MINIMUM $50</span>
-      </div>
-
-      <div class="field">
-        <label>CURRENCY</label>
-
-        <select id="depositCurrency">
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>NETWORK</label>
-
-        <select id="depositNetwork">
-          <option value="TRC20">TRC20</option>
-          <option value="BEP20">BEP20</option>
-          <option value="ERC20">ERC20</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>AMOUNT</label>
-
-        <input
-          id="depositAmount"
-          type="number"
-          min="50"
-          step="0.01"
-          placeholder="Minimum 50">
-      </div>
-
-      <button id="depositSubmit" class="primary">
-        GENERATE DEPOSIT REQUEST
-      </button>
-
-      <div id="depositMessage" class="message"></div>
-
-      <div class="notice">
-        A deposit request is only a record until a verified payment provider confirms the transaction.
-      </div>
-
-    </div>
-
-
-    <div class="panel">
-
-      <div class="panel-title">
-        <h2>Payment Address</h2>
-        <span class="live">SECURE</span>
-      </div>
-
-      <div class="qr">QR</div>
-
-      <div id="depositAddress" class="wallet-address">
-        Connect a verified payment provider to generate a real deposit address.
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- WITHDRAWALS -->
-
-<section id="withdrawals" class="page-section">
-
-  <div class="heading">
-    <h1>Withdrawals</h1>
-    <p>Request cryptocurrency withdrawals from your available balance.</p>
-  </div>
-
-  <div class="panel">
-
-    <div class="form-grid">
-
-      <div class="field">
-        <label>CURRENCY</label>
-
-        <select id="withdrawCurrency">
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>NETWORK</label>
-
-        <select id="withdrawNetwork">
-          <option value="TRC20">TRC20</option>
-          <option value="BEP20">BEP20</option>
-          <option value="ERC20">ERC20</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>DESTINATION WALLET</label>
-
-        <input
-          id="withdrawAddress"
-          placeholder="Enter wallet address">
-      </div>
-
-      <div class="field">
-        <label>AMOUNT</label>
-
-        <input
-          id="withdrawAmount"
-          type="number"
-          min="1"
-          step="0.01"
-          placeholder="Amount">
-      </div>
-
-    </div>
-
-    <div class="row" style="margin-bottom:18px">
-
-      <div class="stat">
-        <span>Available Balance</span>
-        <strong id="withdrawBalance">$0.00</strong>
-      </div>
-
-      <div class="stat">
-        <span>Network Fee</span>
-        <strong id="withdrawFee">$0.00</strong>
-      </div>
-
-      <div class="stat">
-        <span>You Receive</span>
-        <strong id="withdrawReceive">$0.00</strong>
-      </div>
-
-    </div>
-
-    <button id="withdrawSubmit" class="primary">
-      REQUEST WITHDRAWAL
-    </button>
-
-    <div id="withdrawMessage" class="message"></div>
-
-  </div>
-
-</section>
-
-
-<!-- RISK MANAGEMENT -->
-
-<section id="risk-management" class="page-section">
-
-  <div class="heading">
-
-    <h1>Risk Management</h1>
-
-    <p>
-      Configure automatic position sizing for the AI MONSTER engine.
-    </p>
-
-    <div class="badge">
-      AUTOMATIC LOT CALCULATION
-    </div>
-
-  </div>
-
-
-  <div class="panel">
-
-    <div class="panel-title">
-      <h2>Risk Profile</h2>
-      <span id="riskProfileStatus" class="live">
-        STANDARD
-      </span>
-    </div>
-
-
-    <div class="form-grid">
-
-      <div
-        id="standardRiskCard"
-        class="risk-option active">
-
-        <strong>STANDARD — 2%</strong>
-
-        <span>
-          Uses 2% of current account equity as the maximum planned risk for each trade.
-        </span>
-
-      </div>
-
-
-      <div
-        id="aggressiveRiskCard"
-        class="risk-option">
-
-        <strong>AGGRESSIVE — 3.5%</strong>
-
-        <span>
-          Uses 3.5% of current account equity as the maximum planned risk for each trade.
-        </span>
+      <div class="user-box">
+
+        <div>
+          <div id="userEmail">
+            Loading...
+          </div>
+        </div>
+
+        <div
+          class="avatar"
+          id="avatar">
+          U
+        </div>
 
       </div>
 
     </div>
 
 
-    <div class="form-grid" style="margin-top:18px">
+    <!-- =========================
+         DASHBOARD
+    ========================== -->
 
-      <div class="field">
+    <section
+      id="dashboard"
+      class="page-section active">
 
-        <label>RISK PER TRADE %</label>
+      <div class="grid">
 
-        <input
-          id="riskPercent"
-          type="number"
-          min="2"
-          max="3.5"
-          step=".1"
-          value="2">
+        <div class="card">
+          <div class="card-label">
+            MT5 BALANCE
+          </div>
 
-      </div>
+          <div
+            class="card-value"
+            id="mt5Balance">
+            $0.00
+          </div>
+        </div>
 
+        <div class="card">
+          <div class="card-label">
+            MT5 EQUITY
+          </div>
 
-      <div class="field">
+          <div
+            class="card-value"
+            id="mt5Equity">
+            $0.00
+          </div>
+        </div>
 
-        <label>AUTOMATIC LOT SIZE</label>
+        <div class="card">
+          <div class="card-label">
+            TODAY P/L
+          </div>
 
-        <select id="automaticLot">
+          <div
+            class="card-value"
+            id="todayProfit">
+            $0.00
+          </div>
+        </div>
 
-          <option value="true">
-            ON — CALCULATE FROM EQUITY
-          </option>
+        <div class="card">
+          <div class="card-label">
+            OPEN POSITIONS
+          </div>
 
-          <option value="false">
-            OFF
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div class="field">
-
-        <label>AUTOMATIC STOP LOSS</label>
-
-        <select id="automaticSL">
-
-          <option value="true">ON</option>
-          <option value="false">OFF</option>
-
-        </select>
-
-      </div>
-
-
-      <div class="field">
-
-        <label>AUTOMATIC TAKE PROFIT</label>
-
-        <select id="automaticTP">
-
-          <option value="true">ON</option>
-          <option value="false">OFF</option>
-
-        </select>
+          <div
+            class="card-value"
+            id="openPositions">
+            0
+          </div>
+        </div>
 
       </div>
 
 
-      <div class="field">
+      <div class="status-panel">
 
-        <label>TIMEFRAME</label>
+        <div class="status-item">
+          <small>BOT STATUS</small>
+          <strong id="aiBotStatus">
+            OFFLINE
+          </strong>
+        </div>
 
-        <select id="riskTimeframe">
+        <div class="status-item">
+          <small>MT5 ENGINE</small>
+          <strong id="engineStatus">
+            MT5 NOT CONNECTED
+          </strong>
+        </div>
 
-          <option value="1m">1M</option>
-          <option value="5m">5M</option>
-          <option value="15m">15M</option>
-          <option value="30m">30M</option>
-          <option value="1h">1H</option>
-          <option value="4h">4H</option>
-          <option value="1d">1D</option>
+        <div class="status-item">
+          <small>BROKER</small>
+          <strong id="mt5Broker">
+            —
+          </strong>
+        </div>
 
-        </select>
+        <div class="status-item">
+          <small>ACCOUNT</small>
+          <strong id="mt5Login">
+            —
+          </strong>
+        </div>
+
+        <div class="status-item">
+          <small>MODE</small>
+          <strong id="mt5AccountMode">
+            DEMO
+          </strong>
+        </div>
 
       </div>
 
-    </div>
+
+      <div class="section">
+
+        <h3>MT5 Connection</h3>
+
+        <div class="muted">
+          Connection status is read from the MT5 bridge heartbeat.
+        </div>
+
+        <br>
+
+        <div id="mt5Error"
+             class="red">
+        </div>
+
+      </div>
 
 
-    <div class="notice">
+      <div class="section">
 
-      <strong>Automatic lot sizing:</strong>
-      the website sends the selected risk percentage to the EA bridge.
-      The MT5 EA must calculate the final volume using the actual account equity,
-      symbol contract specifications, tick value, tick size and stop-loss distance.
+        <h3>Emergency Controls</h3>
 
-      The website does not blindly force 0.01 lots.
+        <div class="buttons">
 
-    </div>
+          <button
+            class="btn btn-red"
+            id="emergencyClose">
+            CLOSE ALL POSITIONS
+          </button>
 
+          <button
+            class="btn btn-green"
+            id="startAiBotDashboard">
+            START AI BOT
+          </button>
 
-    <button
-      id="saveRisk"
-      class="primary"
-      style="margin-top:18px">
+          <button
+            class="btn"
+            id="stopAiBotDashboard">
+            STOP AI BOT
+          </button>
 
-      SAVE RISK SETTINGS
+        </div>
 
-    </button>
+        <div
+          id="dashboardMessage"
+          class="message">
+        </div>
 
+      </div>
 
-    <div id="riskMessage" class="message"></div>
-
-  </div>
-
-</section>
-
-
-<!-- SETTINGS -->
-
-<section id="settings" class="page-section">
-
-  <div class="heading">
-
-    <h1>Settings</h1>
-
-    <p>
-      Configure your AI MONSTER U trading preferences.
-    </p>
-
-  </div>
+    </section>
 
 
-  <div class="panel">
+    <!-- =========================
+         TRADING
+    ========================== -->
 
-    <div class="setting">
-      <span>Account Email</span>
-      <strong id="settingsEmail">—</strong>
-    </div>
+    <section
+      id="trading"
+      class="page-section">
 
-    <div class="setting">
-      <span>Default Currency</span>
-      <strong>USD</strong>
-    </div>
+      <div class="section">
 
-    <div class="setting">
-      <span>Default Trading Mode</span>
-      <strong>DEMO</strong>
-    </div>
+        <h3>AI Trading Configuration</h3>
 
-    <div class="setting">
-      <span>Automatic Trading</span>
-      <button id="autoTradingSwitch" class="switch"></button>
-    </div>
+        <div class="form-grid">
 
-    <div class="setting">
-      <span>Market Notifications</span>
-      <button id="notificationSwitch" class="switch on"></button>
-    </div>
+          <div class="form-group">
 
-    <div style="margin-top:20px">
+            <label>
+              Risk Mode
+            </label>
 
-      <button
-        id="saveSettings"
-        class="primary">
+            <select id="riskMode">
 
-        SAVE SETTINGS
+              <option value="standard">
+                Standard
+              </option>
 
-      </button>
+              <option value="aggressive">
+                Aggressive
+              </option>
 
-    </div>
+            </select>
 
-    <div id="settingsMessage" class="message"></div>
-
-  </div>
-
-</section>
+          </div>
 
 
-<!-- SECURITY -->
+          <div class="form-group">
 
-<section id="security" class="page-section">
+            <label>
+              Risk %
+            </label>
 
-  <div class="heading">
-    <h1>Security</h1>
+            <input
+              id="riskPercent"
+              type="number"
+              min="0.1"
+              max="3.5"
+              step="0.1"
+              value="2">
 
-    <p>
-      Protect your account and trading access.
-    </p>
-
-  </div>
+          </div>
 
 
-  <div class="panel">
+          <div class="form-group">
 
-    <div class="setting">
-      <span>Email verification</span>
-      <strong id="emailVerified" class="green">
-        VERIFIED
-      </strong>
-    </div>
+            <label>
+              Timeframe
+            </label>
 
-    <div class="setting">
-      <span>Authentication</span>
-      <strong class="green">
-        EMAIL AUTHENTICATION
-      </strong>
-    </div>
+            <select id="timeframe">
 
-    <div class="setting">
-      <span>Current session</span>
-      <strong class="green">
-        ACTIVE
-      </strong>
-    </div>
+              <option value="1m">1 Minute</option>
+              <option value="5m">5 Minutes</option>
+              <option value="15m">15 Minutes</option>
+              <option value="30m">30 Minutes</option>
+              <option value="1h">1 Hour</option>
+              <option value="4h">4 Hours</option>
 
-    <div style="margin-top:20px">
+            </select>
 
-      <button
-        id="securityLogout"
-        class="danger">
+          </div>
 
-        SIGN OUT OF THIS ACCOUNT
 
-      </button>
+          <div class="form-group">
 
-    </div>
+            <label>
+              Strategy
+            </label>
 
-    <div class="notice">
-      Never share your Supabase authentication tokens,
-      private keys, broker passwords, or crypto wallet private keys.
-    </div>
+            <select id="strategy">
 
-  </div>
+              <option value="AI Scalping">
+                AI Scalping
+              </option>
 
-</section>
+              <option value="Trend Following">
+                Trend Following
+              </option>
 
-</main>
+              <option value="EMA RSI">
+                EMA + RSI
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Max Daily Loss %
+            </label>
+
+            <input
+              id="maxDailyLoss"
+              type="number"
+              value="3"
+              min="0.1"
+              max="20"
+              step="0.1">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Max Drawdown %
+            </label>
+
+            <input
+              id="maxDrawdown"
+              type="number"
+              value="10"
+              min="0.1"
+              max="50"
+              step="0.1">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Maximum Open Trades
+            </label>
+
+            <input
+              id="maxOpenTrades"
+              type="number"
+              value="3"
+              min="1"
+              max="100">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Automatic Lot Size
+            </label>
+
+            <select id="automaticLot">
+
+              <option value="true">
+                ON
+              </option>
+
+              <option value="false">
+                OFF
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Automatic Stop Loss
+            </label>
+
+            <select id="automaticSL">
+
+              <option value="true">
+                ON
+              </option>
+
+              <option value="false">
+                OFF
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Automatic Take Profit
+            </label>
+
+            <select id="automaticTP">
+
+              <option value="true">
+                ON
+              </option>
+
+              <option value="false">
+                OFF
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="section">
+
+        <h3>Trading Symbols</h3>
+
+        <div
+          id="symbolGrid"
+          class="symbol-grid">
+        </div>
+
+      </div>
+
+
+      <div class="section">
+
+        <div class="buttons">
+
+          <button
+            class="btn btn-green"
+            id="saveTradingSettings">
+            SAVE SETTINGS
+          </button>
+
+          <button
+            class="btn btn-green"
+            id="startAiBot">
+            START AI BOT
+          </button>
+
+          <button
+            class="btn btn-red"
+            id="stopAiBot">
+            STOP AI BOT
+          </button>
+
+        </div>
+
+        <div
+          id="tradingMessage"
+          class="message">
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         POSITIONS
+    ========================== -->
+
+    <section
+      id="positions"
+      class="page-section">
+      <div class="section">
+
+        <h3>
+          Active Positions
+          <span
+            id="positionsCount"
+            class="muted">
+            0 ACTIVE
+          </span>
+        </h3>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Volume</th>
+                <th>Entry</th>
+                <th>Current</th>
+                <th>SL</th>
+                <th>TP</th>
+                <th>Floating P/L</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="positionsBody">
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div
+          id="positionsEmpty"
+          class="muted">
+          No open positions.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         HISTORY
+    ========================== -->
+
+    <section
+      id="history"
+      class="page-section">
+
+      <div class="section">
+
+        <h3>Trade History</h3>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Volume</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Profit</th>
+                <th>Result</th>
+                <th>Opened</th>
+                <th>Closed</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="tradesBody">
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div
+          id="tradesEmpty"
+          class="muted">
+          No completed trades.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         SETTINGS
+    ========================== -->
+
+    <section
+      id="settings"
+      class="page-section">
+
+      <div class="section">
+
+        <h3>Account</h3>
+
+        <p id="settingsEmail"
+           class="muted">
+          —
+        </p>
+
+        <br>
+
+        <button
+          class="btn btn-red"
+          id="logoutButton">
+          SIGN OUT
+        </button>
+
+      </div>
+
+
+      <div class="section">
+
+        <h3>Trading Account</h3>
+
+        <div id="accountInfo"
+             class="muted">
+          Loading account...
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
 </div>
 
 
 <script>
 
 /* =========================================================
-   SUPABASE
+   SUPABASE CONFIGURATION
 ========================================================= */
 
-const SUPABASE_URL =
-  "https://kkjhgoodsstixqjfyvme.supabase.co";
+/*
+  IMPORTANT:
 
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_jpd0pf-S7laKRnuc9dfhKg_C_WEzl1Y";
+  Replace these two values with the same
+  Supabase URL and ANON/PUBLISHABLE KEY
+  from your existing project.
+*/
+
+const SUPABASE_URL =sb_publishable_jpd0pf-S7laKRnuc9dfhKg_C_WEzl1Y
+  "YOUR_SUPABASE_URL";
+
+const SUPABASE_ANON_KEY =
+  "YOUR_SUPABASE_ANON_KEY";
+
 
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
+    SUPABASE_ANON_KEY
   );
 
 
@@ -1620,16 +1129,17 @@ const supabaseClient =
 ========================================================= */
 
 let currentUser = null;
-let demoAccount = null;
-let walletBalance = 0;
+
+let tradingAccount = null;
+
+let bridgeStatus = null;
 
 let selectedSymbols = [
-  "XAUUSD",
-  "EURUSD",
-  "BTCUSD"
+  "XAUUSD"
 ];
 
 let riskMode = "standard";
+
 let riskPercent = 2;
 
 
@@ -1640,2410 +1150,83 @@ let riskPercent = 2;
 const AVAILABLE_SYMBOLS = [
 
   {
-    value:"XAUUSD",
-    label:"XAUUSD",
-    description:"Gold"
+    value: "XAUUSD",
+    label: "XAUUSD",
+    description: "Gold"
   },
 
   {
-    value:"EURUSD",
-    label:"EURUSD",
-    description:"Euro / USD"
+    value: "EURUSD",
+    label: "EURUSD",
+    description: "Euro / USD"
   },
 
   {
-    value:"GBPUSD",
-    label:"GBPUSD",
-    description:"Pound / USD"
+    value: "GBPUSD",
+    label: "GBPUSD",
+    description: "Pound / USD"
   },
 
   {
-    value:"USDJPY",
-    label:"USDJPY",
-    description:"USD / Yen"
+    value: "USDJPY",
+    label: "USDJPY",
+    description: "USD / Yen"
   },
 
   {
-    value:"AUDUSD",
-    label:"AUDUSD",
-    description:"Australian Dollar"
+    value: "AUDUSD",
+    label: "AUDUSD",
+    description: "Australian Dollar"
   },
 
   {
-    value:"USDCAD",
-    label:"USDCAD",
-    description:"USD / Canadian Dollar"
+    value: "USDCAD",
+    label: "USDCAD",
+    description: "USD / Canadian Dollar"
   },
 
   {
-    value:"USDCHF",
-    label:"USDCHF",
-    description:"USD / Swiss Franc"
+    value: "USDCHF",
+    label: "USDCHF",
+    description: "USD / Swiss Franc"
   },
 
   {
-    value:"NZDUSD",
-    label:"NZDUSD",
-    description:"New Zealand Dollar"
+    value: "NZDUSD",
+    label: "NZDUSD",
+    description: "New Zealand Dollar"
   },
 
   {
-    value:"EURGBP",
-    label:"EURGBP",
-    description:"Euro / Pound"
+    value: "EURGBP",
+    label: "EURGBP",
+    description: "Euro / Pound"
   },
 
   {
-    value:"EURJPY",
-    label:"EURJPY",
-    description:"Euro / Yen"
+    value: "EURJPY",
+    label: "EURJPY",
+    description: "Euro / Yen"
   },
 
   {
-    value:"GBPJPY",
-    label:"GBPJPY",
-    description:"Pound / Yen"
+    value: "GBPJPY",
+    label: "GBPJPY",
+    description: "Pound / Yen"
   },
 
   {
-    value:"BTCUSD",
-    label:"BTCUSD",
-    description:"Bitcoin"
+    value: "BTCUSD",
+    label: "BTCUSD",
+    description: "Bitcoin"
   },
 
   {
-    value:"ETHUSD",
-    label:"ETHUSD",
-    description:"Ethereum"
+    value: "ETHUSD",
+    label: "ETHUSD",
+    description: "Ethereum"
   }
 
-];
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function money(value){
-
-  const number =
-    Number(value || 0);
-
-  return "$" + number.toFixed(2);
-}
-
-
-function escapeHTML(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-
-function setMessage(id,text,type=""){
-
-  const element =
-    document.getElementById(id);
-
-  if(!element) return;
-
-  element.className =
-    "message " + type;
-
-  element.textContent =
-    text;
-}
-
-
-/* =========================================================
-   AUTH
-========================================================= */
-
-async function getCurrentUser(){
-
-  const result =
-    await supabaseClient.auth.getSession();
-
-  if(result.error){
-
-    throw result.error;
-
-  }
-
-  if(!result.data.session){
-
-    window.location.replace("auth.html");
-
-    return null;
-
-  }
-
-  return result.data.session.user;
-}
-
-
-/* =========================================================
-   WALLET
-========================================================= */
-  async function loadWallet(userId){
-
-  const result =
-    await supabaseClient
-      .from("wallets")
-      .select("balance,currency")
-      .eq("user_id",userId)
-      .maybeSingle();
-
-  if(result.error){
-
-    console.warn(
-      "Wallet:",
-      result.error.message
-    );
-
-    return;
-
-  }
-
-  if(!result.data){
-
-    walletBalance = 0;
-
-    return;
-
-  }
-
-  walletBalance =
-    Number(result.data.balance || 0);
-
-  document.getElementById("balance")
-    .textContent =
-    money(walletBalance);
-
-  document.getElementById("withdrawBalance")
-    .textContent =
-    money(walletBalance);
-
-  document.getElementById("currencyText")
-    .textContent =
-    (result.data.currency || "USD") +
-    " wallet balance";
-
-}
-
-
-/* =========================================================
-   TRADING ACCOUNT
-========================================================= */
-
-async function loadDemoAccount(userId){
-
-  const result =
-    await supabaseClient
-      .from("trading_accounts")
-      .select("*")
-      .eq("user_id",userId)
-      .eq("mode","demo")
-      .maybeSingle();
-
-  if(result.error){
-
-    console.warn(
-      "Trading account:",
-      result.error.message
-    );
-
-    return;
-
-  }
-
-  if(!result.data){
-
-    demoAccount = null;
-
-    document.getElementById("equity")
-      .textContent =
-      "$0.00";
-
-    document.getElementById("accountModeText")
-      .textContent =
-      "No demo account";
-
-    return;
-
-  }
-
-  demoAccount =
-    result.data;
-
-  const equity =
-    Number(
-      result.data.equity ??
-      result.data.balance ??
-      0
-    );
-
-  document.getElementById("equity")
-    .textContent =
-    money(equity);
-
-  document.getElementById("accountModeText")
-    .textContent =
-    "Demo account";
-
-  const accountName =
-    result.data.account_name ||
-    "AI MONSTER U Demo";
-
-  const mode =
-    String(
-      result.data.mode ||
-      "demo"
-    ).toUpperCase();
-
-  const status =
-    String(
-      result.data.status ||
-      "disconnected"
-    ).toUpperCase();
-
-  document.getElementById(
-    "dashboardAccountName"
-  ).textContent =
-    accountName;
-
-  document.getElementById(
-    "dashboardMode"
-  ).textContent =
-    mode;
-
-  document.getElementById(
-    "dashboardStatus"
-  ).textContent =
-    status;
-
-  document.getElementById(
-    "dashboardBot"
-  ).textContent =
-    result.data.bot_enabled ?
-    "ON" :
-    "OFF";
-
-  document.getElementById(
-    "dashboardAccountStatus"
-  ).textContent =
-    status;
-
-  document.getElementById(
-    "aiAccountName"
-  ).textContent =
-    accountName;
-
-  document.getElementById(
-    "aiAccountMode"
-  ).textContent =
-    mode;
-
-  document.getElementById(
-    "aiBotStatus"
-  ).textContent =
-    result.data.bot_enabled ?
-    "ON" :
-    "OFF";
-
-  document.getElementById(
-    "engineMode"
-  ).textContent =
-    mode;
-
-  document.getElementById(
-    "aiModeBadge"
-  ).textContent =
-    mode + " MODE";
-
-  if(result.data.bot_enabled){
-
-    document.getElementById(
-      "engineStatus"
-    ).textContent =
-    "RUNNING";
-
-  }
-
-}
-
-
-/* =========================================================
-   ACCOUNTS
-========================================================= */
-
-async function loadAccounts(){
-
-  const container =
-    document.getElementById(
-      "accountsList"
-    );
-
-  const result =
-    await supabaseClient
-      .from("trading_accounts")
-      .select("*")
-      .eq("user_id",currentUser.id)
-      .order(
-        "created_at",
-        {ascending:false}
-      );
-
-  if(result.error){
-
-    container.innerHTML =
-      '<div class="empty">' +
-      escapeHTML(result.error.message) +
-      "</div>";
-
-    return;
-
-  }
-
-  if(!result.data.length){
-
-    container.innerHTML =
-      '<div class="panel">' +
-      '<div class="empty">' +
-      'No trading accounts yet.' +
-      '</div>' +
-      '<button id="createDemoButton" class="primary">' +
-      'CREATE $50 DEMO ACCOUNT' +
-      '</button>' +
-      '</div>';
-
-    document
-      .getElementById(
-        "createDemoButton"
-      )
-      .addEventListener(
-        "click",
-        createDemoAccount
-      );
-
-    return;
-
-  }
-
-  container.innerHTML =
-    result.data.
-    map(
-      account => {
-
-        const mode =
-          String(
-            account.mode ||
-            "demo"
-          ).toLowerCase();
-
-        const status =
-          String(
-            account.status ||
-            "disconnected"
-          ).toLowerCase();
-
-        return `
-
-        <div class="account">
-
-          <div>
-
-            <h3>
-              ${escapeHTML(
-                account.account_name ||
-                "Trading Account"
-              )}
-            </h3>
-
-            <p>
-              ${escapeHTML(
-                account.broker ||
-                "Broker"
-              )}
-              •
-              ${escapeHTML(
-                account.currency ||
-                "USD"
-              )}
-            </p>
-
-            <p>
-              ID:
-              ${escapeHTML(
-                account.broker_account_id ||
-                account.id
-              )}
-            </p>
-
-          </div>
-
-          <div class="account-right">
-
-            <span class="mode ${
-              mode === "live" ?
-              "live-mode" :
-              "demo"
-            }">
-
-              ${mode.toUpperCase()}
-
-            </span>
-
-            <p class="${
-              status === "connected" ?
-              "connected" :
-              "disconnected"
-            }">
-
-              ${status.toUpperCase()}
-
-            </p>
-
-            <strong>
-              ${money(
-                account.equity ??
-                account.balance ??
-                0
-              )}
-            </strong>
-
-          </div>
-
-        </div>
-
-        `;
-
-      }
-    ).join("");
-
-}
-
-
-/* =========================================================
-   DEMO ACCOUNT
-========================================================= */
-
-
-
-  try{
-
-    const existing =
-      await supabaseClient
-        .from("trading_accounts")
-        .select("id")
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .eq(
-          "mode",
-          "demo"
-        )
-        .maybeSingle();
-
-    if(existing.error)
-      throw existing.error;
-
-    if(existing.data){
-
-      await loadDemoAccount(
-        currentUser.id
-      );
-
-      return;
-
-    }
-
-    const result =
-      await supabaseClient
-        .from("trading_accounts")
-        .insert({
-
-          user_id:
-            currentUser.id,
-
-          account_name:
-            "AI MONSTER U Demo",
-
-          mode:
-            "demo",
-
-          broker:
-            "AI MONSTER U Demo",
-
-          broker_account_id:
-            "DEMO-" +
-            Date.now(),
-
-          currency:
-            "USD",
-
-          balance:
-            50,
-
-          equity:
-            50,
-
-          available_margin:
-            50,
-
-          status:
-            "connected",
-
-          bot_enabled:
-            false
-
-        })
-        .select()
-        .single();
-
-    if(result.error)
-      throw result.error;
-
-    await loadDemoAccount(
-      currentUser.id
-    );
-
-    await loadAccounts();
-
-  }catch(error){
-
-    alert(
-      "Demo account could not be created: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SYMBOL UI
-========================================================= */
-
-function renderSymbolGrids(){
-
-  const grids = [
-    document.getElementById(
-      "marketSymbolGrid"
-    ),
-    document.getElementById(
-      "aiSymbolGrid"
-    )
-  ];
-
-  grids.forEach(grid => {
-
-    if(!grid) return;
-
-    grid.innerHTML =
-      AVAILABLE_SYMBOLS
-        .map(symbol => {
-
-          const active =
-            selectedSymbols.includes(
-              symbol.value
-            );
-
-          return `
-
-          <button
-            type="button"
-            class="symbol-btn ${
-              active ? "active" : ""
-            }"
-            data-symbol="${
-              escapeHTML(symbol.value)
-            }">
-
-            ${escapeHTML(symbol.label)}
-
-          </button>
-
-          `;
-
-        })
-        .join("");
-
-    grid
-      .querySelectorAll(
-        ".symbol-btn"
-      )
-      .forEach(button => {
-
-        button.
-          addEventListener(
-          "click",
-          () => {
-
-            const symbol =
-              button.dataset.symbol;
-
-            if(
-              selectedSymbols.includes(
-                symbol
-              )
-            ){
-
-              selectedSymbols =
-                selectedSymbols.filter(
-                  item =>
-                    item !== symbol
-                );
-
-            }else{
-
-              selectedSymbols.push(
-                symbol
-              );
-
-            }
-
-            renderSymbolGrids();
-
-          }
-        );
-
-      });
-
-  });
-
-  const count =
-    selectedSymbols.length;
-
-  document.getElementById(
-    "selectedSymbolCount"
-  ).textContent =
-    count + " SELECTED";
-
-}
-
-
-/* =========================================================
-   LOAD BOT SETTINGS
-========================================================= */
-
-async function loadBotSettings(){
-
-  if(!demoAccount)
-    return;
-
-  const result =
-    await supabaseClient
-      .from("bot_settings")
-      .select("*")
-      .eq(
-        "trading_account_id",
-        demoAccount.id
-      )
-      .maybeSingle();
-
-  if(result.error){
-
-    console.warn(
-      "Bot settings:",
-      result.error.message
-    );
-
-    return;
-
-  }
-
-  if(!result.data)
-    return;
-
-  const settings =
-    result.data;
-
-  const storedRisk =
-    Number(
-      settings.risk_percent ||
-      2
-    );
-
-  riskPercent =
-    storedRisk >= 3.5 ?
-    3.5 :
-    2;
-
-  riskMode =
-    riskPercent >= 3.5 ?
-    "aggressive" :
-    "standard";
-
-  selectedSymbols =
-    String(
-      settings.allowed_symbols ||
-      "XAUUSD,EURUSD,BTCUSD"
-    )
-    .split(",")
-    .map(
-      symbol =>
-        symbol.trim().toUpperCase()
-    )
-    .filter(Boolean);
-
-  document.getElementById(
-    "riskPercent"
-  ).value =
-    riskPercent;
-
-  document.getElementById(
-    "aiRiskInput"
-  ).value =
-    riskPercent;
-
-  document.getElementById(
-    "aiRiskMode"
-  ).value =
-    riskMode;
-
-  document.getElementById(
-    "riskTimeframe"
-  ).value =
-    settings.timeframe ||
-    "1m";
-
-  document.getElementById(
-    "aiTimeframe"
-  ).value =
-    settings.timeframe ||
-    "1m";
-
-  document.getElementById(
-    "aiStrategy"
-  ).value =
-    settings.strategy ||
-    "AI Scalping";
-
-  if(
-    settings.automatic_lot_size !==
-    undefined
-  ){
-
-    document.getElementById(
-      "automaticLot"
-    ).value =
-      settings.automatic_lot_size ?
-      "true" :
-      "false";
-
-  }
-
-  if(
-    settings.automatic_sl !==
-    undefined
-  ){
-
-    document.getElementById(
-      "automaticSL"
-    ).value =
-      settings.automatic_sl ?
-      "true" :
-      "false";
-
-  }
-
-  if(
-    settings.automatic_tp !==
-    undefined
-  ){
-
-    document.getElementById(
-      "automaticTP"
-    ).value =
-      settings.automatic_tp ?
-      "true" :
-      "false";
-
-  }
-
-  updateRiskUI();
-  renderSymbolGrids();
-
-}
-
-
-/* =========================================================
-   RISK UI
-========================================================= */
-
-function updateRiskUI(){
-
-  const standard =
-    document.getElementById(
-      "standardRiskCard"
-    );
-
-  const aggressive =
-    document.getElementById(
-      "aggressiveRiskCard"
-    );
-
-  standard.classList.remove(
-    "active"
-  );
-
-  aggressive.classList.remove(
-    "active"
-  );
-
-  if(
-    riskMode ===
-    "aggressive"
-  ){
-
-    aggressive.classList.add(
-      "active"
-    );
-
-    document.getElementById(
-      "riskProfileStatus"
-    ).textContent =
-    "AGGRESSIVE";
-
-  }else{
-
-    standard.classList.add(
-      "active"
-    );
-
-    document.getElementById(
-      "riskProfileStatus"
-    ).textContent =
-    "STANDARD";
-
-  }
-
-  document.getElementById(
-    "dashboardRisk"
-  ).textContent =
-  riskPercent + "%";
-
-  document.getElementById(
-    "dashboardRiskMode"
-  ).textContent =
-  riskMode.toUpperCase();
-
-}
-
-
-/* =========================================================
-   SAVE BOT SETTINGS
-========================================================= */
-
-async function saveBotSettings(){
-
-  if(!demoAccount){
-
-    setMessage(
-      "riskMessage",
-      "Create or connect a trading account first.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  const selectedRisk =
-    Number(
-      document.getElementById(
-        "riskPercent"
-      ).value
-    );
-
-  riskPercent =
-    selectedRisk >= 3.5 ?
-    3.5 :
-    2;
-
-  riskMode =
-    riskPercent >= 3.5 ?
-    "aggressive" :
-    "standard";
-
-  document.getElementById(
-    "riskPercent"
-  ).value =
-  riskPercent;
-
-  document.getElementById(
-    "aiRiskInput"
-  ).value =
-  riskPercent;
-
-  document.getElementById(
-    "aiRiskMode"
-  ).value =
-  riskMode;
-
-  if(!selectedSymbols.length){
-
-    setMessage(
-      "riskMessage",
-      "Select at least one trading symbol.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  const values = {
-
-    trading_account_id:
-      demoAccount.id,
-
-    risk_percent:
-      riskPercent,
-
-    automatic_lot_size:
-      document.getElementById(
-        "automaticLot"
-      ).value === "true",
-
-    automatic_sl:
-      document.getElementById(
-        "automaticSL"
-      ).value === "true",
-
-    automatic_tp:
-      document.getElementById(
-        "automaticTP"
-      ).value === "true",
-
-    strategy:
-      document.getElementById(
-        "aiStrategy"
-      ).value,
-
-    timeframe:
-      document.getElementById(
-        "riskTimeframe"
-      ).value,
-
-    allowed_symbols:
-      selectedSymbols.join(",")
-
-  };
-
-
-  const result =
-    await supabaseClient
-      .from("bot_settings")
-      .upsert(
-        values,
-        {
-          onConflict:
-            "trading_account_id"
-        }
-      );
-
-
-  if(result.error){
-
-    setMessage(
-      "riskMessage",
-      result.error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  updateRiskUI();
-
-  renderSymbolGrids();
-
-  setMessage(
-    "riskMessage",
-    "Risk, symbols and automatic lot settings saved.",
-    "success"
-  );
-
-}
-
-
-/* =========================================================
-   SAVE SYMBOLS
-========================================================= */
-
-async function saveMarketSymbols(){
-
-  if(!demoAccount){
-
-    setMessage(
-      "marketMessage",
-      "Create or connect a trading account first.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  if(!selectedSymbols.length){
-
-    setMessage(
-      "marketMessage",
-      "Select at least one symbol.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  const result =
-    await supabaseClient
-      .from("bot_settings")
-      .upsert(
-
-        {
-
-          trading_account_id:
-            demoAccount.id,
-
-          allowed_symbols:
-            selectedSymbols.join(",")
-
-        },
-
-        {
-          onConflict:
-            "trading_account_id"
-        }
-
-      );
-
-
-  if(result.error){
-
-    setMessage(
-      "marketMessage",
-      result.error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-  setMessage(
-    "marketMessage",
-    selectedSymbols.length +
-    " symbols saved for the EA bridge.",
-    "success"
-  );
-
-}
-
-
-/* =========================================================
-   POSITIONS
-========================================================= */
-
-async function loadPositions(){
-
-  const body =
-    document.getElementById(
-      "positionsBody"
-    );
-
-  const empty =
-    document.getElementById(
-      "positionsEmpty"
-    );
-
-  const result =
-    await supabaseClient
-      .from("positions")
-      .select("*")
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .order(
-        "opened_at",
-        {ascending:false}
-      );
-
-  if(result.error){
-
-    body.innerHTML = "";
-
-    empty.textContent =
-      "Positions unavailable: " +
-      result.error.message;
-
-    return;
-
-  }
-
-  const rows =
-    result.data || [];
-
-  document.getElementById(
-    "openPositions"
-  ).textContent =
-  rows.length;
-
-  document.getElementById(
-    "positionsCount"
-  ).textContent =
-  rows.length +
-  " ACTIVE";
-
-
-  if(!rows.length){
-
-    body.innerHTML = "";
-
-    empty.style.display =
-      "block";
-
-    empty.textContent =
-      "No open positions.";
-
-    return;
-
-  }
-
-
-  empty.style.display =
-    "none";
-
-
-  body.innerHTML =
-    rows.map(
-      position => `
-
-      <tr>
-
-        <td>
-          ${escapeHTML(
-            position.symbol
-          )}
-        </td>
-
-        <td>
-        ${escapeHTML(
-            position.side
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            position.volume
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            position.entry_price
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            position.current_price
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            position.stop_loss
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            position.take_profit ??
-            position.take_profits
-          )}
-        </td>
-
-        <td>
-          ${money(
-            position.floating_profit
-          )}
-        </td>
-
-      </tr>
-
-      `
-    ).join("");
-
-}
-
-
-/* =========================================================
-   TRADE HISTORY
-========================================================= */
-
-async function loadTrades(){
-
-  const body =
-    document.getElementById(
-      "tradesBody"
-    );
-
-  const empty =
-    document.getElementById(
-      "tradesEmpty"
-    );
-
-  const result =
-    await supabaseClient
-      .from("trades")
-      .select("*")
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .order(
-        "closed_at",
-        {ascending:false}
-      )
-      .limit(100);
-
-
-  if(result.error){
-
-    body.innerHTML = "";
-
-    empty.textContent =
-      "Trade history unavailable: " +
-      result.error.message;
-
-    return;
-
-  }
-
-
-  const rows =
-    result.data || [];
-
-
-  if(!rows.length){
-
-    body.innerHTML = "";
-
-    empty.style.display =
-      "block";
-
-    return;
-
-  }
-
-
-  empty.style.display =
-    "none";
-
-
-  body.innerHTML =
-    rows.map(
-      trade => `
-
-      <tr>
-
-        <td>
-          ${escapeHTML(
-            trade.symbol
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.side
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.volume
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.entry_price
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.exit_price
-          )}
-        </td>
-
-        <td class="${
-          Number(trade.result || 0) >= 0 ?
-          "green" :
-          "red"
-        }">
-
-          ${money(
-            trade.result
-          )}
-
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.opened_at
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.closed_at
-          )}
-        </td>
-
-      </tr>
-
-      `
-    ).join("");
-
-
-  const today =
-    rows
-      .filter(
-        trade => {
-
-          if(!trade.closed_at)
-            return false;
-
-          const date =
-            new Date(
-              trade.closed_at
-            );
-
-          const now =
-            new Date();
-
-          return (
-            date.toDateString() ===
-            now.toDateString()
-          );
-
-        }
-      )
-      .reduce(
-        (sum,trade) =>
-          sum +
-          Number(
-            trade.result || 0
-          ),
-        0
-      );
-
-
-  document.getElementById(
-    "todayProfit"
-  ).textContent =
-  money(today);
-
-}
-
-
-/* =========================================================
-   TRANSACTIONS
-========================================================= */
-
-async function loadTransactions(){
-
-  const body =
-    document.getElementById(
-      "depositHistoryBody"
-    );
-
-  if(!body)
-    return;
-
-
-  const result =
-    await supabaseClient
-      .from("transactions")
-      .select("*")
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .order(
-        "created_at",
-        {ascending:false}
-      )
-      .limit(100);
-
-
-  if(result.error)
-    return;
-
-
-  body.innerHTML =
-    (result.data || [])
-      .map(
-        tx => `
-
-        <tr>
-
-          <td>
-            ${escapeHTML(
-              tx.type
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.amount
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.currency
-            )}
-          </td>
-          <td>
-            ${escapeHTML(
-              tx.status
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.tx_hash ||
-              "—"
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.created_at ||
-              "—"
-            )}
-          </td>
-
-        </tr>
-
-        `
-      )
-      .join("");
-
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function setupNavigation(){
-
-  const links =
-    document.querySelectorAll(
-      ".menu a[data-page]"
-    );
-
-  const pages =
-    document.querySelectorAll(
-      ".page-section"
-    );
-
-
-  function showPage(name){
-
-    pages.forEach(
-      page => {
-
-        page.classList.remove(
-          "active"
-        );
-
-        page.style.display =
-          "none";
-
-      }
-    );
-
-
-    const selected =
-      document.getElementById(
-        name
-      );
-
-
-    if(selected){
-
-      selected.classList.add(
-        "active"
-      );
-
-      selected.style.display =
-        "block";
-
-    }
-
-
-    links.forEach(
-      link =>
-        link.classList.remove(
-          "active"
-        )
-    );
-
-
-    const active =
-      document.querySelector(
-        '.menu a[data-page="' +
-        name +
-        '"]'
-      );
-
-
-    if(active){
-
-      active.classList.add(
-        "active"
-      );
-
-    }
-
-
-    history.replaceState(
-      null,
-      "",
-      "#" + name
-    );
-
-    window.scrollTo(
-      0,
-      0
-    );
-
-  }
-
-
-  links.forEach(
-    link => {
-
-      link.addEventListener(
-        "click",
-        event => {
-
-          event.preventDefault();
-
-          showPage(
-            link.getAttribute(
-              "data-page"
-            )
-          );
-
-        }
-      );
-
-    }
-  );
-
-
-  const initial =
-    location.hash.replace(
-      "#",
-      ""
-    );
-
-
-  if(
-    initial &&
-    document.getElementById(
-      initial
-    )
-  ){
-
-    showPage(
-      initial
-    );
-
-  }else{
-
-    showPage(
-      "dashboard"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   WITHDRAWAL CALCULATOR
-========================================================= */
-
-function setupWithdrawCalculation(){
-
-  const amount =
-    document.getElementById(
-      "withdrawAmount"
-    );
-
-  const receive =
-    document.getElementById(
-      "withdrawReceive"
-    );
-
-  const fee =
-    document.getElementById(
-      "withdrawFee"
-    );
-
-
-  function update(){
-
-    const value =
-      Number(
-        amount.value ||
-        0
-      );
-
-    const networkFee =
-      value > 0 ?
-      1 :
-      0;
-
-    fee.textContent =
-      money(
-        networkFee
-      );
-
-    receive.textContent =
-      money(
-        Math.max(
-          0,
-          value -
-          networkFee
-        )
-      );
-
-  }
-
-
-  amount.addEventListener(
-    "input",
-    update
-  );
-
-}
-
-
-/* =========================================================
-   RISK PROFILE BUTTONS
-========================================================= */
-
-document
-  .getElementById(
-    "standardRiskCard"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      riskMode =
-        "standard";
-
-      riskPercent =
-        2;
-
-      document.getElementById(
-        "riskPercent"
-      ).value =
-      2;
-
-      document.getElementById(
-        "aiRiskInput"
-      ).value =
-      2;
-
-      document.getElementById(
-        "aiRiskMode"
-      ).value =
-      "standard";
-
-      updateRiskUI();
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "aggressiveRiskCard"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      riskMode =
-        "aggressive";
-
-      riskPercent =
-        3.5;
-
-      document.getElementById(
-        "riskPercent"
-      ).value =
-      3.5;
-
-      document.getElementById(
-        "aiRiskInput"
-      ).value =
-      3.5;
-
-      document.getElementById(
-        "aiRiskMode"
-      ).value =
-      "aggressive";
-
-      updateRiskUI();
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "aiRiskMode"
-  )
-  .addEventListener(
-    "change",
-    event => {
-
-      riskMode =
-        event.
-        target.value;
-
-      riskPercent =
-        riskMode ===
-        "aggressive" ?
-        3.5 :
-        2;
-
-      document.getElementById(
-        "aiRiskInput"
-      ).value =
-      riskPercent;
-
-      document.getElementById(
-        "riskPercent"
-      ).value =
-      riskPercent;
-
-      updateRiskUI();
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "aiRiskInput"
-  )
-  .addEventListener(
-    "change",
-    event => {
-
-      const value =
-        Number(
-          event.target.value
-        );
-
-      riskPercent =
-        value >= 3.5 ?
-        3.5 :
-        2;
-
-      riskMode =
-        riskPercent >= 3.5 ?
-        "aggressive" :
-        "standard";
-
-      event.target.value =
-        riskPercent;
-
-      document.getElementById(
-        "riskPercent"
-      ).value =
-      riskPercent;
-
-      document.getElementById(
-        "aiRiskMode"
-      ).value =
-      riskMode;
-
-      updateRiskUI();
-
-    }
-  );
-
-
-/* =========================================================
-   BUTTON EVENTS
-========================================================= */
-
-document
-  .getElementById(
-    "saveRisk"
-  )
-  .addEventListener(
-    "click",
-    saveBotSettings
-  );
-
-
-document
-  .getElementById(
-    "saveMarketSymbols"
-  )
-  .addEventListener(
-    "click",
-    saveMarketSymbols
-  );
-
-
-document
-  .getElementById(
-    "startAiBot"
-  )
-  .addEventListener(
-    "click",
-    async () => {
-
-      if(!demoAccount){
-
-        setMessage(
-          "aiMessage",
-          "Create or connect a trading account first.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      await saveBotSettings();
-
-
-      document.getElementById(
-        "aiBotStatus"
-      ).textContent =
-      "READY";
-
-
-      document.getElementById(
-        "engineStatus"
-      ).textContent =
-      "READY";
-
-
-      setMessage(
-        "aiMessage",
-        "AI configuration sent. Waiting for the connected EA bridge to confirm execution.",
-        "success"
-      );
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "stopAiBot"
-  )
-  .addEventListener(
-    "click",
-    async () => {
-
-      if(demoAccount){
-
-        await supabaseClient
-          .from("trading_accounts")
-          .update({
-            bot_enabled:false
-          })
-          .eq(
-            "id",
-            demoAccount.id
-          );
-
-      }
-
-
-      document.getElementById(
-        "aiBotStatus"
-      ).textContent =
-      "OFF";
-
-      document.getElementById(
-        "engineStatus"
-      ).textContent =
-      "READY";
-
-      setMessage(
-        "aiMessage",
-        "AI engine stopped.",
-        ""
-      );
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "emergencyClose"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      setMessage(
-        "aiMessage",
-        "Emergency close command requires the connected MT5 execution bridge.",
-        "error"
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-document
-  .getElementById(
-    "autoTradingSwitch"
-  )
-  .addEventListener(
-    "click",
-    function(){
-
-      this.classList.toggle(
-        "on"
-      );
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "notificationSwitch"
-  )
-  .addEventListener(
-    "click",
-    function(){
-
-      this.classList.toggle(
-        "on"
-      );
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "saveSettings"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      setMessage(
-        "settingsMessage",
-        "Platform settings saved for this session.",
-        "success"
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-  await supabaseClient.auth.signOut();
-
-  window.location.replace(
-    "auth.html"
-  );
-
-}
-
-
-document
-  .getElementById(
-    "logoutButton"
-  )
-  .addEventListener(
-    "click",
-    logout
-  );
-
-
-document
-  .getElementById(
-    "securityLogout"
-  )
-  .addEventListener(
-    "click",
-    logout
-  );
-
-
-/* =========================================================
-   DEPOSIT
-  ========================================================= */
-
-document
-  .getElementById(
-    "depositSubmit"
-  )
-  .addEventListener(
-    "click",
-    async () => {
-
-      const amount =
-        Number(
-          document.getElementById(
-            "depositAmount"
-          ).value
-        );
-
-
-      if(amount < 50){
-
-        setMessage(
-          "depositMessage",
-          "Minimum deposit is $50.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const result =
-        await supabaseClient
-          .from("transactions")
-          .insert({
-
-            user_id:
-              currentUser.id,
-
-            type:
-              "deposit",
-
-            amount:
-              amount,
-
-            currency:
-              document.getElementById(
-                "depositCurrency"
-              ).value,
-
-            status:
-              "pending",
-
-            tx_hash:
-              null
-
-          });
-
-
-      if(result.error){
-
-        setMessage(
-          "depositMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      setMessage(
-        "depositMessage",
-        "Deposit request created. Waiting for verified payment confirmation.",
-        "success"
-      );
-
-
-      await loadTransactions();
-
-    }
-  );
-
-
-/* =========================================================
-   WITHDRAW
-========================================================= */
-
-document
-  .getElementById(
-    "withdrawSubmit"
-  )
-  .addEventListener(
-    "click",
-    async () => {
-
-      const amount =
-        Number(
-          document.getElementById(
-            "withdrawAmount"
-          ).value
-        );
-
-
-      const address =
-        document.getElementById(
-          "withdrawAddress"
-        ).value.trim();
-
-
-      if(!address){
-
-        setMessage(
-          "withdrawMessage",
-          "Enter a destination wallet address.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      if(amount <= 0){
-
-        setMessage(
-          "withdrawMessage",
-          "Enter a valid withdrawal amount.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      if(amount > walletBalance){
-
-        setMessage(
-          "withdrawMessage",
-          "Insufficient available balance.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const result =
-        await supabaseClient
-          .from("transactions")
-          .insert({
-
-            user_id:
-              currentUser.id,
-
-            type:
-              "withdrawal",
-
-            amount:
-              amount,
-
-            currency:
-              document.getElementById(
-                "withdrawCurrency"
-              ).value,
-
-            status:
-              "pending",
-
-            tx_hash:
-              null
-
-          });
-
-
-      if(result.error){
-
-        setMessage(
-          "withdrawMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      setMessage(
-        "withdrawMessage",
-        "Withdrawal request submitted for review.",
-        "success"
-      );
-
-
-      await loadTransactions();
-
-    }
-  );
-
-
-/* =========================================================
-   STARTUP
-========================================================= */
-
-async function start(){
-
-  try{
-
-    currentUser =
-      await getCurrentUser();
-
-
-    if(!currentUser)
-      return;
-
-
-    const email =
-      currentUser.email ||
-      "Trader";
-
-
-    document.getElementById(
-      "userEmail"
-    ).textContent =
-    email;
-
-
-    document.getElementById(
-      "settingsEmail"
-    ).textContent =
-    email;
-
-
-    document.getElementById(
-      "avatar"
-    ).textContent =
-    email
-      .charAt(0)
-      .toUpperCase();
-
-
-    await loadWallet(
-      currentUser.id
-    );
-
-
-    await loadDemoAccount(
-      currentUser.id
-    );
-
-
-    await loadAccounts();
-
-
-    await loadBotSettings();
-
-
-    await loadPositions();
-
-
-    await loadTrades();
-
-
-    await loadTransactions();
-
-
-    renderSymbolGrids();
-
-
-    updateRiskUI();
-
-
-    setupWithdrawCalculation();
-
-
-    document.getElementById(
-      "withdrawBalance"
-    ).textContent =
-    money(walletBalance);
-
-
-  }catch(error){
-
-    console.error(
-      "Dashboard startup error:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-setupNavigation();
-
-start();
-
-<script>
-
-/* =========================================================
-   AI MONSTER U — DASHBOARD ENGINE
-========================================================= */
-
-let currentUser = null;
-let demoAccount = null;
-
-let walletBalance = 0;
-
-let riskPercent = 2;
-let riskMode = "standard";
-
-let selectedSymbols = [
-  "XAUUSD",
-  "EURUSD",
-  "BTCUSD"
 ];
 
 
@@ -4056,68 +1239,157 @@ function money(value) {
   const number =
     Number(value || 0);
 
-  return "$" +
-    number.toFixed(2);
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  ).format(number);
 
 }
 
 
 function escapeHTML(value) {
 
-  if (value === null ||
-      value === undefined) {
-
-    return "";
-
-  }
-
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  return String(
+    value ??
+    ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
 
 function setMessage(
-  elementId,
-  message,
-  type
+  id,
+  text,
+  type = "success"
 ) {
 
   const element =
-    document.getElementById(
-      elementId
-    );
+    document.getElementById(id);
 
   if (!element)
     return;
 
   element.textContent =
-    message;
+    text;
 
   element.className =
-    type ?
-      "message " + type :
-      "message";
+    "message show " +
+    type;
+
+}
+
+
+function formatDate(value) {
+
+  if (!value)
+    return "—";
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return escapeHTML(value);
+  }
+
+  return date.toLocaleString();
 
 }
 
 
 /* =========================================================
-   CURRENT USER
+   AUTH
 ========================================================= */
 
 async function getCurrentUser() {
 
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .auth
+      .getUser();
+
+  if (error) {
+
+    console.error(
+      "Authentication error:",
+      error
+    );
+
+    return null;
+
+  }
+
+  return data?.user || null;
+
+}
+
+
+/* =========================================================
+   LOAD TRADING ACCOUNT
+========================================================= */
+
+async function loadTradingAccount() {
+
+  if (!currentUser)
+    return null;
+
+
   const result =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+      .from(
+        "trading_accounts"
+      )
+      .select(
+        "*"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "updated_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+
 
   if (result.error) {
 
     console.error(
+      "Trading account error:",
       result.error
     );
 
@@ -4125,887 +1397,61 @@ async function getCurrentUser() {
 
   }
 
-  return result.data.user;
+
+  tradingAccount =
+    result.data?.[0] ||
+    null;
+
+
+  return tradingAccount;
 
 }
 
 
 /* =========================================================
-   WALLET
+   LOAD MT5 BRIDGE STATUS
 ========================================================= */
 
-async function loadWallet(
-  userId
-) {
-
-  try {
-
-    const result =
-      await supabaseClient
-        .from("wallets")
-        .select("*")
-        .eq(
-          "user_id",
-          userId
-        )
-        .maybeSingle();
-
-
-    if (result.error) {
-
-      console.error(
-        "Wallet error:",
-        result.error
-      );
-
-      return;
-
-    }
-
-
-    if (result.data) {
-
-      walletBalance =
-        Number(
-          result.data.balance || 0
-        );
-
-    } else {
-
-      walletBalance = 0;
-
-    }
-
-
-    const balance =
-      document.getElementById(
-        "walletBalance"
-      );
-
-    if (balance) {
-
-      balance.textContent =
-        money(walletBalance);
-
-    }
-
-
-    const withdrawBalance =
-      document.getElementById(
-        "withdrawBalance"
-      );
-
-    if (withdrawBalance) {
-
-      withdrawBalance.textContent =
-        money(walletBalance);
-
-    }
-
-  } catch(error) {
-
-    console.error(
-      "Wallet loading error:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   DEMO ACCOUNT
-========================================================= */
-
-async function loadDemoAccount(
-  userId
-) {
-
-  const result =
-    await supabaseClient
-      .from("trading_accounts")
-      .select("*")
-      .eq(
-        "user_id",
-        userId
-      )
-      .eq(
-        "mode",
-        "demo"
-      )
-      .maybeSingle();
-
-
-  if (result.error) {
-
-    console.error(
-      "Demo account error:",
-      result.error
-    );
-
-    return;
-
-  }
-
-
-  demoAccount =
-    result.data || null;
-
-}
-
-
-/* =========================================================
-   ACCOUNTS
-========================================================= */
-
-async function loadAccounts() {
+async function loadMT5Status() {
 
   if (!currentUser)
     return;
 
 
-  const result =
-    await supabaseClient
-      .from("trading_accounts")
-      .select("*")
+  let query =
+    supabaseClient
+      .from(
+        "mt5_bridge_status"
+      )
+      .select(
+        "*"
+      )
       .eq(
         "user_id",
         currentUser.id
-      )
+      );
+
+
+  if (tradingAccount?.id) {
+
+    query =
+      query.eq(
+        "trading_account_id",
+        tradingAccount.id
+      );
+
+  }
+
+
+  const result =
+    await query
       .order(
-        "created_at",
+        "updated_at",
         {
           ascending: false
         }
-      );
-
-
-  if (result.error) {
-
-    console.error(
-      "Accounts error:",
-      result.error
-    );
-
-    return;
-
-  }
-
-
-  const accounts =
-    result.data || [];
-
-
-  if (!demoAccount &&
-      accounts.length) {
-
-    demoAccount =
-      accounts.find(
-        account =>
-          account.mode === "demo"
-      ) ||
-      accounts[0];
-
-  }
-
-
-  const accountStatus =
-    document.getElementById(
-      "accountStatus"
-    );
-
-  if (accountStatus) {
-
-    accountStatus.
-      textContent =
-      demoAccount ?
-      "CONNECTED" :
-      "NOT CONNECTED";
-
-  }
-
-}
-
-
-/* =========================================================
-   BOT SETTINGS
-========================================================= */
-
-async function loadBotSettings() {
-
-  if (!demoAccount)
-    return;
-
-
-  const result =
-    await supabaseClient
-      .from("bot_settings")
-      .select("*")
-      .eq(
-        "trading_account_id",
-        demoAccount.id
       )
-      .maybeSingle();
-
-
-  if (result.error) {
-
-    console.error(
-      "Bot settings error:",
-      result.error
-    );
-
-    return;
-
-  }
-
-
-  if (!result.data)
-    return;
-
-
-  const settings =
-    result.data;
-
-
-  const storedRisk =
-    Number(
-      settings.risk_percent || 2
-    );
-
-
-  riskPercent =
-    storedRisk >= 3.5 ?
-    3.5 :
-    2;
-
-
-  riskMode =
-    riskPercent >= 3.5 ?
-    "aggressive" :
-    "standard";
-
-
-  selectedSymbols =
-    String(
-      settings.allowed_symbols ||
-      "XAUUSD,EURUSD,BTCUSD"
-    )
-    .split(",")
-    .map(
-      symbol =>
-        symbol
-          .trim()
-          .toUpperCase()
-    )
-    .filter(Boolean);
-
-
-  const risk =
-    document.getElementById(
-      "riskPercent"
-    );
-
-  if (risk)
-    risk.value =
-      riskPercent;
-
-
-  const aiRisk =
-    document.getElementById(
-      "aiRiskInput"
-    );
-
-  if (aiRisk)
-    aiRisk.value =
-      riskPercent;
-
-
-  const aiMode =
-    document.getElementById(
-      "aiRiskMode"
-    );
-
-  if (aiMode)
-    aiMode.value =
-      riskMode;
-
-
-  const timeframe =
-    document.getElementById(
-      "riskTimeframe"
-    );
-
-  if (timeframe)
-    timeframe.value =
-      settings.timeframe ||
-      "1m";
-
-
-  const aiTimeframe =
-    document.getElementById(
-      "aiTimeframe"
-    );
-
-  if (aiTimeframe)
-    aiTimeframe.value =
-      settings.timeframe ||
-      "1m";
-
-
-  const strategy =
-    document.getElementById(
-      "aiStrategy"
-    );
-
-  if (strategy)
-    strategy.value =
-      settings.strategy ||
-      "AI Scalping";
-
-
-  if (
-    settings.automatic_lot_size !==
-    undefined
-  ) {
-
-    const automaticLot =
-      document.getElementById(
-        "automaticLot"
-      );
-
-    if (automaticLot) {
-
-      automaticLot.value =
-        settings.automatic_lot_size ?
-        "true" :
-        "false";
-
-    }
-
-  }
-
-
-  if (
-    settings.automatic_sl !==
-    undefined
-  ) {
-
-    const automaticSL =
-      document.getElementById(
-        "automaticSL"
-      );
-
-    if (automaticSL) {
-
-      automaticSL.value =
-        settings.automatic_sl ?
-        "true" :
-        "false";
-
-    }
-
-  }
-
-
-  if (
-    settings.automatic_tp !==
-    undefined
-  ) {
-
-    const automaticTP =
-      document.getElementById(
-        "automaticTP"
-      );
-
-    if (automaticTP) {
-
-      automaticTP.value =
-        settings.automatic_tp ?
-        "true" :
-        "false";
-
-    }
-
-  }
-
-
-  updateRiskUI();
-
-  renderSymbolGrids();
-
-}
-
-
-/* =========================================================
-   RISK UI
-========================================================= */
-
-function updateRiskUI() {
-
-  const standard =
-    document.getElementById(
-      "standardRiskCard"
-    );
-
-  const aggressive =
-    document.getElementById(
-      "aggressiveRiskCard"
-    );
-
-
-  if (standard)
-    standard.classList.remove(
-      "active"
-    );
-
-
-  if (aggressive)
-    aggressive.classList.remove(
-      "active"
-    );
-
-
-  if (
-    riskMode ===
-    "aggressive"
-  ) {
-
-    if (aggressive)
-      aggressive.classList.add(
-        "active"
-      );
-
-
-    const status =
-      document.getElementById(
-        "riskProfileStatus"
-      );
-
-    if (status)
-      status.textContent =
-        "AGGRESSIVE";
-
-  } else {
-
-    if (standard)
-      standard.classList.add(
-        "active"
-      );
-
-
-    const status =
-      document.getElementById(
-        "riskProfileStatus"
-      );
-
-    if (status)
-      status.textContent =
-        "STANDARD";
-
-  }
-
-
-  const dashboardRisk =
-    document.getElementById(
-      "dashboardRisk"
-    );
-
-  if (dashboardRisk)
-    dashboardRisk.textContent =
-      riskPercent + "%";
-
-
-  const dashboardMode =
-    document.getElementById(
-      "dashboardRiskMode"
-    );
-
-  if (dashboardMode)
-    dashboardMode.textContent =
-      riskMode.toUpperCase();
-
-}
-
-
-/* =========================================================
-   SAVE BOT SETTINGS
-========================================================= */
-
-async function saveBotSettings() {
-
-  if (!demoAccount) {
-
-    setMessage(
-      "riskMessage",
-      "Create or connect a trading account first.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  const input =
-    document.getElementById(
-      "riskPercent"
-    );
-
-
-  const selectedRisk =
-    Number(
-      input ?
-      input.value :
-      2
-    );
-
-
-  riskPercent =
-    selectedRisk >= 3.5 ?
-    3.5 :
-    2;
-
-
-  riskMode =
-    riskPercent >= 3.5 ?
-    "aggressive" :
-    "standard";
-
-
-  const risk =
-    document.getElementById(
-      "riskPercent"
-    );
-
-  if (risk)
-    risk.value =
-      riskPercent;
-
-
-  const aiRisk =
-    document.getElementById(
-      "aiRiskInput"
-    );
-
-  if (aiRisk)
-    aiRisk.value =
-      riskPercent;
-
-
-  const aiMode =
-    document.getElementById(
-      "aiRiskMode"
-    );
-
-  if (aiMode)
-    aiMode.value =
-      riskMode;
-
-
-  if (!selectedSymbols.length) {
-
-    setMessage(
-      "riskMessage",
-      "Select at least one trading symbol.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  const automaticLot =
-    document.getElementById(
-      "automaticLot"
-    );
-
-  const automaticSL =
-    document.getElementById(
-      "automaticSL"
-    );
-
-  const automaticTP =
-    document.getElementById(
-      "automaticTP"
-    );
-
-  const strategy =
-    document.getElementById(
-      "aiStrategy"
-    );
-
-  const timeframe =
-    document.getElementById(
-      "riskTimeframe"
-    );
-
-
-  const values = {
-
-    trading_account_id:
-      demoAccount.id,
-
-    risk_percent:
-      riskPercent,
-
-    automatic_lot_size:
-      automaticLot ?
-      automaticLot.value === "true" :
-      true,
-
-    automatic_sl:
-      automaticSL ?
-      automaticSL.value === "true" :
-      true,
-
-    automatic_tp:
-      automaticTP ?
-      automaticTP.value === "true" :
-      true,
-
-    strategy:
-      strategy ?
-      strategy.value :
-      "AI Scalping",
-
-    timeframe:
-      timeframe ?
-      timeframe.value :
-      "1m",
-
-    allowed_symbols:
-      selectedSymbols.join(",")
-
-  };
-
-
-  const result =
-    await supabaseClient
-      .from("bot_settings")
-      .upsert(
-        values,
-        {
-          onConflict:
-            "trading_account_id"
-        }
-      );
-
-
-  if (result.error) {
-
-    setMessage(
-      "riskMessage",
-      result.error.message,
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  updateRiskUI();
-
-  renderSymbolGrids();
-
-
-  setMessage(
-    "riskMessage",
-    "Risk, symbols and automatic lot settings saved.",
-    "success"
-  );
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   SYMBOL GRID
-========================================================= */
-
-function renderSymbolGrids() {
-
-  const containers =
-    document.querySelectorAll(
-      "[data-symbol]"
-    );
-
-
-  containers.forEach(
-    element => {
-
-      const symbol =
-        String(
-          element.dataset.symbol ||
-          ""
-        )
-        .trim()
-        .toUpperCase();
-
-
-      if (
-        selectedSymbols.includes(
-          symbol
-        )
-      ) {
-
-        element.classList.add(
-          "active",
-          "selected"
-        );
-
-      } else {
-
-        element.classList.remove(
-          "active",
-          "selected"
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   SAVE SYMBOLS
-========================================================= */
-
-async function saveMarketSymbols() {
-
-  if (!demoAccount) {
-
-    setMessage(
-      "marketMessage",
-      "Create or connect a trading account first.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (!selectedSymbols.length) {
-
-    setMessage(
-      "marketMessage",
-      "Select at least one symbol.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const result =
-    await supabaseClient
-      .from("bot_settings")
-      .upsert(
-
-        {
-          trading_account_id:
-            demoAccount.id,
-
-          allowed_symbols:
-            selectedSymbols.join(",")
-
-        },
-
-        {
-
-          onConflict:
-            "trading_account_id"
-
-        }
-
-      );
-
-
-  if (result.error) {
-
-    setMessage(
-      "marketMessage",
-      result.error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  setMessage(
-    "marketMessage",
-    selectedSymbols.length +
-    " symbols saved for the EA bridge.",
-    "success"
-  );
-
-}
-
-
-/* =========================================================
-   MT5 BRIDGE STATUS
-========================================================= */
-async function updateMT5Status() {
-  try {
-    const response = await fetch("/api/mt5/status");
-
-    const data = await response.json();
-
-    if (!data.ok) {
-      throw new Error(data.error || "MT5 status unavailable");
-    }
-
-    const connected = Boolean(data.mt5Connected);
-
-    document.getElementById("dashboardAccountStatus").textContent =
-      connected ? "CONNECTED" : "DISCONNECTED";
-
-    document.getElementById("dashboardStatus").textContent =
-      connected ? "CONNECTED" : "DISCONNECTED";
-
-    document.getElementById("dashboardBot").textContent =
-      data.botRunning ? "ON" : "OFF";
-
-    document.getElementById("dashboardMode").textContent =
-      data.mt5Mode || "DEMO";
-
-    document.getElementById("dashboardAccountName").textContent =
-      data.mt5Account || "MT5";
-
-  } catch (error) {
-    console.error("MT5 website status:", error);
-  }
-}
-
-setInterval(updateMT5Status, 3000);
-updateMT5Status();
-async function loadMT5Status() {
-
-  if (!demoAccount ||
-      !currentUser)
-    return;
-
-
-  const result =
-    await supabaseClient
-      .from("mt5_bridge_status")
-      .select("*")
-      .eq(
-        "trading_account_id",
-        demoAccount.id
-      )
-      .maybeSingle();
+      .limit(1);
 
 
   if (result.error) {
@@ -5020,14 +1466,31 @@ async function loadMT5Status() {
   }
 
 
+  bridgeStatus =
+    result.data?.[0] ||
+    null;
+
+
+  updateMT5UI();
+
+}
+
+
+/* =========================================================
+   MT5 UI
+========================================================= */
+
+function updateMT5UI() {
+
   const status =
-    result.data;
+    bridgeStatus;
 
 
   const botStatus =
     document.getElementById(
       "aiBotStatus"
     );
+
 
   const engineStatus =
     document.getElementById(
@@ -5050,44 +1513,50 @@ async function loadMT5Status() {
   }
 
 
+  /*
+    Heartbeat must be recent.
+
+    20 seconds is used here.
+  */
+
   const heartbeat =
-    status.last_heartbeat ?
-    new Date(
-      status.last_heartbeat
-    ) :
-    null;
+    status.last_heartbeat
+      ? new Date(
+          status.last_heartbeat
+        ).getTime()
+      : 0;
 
 
   const age =
-    heartbeat ?
     Date.now() -
-    heartbeat.getTime() :
-    Infinity;
+    heartbeat;
 
 
-  const online =
-    status.connected &&
-    age <
-    30000;
+  const connected =
+    status.connected === true &&
+    age <= 20000;
 
 
-  if (online) {
+  if (connected) {
 
     if (botStatus) {
 
       botStatus.textContent =
-        status.trading_allowed ?
-        "CONNECTED" :
-        "CONNECTED / TRADING DISABLED";
+        status.trading_allowed === true
+          ? "CONNECTED"
+          : "CONNECTED / TRADING DISABLED";
 
     }
 
 
-    if (engineStatus)
+    if (engineStatus) {
+
       engineStatus.textContent =
-        status.trading_allowed ?
-        "MT5 ONLINE" :
-        "TRADING NOT AUTHORIZED";
+        status.trading_allowed === true
+          ? "MT5 ONLINE"
+          : "TRADING NOT AUTHORIZED";
+
+    }
 
   } else {
 
@@ -5107,9 +1576,14 @@ async function loadMT5Status() {
       "mt5Balance"
     );
 
-  if (balance)
+  if (balance) {
+
     balance.textContent =
-      money(status.balance);
+      money(
+        status.balance
+      );
+
+  }
 
 
   const equity =
@@ -5117,9 +1591,14 @@ async function loadMT5Status() {
       "mt5Equity"
     );
 
-  if (equity)
+  if (equity) {
+
     equity.textContent =
-      money(status.equity);
+      money(
+        status.equity
+      );
+
+  }
 
 
   const broker =
@@ -5127,10 +1606,13 @@ async function loadMT5Status() {
       "mt5Broker"
     );
 
-  if (broker)
+  if (broker) {
+
     broker.textContent =
       status.broker ||
       "—";
+
+  }
 
 
   const mode =
@@ -5138,12 +1620,16 @@ async function loadMT5Status() {
       "mt5AccountMode"
     );
 
-  if (mode)
+  if (mode) {
+
     mode.textContent =
       String(
         status.account_mode ||
+        tradingAccount?.mode ||
         "demo"
       ).toUpperCase();
+
+  }
 
 
   const login =
@@ -5151,10 +1637,14 @@ async function loadMT5Status() {
       "mt5Login"
     );
 
-  if (login)
+  if (login) {
+
     login.textContent =
       status.account_login ||
+      tradingAccount?.broker_account_id ||
       "—";
+
+  }
 
 
   const error =
@@ -5162,16 +1652,94 @@ async function loadMT5Status() {
       "mt5Error"
     );
 
-  if (error)
+  if (error) {
+
     error.textContent =
       status.last_error ||
       "";
+
+  }
+
+
+  updateTradingAccountUI();
 
 }
 
 
 /* =========================================================
-   SEND TRADING COMMAND
+   ACCOUNT UI
+========================================================= */
+
+function updateTradingAccountUI() {
+
+  const element =
+    document.getElementById(
+      "accountInfo"
+    );
+
+  if (!element)
+    return;
+
+
+  if (!tradingAccount) {
+
+    element.textContent =
+      "No trading account connected.";
+
+    return;
+
+  }
+
+
+  element.innerHTML = `
+
+    <strong>
+      ${escapeHTML(
+        tradingAccount.account_name
+      )}
+    </strong>
+
+    <br>
+
+    Broker:
+    ${escapeHTML(
+      tradingAccount.broker ||
+      "—"
+    )}
+
+    <br>
+
+    Account:
+    ${escapeHTML(
+      tradingAccount.broker_account_id ||
+      "—"
+    )}
+
+    <br>
+
+    Mode:
+    ${escapeHTML(
+      String(
+        tradingAccount.mode ||
+        "demo"
+      ).toUpperCase()
+    )}
+
+    <br>
+
+    Status:
+    ${escapeHTML(
+      tradingAccount.status ||
+      "—"
+    )}
+
+  `;
+
+}
+
+
+/* =========================================================
+   TRADING COMMAND
 ========================================================= */
 
 async function sendTradingCommand(
@@ -5191,7 +1759,7 @@ async function sendTradingCommand(
   }
 
 
-  if (!demoAccount) {
+  if (!tradingAccount) {
 
     return {
       error:
@@ -5204,14 +1772,16 @@ async function sendTradingCommand(
 
 
   return await supabaseClient
-    .from("trading_commands")
+    .from(
+      "trading_commands"
+    )
     .insert({
 
       user_id:
         currentUser.id,
 
       trading_account_id:
-        demoAccount.id,
+        tradingAccount.id,
 
       command:
         command,
@@ -5228,6 +1798,766 @@ async function sendTradingCommand(
 
 
 /* =========================================================
+   BOT SETTINGS
+========================================================= */
+
+async function saveBotSettings() {
+
+  if (!tradingAccount)
+    return false;
+
+
+  const timeframe =
+    document.getElementById(
+      "timeframe"
+    )?.value ||
+    "1m";
+
+
+  const strategy =
+    document.getElementById(
+      "strategy"
+    )?.value ||
+    "AI Scalping";
+
+
+  const maxDailyLoss =
+    Number(
+      document.getElementById(
+        "maxDailyLoss"
+      )?.value ||
+      3
+    );
+
+
+  const maxDrawdown =
+    Number(
+      document.getElementById(
+        "maxDrawdown"
+      )?.value ||
+      10
+    );
+
+
+  const maxOpenTrades =
+    Number(
+      document.getElementById(
+        "maxOpenTrades"
+      )?.value ||
+      3
+    );
+
+
+  const automaticLot =
+    document.getElementById(
+      "automaticLot"
+    )?.value ===
+    "true";
+
+
+  const automaticSL =
+    document.getElementById(
+      "automaticSL"
+    )?.value ===
+    "true";
+
+
+  const automaticTP =
+    document.getElementById(
+      "automaticTP"
+    )?.value ===
+    "true";
+
+
+  const payload = {
+
+    risk_percent:
+      riskPercent,
+
+    max_daily_loss_percent:
+      maxDailyLoss,
+
+    max_drawdown_percent:
+      maxDrawdown,
+
+    max_open_trades:
+      maxOpenTrades,
+
+    automatic_lot_size:
+      automaticLot,
+
+    automatic_sl:
+      automaticSL,
+
+    automatic_tp:
+      automaticTP,
+
+    strategy:
+      strategy,
+
+    timeframe:
+      timeframe,
+
+    allowed_symbols:
+      selectedSymbols
+
+  };
+
+
+  const existing =
+    await supabaseClient
+      .from(
+        "bot_settings"
+      )
+      .select(
+        "id"
+      )
+      .eq(
+        "trading_account_id",
+        tradingAccount.id
+      )
+      .limit(1);
+
+
+  if (existing.error) {
+
+    setMessage(
+      "tradingMessage",
+      existing.error.message,
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  let result;
+
+
+  if (existing.data?.length) {
+
+    result =
+      await supabaseClient
+        .from(
+          "bot_settings"
+        )
+        .update(
+          payload
+        )
+        .eq(
+          "id",
+          existing.data[0].id
+        );
+
+  } else {
+
+    result =
+      await supabaseClient
+        .from(
+          "bot_settings"
+        )
+        .insert({
+
+          trading_account_id:
+            tradingAccount.id,
+
+          ...payload
+
+        });
+
+  }
+
+
+  if (result.error) {
+
+    setMessage(
+      "tradingMessage",
+      result.error.message,
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   LOAD BOT SETTINGS
+========================================================= */
+
+async function loadBotSettings() {
+
+  if (!tradingAccount)
+    return;
+
+
+  const result =
+    await supabaseClient
+      .from(
+        "bot_settings"
+      )
+      .select(
+        "*"
+      )
+      .eq(
+        "trading_account_id",
+        tradingAccount.id
+      )
+      .limit(1);
+
+
+  if (result.error) {
+
+    console.error(
+      "Bot settings error:",
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  const settings =
+    result.data?.[0];
+
+
+  if (!settings)
+    return;
+
+
+  riskPercent =
+    Number(
+      settings.risk_percent ||
+      2
+    );
+
+
+  riskMode =
+    riskPercent >= 3.5
+      ? "aggressive"
+      : "standard";
+
+
+  const riskModeElement =
+    document.getElementById(
+      "riskMode"
+    );
+
+  if (riskModeElement)
+    riskModeElement.value =
+      riskMode;
+
+
+  const riskElement =
+    document.getElementById(
+      "riskPercent"
+    );
+
+  if (riskElement)
+    riskElement.value =
+      riskPercent;
+
+
+  const timeframe =
+    document.getElementById(
+      "timeframe"
+    );
+
+  if (
+    timeframe &&
+    settings.timeframe
+  ) {
+
+    timeframe.value =
+      settings.timeframe;
+
+  }
+
+
+  const strategy =
+    document.getElementById(
+      "strategy"
+    );
+
+  if (
+    strategy &&
+    settings.strategy
+  ) {
+
+    strategy.value =
+      settings.strategy;
+
+  }
+
+
+  const maxDailyLoss =
+    document.getElementById(
+      "maxDailyLoss"
+    );
+
+  if (maxDailyLoss)
+    maxDailyLoss.value =
+      settings.max_daily_loss_percent ??
+      3;
+
+
+  const maxDrawdown =
+    document.getElementById(
+      "maxDrawdown"
+    );
+
+  if (maxDrawdown)
+    maxDrawdown.value =
+      settings.max_drawdown_percent ??
+      10;
+
+
+  const maxOpenTrades =
+    document.getElementById(
+      "maxOpenTrades"
+    );
+
+  if (maxOpenTrades)
+    maxOpenTrades.value =
+      settings.max_open_trades ??
+      3;
+
+
+  const automaticLot =
+    document.getElementById(
+      "automaticLot"
+    );
+
+  if (automaticLot)
+    automaticLot.value =
+      String(
+        settings.automatic_lot_size ??
+        true
+      );
+
+
+  const automaticSL =
+    document.getElementById(
+      "automaticSL"
+    );
+
+  if (automaticSL)
+    automaticSL.value =
+      String(
+        settings.automatic_sl ??
+        true
+      );
+
+
+  const automaticTP =
+    document.getElementById(
+      "automaticTP"
+    );
+
+  if (automaticTP)
+    automaticTP.value =
+      String(
+        settings.automatic_tp ??
+        true
+      );
+
+
+  if (
+    Array.isArray(
+      settings.allowed_symbols
+    )
+  ) {
+
+    selectedSymbols =
+      settings.allowed_symbols;
+
+  }
+
+
+  renderSymbols();
+
+}
+
+
+/* =========================================================
+   SYMBOL GRID
+========================================================= */
+
+function renderSymbols() {
+
+  const grid =
+    document.getElementById(
+      "symbolGrid"
+    );
+
+  if (!grid)
+    return;
+
+
+  grid.innerHTML = "";
+
+
+  AVAILABLE_SYMBOLS.forEach(
+    symbol => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.type =
+        "button";
+
+
+      button.className =
+        "symbol-option";
+
+
+      if (
+        selectedSymbols.includes(
+          symbol.value
+        )
+      ) {
+
+        button.classList.add(
+          "selected"
+        );
+
+      }
+
+
+      button.innerHTML = `
+
+        <strong>
+          ${escapeHTML(
+            symbol.label
+          )}
+        </strong>
+
+        <small>
+          ${escapeHTML(
+            symbol.description
+          )}
+        </small>
+
+      `;
+
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          if (
+            selectedSymbols.includes(
+              symbol.value
+            )
+          ) {
+
+            selectedSymbols =
+              selectedSymbols.filter(
+                value =>
+                  value !==
+                  symbol.value
+              );
+
+          } else {
+
+            selectedSymbols.push(
+              symbol.value
+            );
+
+          }
+
+
+          renderSymbols();
+
+        }
+      );
+
+
+      grid.appendChild(
+        button
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   START BOT
+========================================================= */
+
+async function startBot() {
+
+  if (!tradingAccount) {
+
+    setMessage(
+      "tradingMessage",
+      "No trading account connected.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const saved =
+    await saveBotSettings();
+
+
+  if (!saved)
+    return;
+
+
+  const payload = {
+
+    risk_percent:
+      riskPercent,
+
+    risk_mode:
+      riskMode,
+
+    timeframe:
+      document.getElementById(
+        "timeframe"
+      )?.value ||
+      "1m",
+
+    strategy:
+      document.getElementById(
+        "strategy"
+      )?.value ||
+      "AI Scalping",
+
+    allowed_symbols:
+      selectedSymbols,
+
+    automatic_lot_size:
+      document.getElementById(
+        "automaticLot"
+      )?.value ===
+      "true",
+
+    automatic_sl:
+      document.getElementById(
+        "automaticSL"
+      )?.value ===
+      "true",
+
+    automatic_tp:
+      document.getElementById(
+        "automaticTP"
+      )?.value ===
+      "true"
+
+  };
+
+
+  const result =
+    await sendTradingCommand(
+      "START_BOT",
+      payload
+    );
+
+
+  if (result.error) {
+
+    setMessage(
+      "tradingMessage",
+      result.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Also update trading_accounts.
+  */
+
+  await supabaseClient
+    .from(
+      "trading_accounts"
+    )
+    .update({
+      bot_enabled: true,
+      status: "starting"
+    })
+    .eq(
+      "id",
+      tradingAccount.id
+    );
+
+
+  tradingAccount.bot_enabled =
+    true;
+
+
+  tradingAccount.status =
+    "starting";
+
+
+  document.getElementById(
+    "aiBotStatus"
+  ).textContent =
+    "STARTING";
+
+
+  setMessage(
+    "tradingMessage",
+    "START command sent. Waiting for MT5 confirmation.",
+    "success"
+  );
+
+}
+
+
+/* =========================================================
+   STOP BOT
+========================================================= */
+
+async function stopBot() {
+
+  if (!tradingAccount) {
+    setMessage(
+      "tradingMessage",
+      "No trading account connected.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const result =
+    await sendTradingCommand(
+      "STOP_BOT",
+      {}
+    );
+
+
+  if (result.error) {
+
+    setMessage(
+      "tradingMessage",
+      result.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  await supabaseClient
+    .from(
+      "trading_accounts"
+    )
+    .update({
+      bot_enabled: false,
+      status: "connected"
+    })
+    .eq(
+      "id",
+      tradingAccount.id
+    );
+
+
+  tradingAccount.bot_enabled =
+    false;
+
+
+  document.getElementById(
+    "aiBotStatus"
+  ).textContent =
+    "STOPPING";
+
+
+  setMessage(
+    "tradingMessage",
+    "STOP command sent to MT5.",
+    "success"
+  );
+
+}
+
+
+/* =========================================================
+   EMERGENCY CLOSE
+========================================================= */
+
+async function emergencyCloseAll() {
+
+  if (!tradingAccount) {
+
+    setMessage(
+      "dashboardMessage",
+      "No trading account connected.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    window.confirm(
+      "EMERGENCY CLOSE: Close ALL MT5 positions for this account?"
+    );
+
+
+  if (!confirmed)
+    return;
+
+
+  const result =
+    await sendTradingCommand(
+      "CLOSE_ALL",
+      {
+        reason:
+          "USER_EMERGENCY_CLOSE"
+      }
+    );
+
+
+  if (result.error) {
+
+    setMessage(
+      "dashboardMessage",
+      result.error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  setMessage(
+    "dashboardMessage",
+    "Emergency close command sent to MT5.",
+    "success"
+  );
+
+}
+
+
+/* =========================================================
    POSITIONS
 ========================================================= */
 
@@ -5237,27 +2567,41 @@ async function loadPositions() {
     document.getElementById(
       "positionsBody"
     );
+
+
   const empty =
     document.getElementById(
       "positionsEmpty"
     );
 
 
-  if (!body)
-    return;
-
-
-  if (!currentUser)
+  if (
+    !body ||
+    !currentUser ||
+    !tradingAccount
+  )
     return;
 
 
   const result =
     await supabaseClient
-      .from("positions")
-      .select("*")
+      .from(
+        "positions"
+      )
+      .select(
+        "*"
+      )
       .eq(
         "user_id",
         currentUser.id
+      )
+      .eq(
+        "trading_account_id",
+        tradingAccount.id
+      )
+      .eq(
+        "status",
+        "open"
       )
       .order(
         "opened_at",
@@ -5269,18 +2613,10 @@ async function loadPositions() {
 
   if (result.error) {
 
-    body.innerHTML = "";
-
-    if (empty) {
-
-      empty.style.display =
-        "block";
-
-      empty.textContent =
-        "Positions unavailable: " +
-        result.error.message;
-
-    }
+    console.error(
+      "Positions error:",
+      result.error
+    );
 
     return;
 
@@ -5288,16 +2624,18 @@ async function loadPositions() {
 
 
   const rows =
-    result.data || [];
+    result.data ||
+    [];
 
 
-  const openPositions =
+  const count =
     document.getElementById(
       "openPositions"
     );
 
-  if (openPositions)
-    openPositions.textContent =
+
+  if (count)
+    count.textContent =
       rows.length;
 
 
@@ -5305,6 +2643,7 @@ async function loadPositions() {
     document.getElementById(
       "positionsCount"
     );
+
 
   if (positionsCount)
     positionsCount.textContent =
@@ -5316,15 +2655,9 @@ async function loadPositions() {
 
     body.innerHTML = "";
 
-    if (empty) {
-
+    if (empty)
       empty.style.display =
         "block";
-
-      empty.textContent =
-        "No open positions.";
-
-    }
 
     return;
 
@@ -5340,59 +2673,67 @@ async function loadPositions() {
     rows.map(
       position => `
 
-      <tr>
+        <tr>
 
-        <td>
-          ${escapeHTML(
-            position.symbol
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.symbol
+            )}
+          </td>
 
-        <td>
-          ${escapeHTML(
-            position.side
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.side
+            )}
+          </td>
 
-        <td>
-          ${escapeHTML(
-            position.volume
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.volume
+            )}
+          </td>
 
-        <td>
-          ${escapeHTML(
-            position.entry_price
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.entry_price
+            )}
+          </td>
 
-        <td>
-          ${escapeHTML(
-            position.current_price
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.current_price
+            )}
+          </td>
 
-        <td>
-          ${escapeHTML(
-            position.stop_loss
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.stop_loss
+            )}
+          </td>
 
-        <td>
-          ${escapeHTML(
-            position.take_profit ??
-            position.take_profits ??
-            "—"
-          )}
-        </td>
+          <td>
+            ${escapeHTML(
+              position.take_profit
+            )}
+          </td>
 
-        <td>
-          ${money(
-            position.floating_profit
-          )}
-        </td>
+          <td class="${
+            Number(
+              position.floating_profit ||
+              0
+            ) >= 0
+              ? "green"
+              : "red"
+          }">
 
-      </tr>
+            ${money(
+              position.
+              floating_profit
+            )}
+
+          </td>
+
+        </tr>
 
       `
     ).join("");
@@ -5411,24 +2752,36 @@ async function loadTrades() {
       "tradesBody"
     );
 
+
   const empty =
     document.getElementById(
       "tradesEmpty"
     );
 
 
-  if (!body ||
-      !currentUser)
+  if (
+    !body ||
+    !currentUser ||
+    !tradingAccount
+  )
     return;
 
 
   const result =
     await supabaseClient
-      .from("trades")
-      .select("*")
+      .from(
+        "trades"
+      )
+      .select(
+        "*"
+      )
       .eq(
         "user_id",
         currentUser.id
+      )
+      .eq(
+        "trading_account_id",
+        tradingAccount.id
       )
       .order(
         "closed_at",
@@ -5441,18 +2794,10 @@ async function loadTrades() {
 
   if (result.error) {
 
-    body.innerHTML = "";
-
-    if (empty) {
-
-      empty.style.display =
-        "block";
-
-      empty.textContent =
-        "Trade history unavailable: " +
-        result.error.message;
-
-    }
+    console.error(
+      "Trades error:",
+      result.error
+    );
 
     return;
 
@@ -5460,31 +2805,29 @@ async function loadTrades() {
 
 
   const rows =
-    result.data || [];
+    result.data ||
+    [];
 
 
   if (!rows.length) {
 
     body.innerHTML = "";
 
-    if (empty) {
-
+    if (empty)
       empty.style.display =
         "block";
 
-      empty.textContent =
-        "No completed trades.";
-
-    }
 
     const todayProfit =
       document.getElementById(
         "todayProfit"
       );
 
+
     if (todayProfit)
       todayProfit.textContent =
         money(0);
+
 
     return;
 
@@ -5498,70 +2841,96 @@ async function loadTrades() {
 
   body.innerHTML =
     rows.map(
-      trade => `
+      trade => {
 
-      <tr>
-
-        <td>
-          ${escapeHTML(
-            trade.symbol
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.side
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.volume
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.entry_price
-          )}
-        </td>
-
-        <td>
-          ${escapeHTML(
-            trade.exit_price
-          )}
-        </td>
-
-        <td class="${
+        const profit =
           Number(
-            trade.result || 0
-          ) >= 0
-          ? "green"
-            : "red"
-        }">
+            trade.profit ||
+            0
+          );
 
-          ${money(
-            trade.result
-          )}
 
-        </td>
+        return `
 
-        <td>
-          ${escapeHTML(
-            trade.opened_at
-          )}
-        </td>
+          <tr>
 
-        <td>
-          ${escapeHTML(
-            trade.closed_at
-          )}
-        </td>
+            <td>
+              ${escapeHTML(
+                trade.symbol
+              )}
+            </td>
 
-      </tr>
+            <td>
+              ${escapeHTML(
+                trade.side
+              )}
+            </td>
 
-      `
+            <td>
+              ${escapeHTML(
+                trade.volume
+              )}
+            </td>
+
+            <td>
+              ${escapeHTML(
+                trade.entry_price
+              )}
+            </td>
+
+            <td>
+              ${escapeHTML(
+                trade.exit_price
+              )}
+            </td>
+
+            <td class="${
+              profit >= 0
+                ? "green"
+                : "red"
+            }">
+
+              ${money(
+                profit
+              )}
+
+            </td>
+
+            <td>
+              ${escapeHTML(
+                trade.result
+              )}
+            </td>
+
+            <td>
+              ${formatDate(
+                trade.opened_at
+              )}
+            </td>
+
+            <td>
+              ${formatDate(
+                trade.closed_at
+              )}
+            </td>
+
+          </tr>
+
+        `;
+
+      }
     ).join("");
+
+
+  /*
+    TODAY PROFIT
+
+    Uses trade.profit,
+    NOT trade.result.
+  */
+
+  const now =
+    new Date();
 
 
   const today =
@@ -5579,25 +2948,28 @@ async function loadTrades() {
             );
 
 
-          const now =
-            new Date();
-
-
           return (
-            date.toDateString() ===
-            now.toDateString()
+            date.getFullYear() ===
+              now.getFullYear() &&
+
+            date.getMonth() ===
+              now.getMonth() &&
+
+            date.getDate() ===
+              now.getDate()
           );
 
         }
       )
       .reduce(
         (
-          sum,
+          total,
           trade
         ) =>
-          sum +
+          total +
           Number(
-            trade.result || 0
+            trade.profit ||
+            0
           ),
         0
       );
@@ -5608,109 +2980,21 @@ async function loadTrades() {
       "todayProfit"
     );
 
-  if (todayProfit)
+
+  if (todayProfit) {
+
     todayProfit.textContent =
       money(today);
 
-}
-
-
-/* =========================================================
-   TRANSACTIONS
-========================================================= */
-
-async function loadTransactions() {
-
-  const body =
-    document.getElementById(
-      "depositHistoryBody"
-    );
-
-
-  if (!body ||
-      !currentUser)
-    return;
-
-
-  const result =
-    await supabaseClient
-      .from("transactions")
-      .select("*")
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      )
-      .limit(100);
-
-
-  if (result.error) {
-
-    console.error(
-      "Transactions error:",
-      result.error
-    );
-
-    return;
+    todayProfit.className =
+      "card-value " +
+      (
+        today >= 0
+          ? "green"
+          : "red"
+      );
 
   }
-
-
-  body.innerHTML =
-    (result.data || [])
-      .map(
-        tx => `
-
-        <tr>
-
-          <td>
-            ${escapeHTML(
-              tx.type
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.amount
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.currency
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.status
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.tx_hash ||
-              "—"
-            )}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              tx.created_at ||
-              "—"
-            )}
-          </td>
-
-        </tr>
-
-        `
-      )
-      .join("");
 
 }
 
@@ -5742,44 +3026,36 @@ function setupNavigation() {
           "active"
         );
 
-        page.style.display =
-          "none";
+      }
+    );
+
+
+    links.forEach(
+      link => {
+
+        link.classList.remove(
+          "active"
+        );
 
       }
     );
 
 
-    const selected =
+    const page =
       document.getElementById(
         name
       );
 
 
-    if (selected) {
-
-      selected.classList.add(
+    if (page)
+      page.classList.add(
         "active"
       );
-
-      selected.style.display =
-        "block";
-
-    }
-
-
-    links.forEach(
-      link =>
-        link.classList.remove(
-          "active"
-        )
-    );
 
 
     const active =
       document.querySelector(
-        '.menu a[data-page="' +
-        name +
-        '"]'
+        .menu a[data-page="${name}"]
       );
 
 
@@ -5795,12 +3071,6 @@ function setupNavigation() {
       "#" + name
     );
 
-
-    window.scrollTo(
-      0,
-      0
-    );
-
   }
 
 
@@ -5814,9 +3084,7 @@ function setupNavigation() {
           event.preventDefault();
 
           showPage(
-            link.getAttribute(
-              "data-page"
-            )
+            link.dataset.page
           );
 
         }
@@ -5856,298 +3124,97 @@ function setupNavigation() {
 
 
 /* =========================================================
-   WITHDRAWAL CALCULATOR
+   RISK SETTINGS
 ========================================================= */
 
-function setupWithdrawCalculation() {
+function setupRiskControls() {
 
-  const amount =
+  const mode =
     document.getElementById(
-      "withdrawAmount"
-    );
-
-  const receive =
-    document.getElementById(
-      "withdrawReceive"
-    );
-
-  const fee =
-    document.getElementById(
-      "withdrawFee"
+      "riskMode"
     );
 
 
-  if (!amount ||
-      !receive ||
-      !fee)
-    return;
+  const percent =
+    document.getElementById(
+      "riskPercent"
+    );
 
 
-  function update() {
-
-    const value =
-      Number(
-        amount.value || 0
-      );
-
-
-    const networkFee =
-      value > 0 ?
-      1 :
-      0;
-
-
-    fee.textContent =
-      money(
-        networkFee
-      );
-
-
-    receive.textContent =
-      money(
-        Math.max(
-          0,
-          value -
-          networkFee
-        )
-      );
-
-  }
-
-
-  amount.addEventListener(
-    "input",
-    update
-  );
-
-
-  update();
-
-}
-
-
-/* =========================================================
-   RISK PROFILE BUTTONS
-========================================================= */
-
-const standardRiskCard =
-  document.getElementById(
-    "standardRiskCard"
-  );
-
-
-if (standardRiskCard) {
-
-  standardRiskCard.addEventListener(
-    "click",
-    () => {
-
-      riskMode =
-        "standard";
-
-      riskPercent =
-        2;
-
-
-      const risk =
-        document.getElementById(
-          "riskPercent"
-        );
-
-      if (risk)
-        risk.value = 2;
-
-
-      const aiRisk =
-        document.getElementById(
-          "aiRiskInput"
-        );
-
-      if (aiRisk)
-        aiRisk.value = 2;
-
-
-      const aiMode =
-        document.getElementById(
-          "aiRiskMode"
-        );
-
-      if (aiMode)
-        aiMode.value =
-          "standard";
-
-
-      updateRiskUI();
-
-    }
-  );
-
-}
-
-
-const aggressiveRiskCard =
-  document.getElementById(
-    "aggressiveRiskCard"
-  );
-
-
-if (aggressiveRiskCard) {
-
-  aggressiveRiskCard.addEventListener(
-    "click",
-    () => {
-
-      riskMode =
-        "aggressive";
-
-      riskPercent =
-        3.5;
-
-
-      const risk =
-        document.getElementById(
-          "riskPercent"
-        );
-
-      if (risk)
-        risk.value =
-          3.5;
-
-
-      const aiRisk =
-        document.getElementById(
-          "aiRiskInput"
-        );
-
-      if (aiRisk)
-        aiRisk.value =
-          3.5;
-
-
-      const aiMode =
-        document.getElementById(
-          "aiRiskMode"
-        );
-
-      if (aiMode)
-        aiMode.value =
-          "aggressive";
-
-
-      updateRiskUI();
-
-    }
-  );
-
-}
-
-
-const aiRiskMode =
-  document.getElementById(
-    "aiRiskMode"
-  );
-
-
-if (aiRiskMode) {
-
-  aiRiskMode.addEventListener(
+  mode?.addEventListener(
     "change",
-    event => {
+    () => {
 
       riskMode =
-        event.target.value;
+        mode.value;
 
 
       riskPercent =
         riskMode ===
-        "aggressive" ?
-        3.5 :
-        2;
+        "aggressive"
+          ? 3.5
+          : 2;
 
 
-      const aiRisk =
-        document.getElementById(
-          "aiRiskInput"
-        );
-
-      if (aiRisk)
-        aiRisk.value =
-          riskPercent;
-
-
-      const risk =
-        document.getElementById(
-          "riskPercent"
-        );
-
-      if (risk)
-        risk.value =
-          riskPercent;
-
-
-      updateRiskUI();
+      percent.value =
+        riskPercent;
 
     }
   );
 
-}
 
-
-const aiRiskInput =
-  document.getElementById(
-    "aiRiskInput"
-  );
-
-
-if (aiRiskInput) {
-
-  aiRiskInput.addEventListener(
+  percent?.addEventListener(
     "change",
-    event => {
+    () => {
 
-      const value =
+      let value =
         Number(
-          event.target.value
+          percent.value
+        );
+
+
+      if (
+        !Number.isFinite(
+          value
+        )
+      ) {
+
+        value = 2;
+
+      }
+
+
+      /*
+        Hard safety limit for
+        the dashboard.
+      */
+
+      value =
+        Math.max(
+          0.1,
+          Math.min(
+            3.5,
+            value
+          )
         );
 
 
       riskPercent =
-        value >= 3.5 ?
-        3.5 :
-        2;
+        value;
 
 
       riskMode =
-        riskPercent >= 3.5 ?
-        "aggressive" :
-        "standard";
+        value >= 3.5
+          ? "aggressive"
+          : "standard";
 
 
-      event.target.value =
-        riskPercent;
+      mode.value =
+        riskMode;
 
 
-      const risk =
-        document.getElementById(
-          "riskPercent"
-        );
-
-      if (risk)
-        risk.value =
-          riskPercent;
-
-
-      const mode =
-        document.getElementById(
-          "aiRiskMode"
-        );
-
-      if (mode)
-        mode.value =
-          riskMode;
-
-
-      updateRiskUI();
+      percent.value =
+        value;
 
     }
   );
@@ -6156,33 +3223,20 @@ if (aiRiskInput) {
 
 
 /* =========================================================
-   START AI BOT
-   ========================================================= */
+   SAVE SETTINGS BUTTON
+========================================================= */
 
-const startAiBot =
-  document.getElementById(
-    "startAiBot"
-  );
+function setupSaveSettings() {
+
+  const button =
+    document.getElementById(
+      "saveTradingSettings"
+    );
 
 
-if (startAiBot) {
-
-  startAiBot.addEventListener(
+  button?.addEventListener(
     "click",
     async () => {
-
-      if (!demoAccount) {
-
-        setMessage(
-          "aiMessage",
-          "Create or connect a trading account first.",
-          "error"
-        );
-
-        return;
-
-      }
-
 
       const saved =
         await saveBotSettings();
@@ -6192,359 +3246,9 @@ if (startAiBot) {
         return;
 
 
-      const timeframeElement =
-        document.getElementById(
-          "riskTimeframe"
-        );
-
-
-      const strategyElement =
-        document.getElementById(
-          "aiStrategy"
-        );
-
-
-      const automaticLot =
-        document.getElementById(
-          "automaticLot"
-        );
-
-
-      const automaticSL =
-        document.getElementById(
-          "automaticSL"
-        );
-
-
-      const automaticTP =
-        document.getElementById(
-          "automaticTP"
-        );
-
-
-      const payload = {
-
-        risk_percent:
-          riskPercent,
-
-        risk_mode:
-          riskMode,
-
-        timeframe:
-          timeframeElement ?
-          timeframeElement.value :
-          "1m",
-
-        strategy:
-          strategyElement ?
-          strategyElement.value :
-          "AI Scalping",
-
-        allowed_symbols:
-          selectedSymbols,
-
-        automatic_lot_size:
-          automaticLot ?
-          automaticLot.value ===
-          "true" :
-          true,
-
-        automatic_sl:
-          automaticSL ?
-          automaticSL.value ===
-          "true" :
-          true,
-
-        automatic_tp:
-          automaticTP ?
-          automaticTP.value ===
-          "true" :
-          true
-
-      };
-
-
-      const result =
-        await sendTradingCommand(
-          "START_BOT",
-          payload
-        );
-
-
-      if (result.error) {
-
-        setMessage(
-          "aiMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const status =
-        document.getElementById(
-          "aiBotStatus"
-        );
-
-      if (status)
-        status.textContent =
-          "CONNECTING";
-
-
-      const engine =
-        document.getElementById(
-          "engineStatus"
-        );
-
-      if (engine)
-        engine.textContent =
-          "WAITING FOR MT5";
-
-
       setMessage(
-        "aiMessage",
-        "START command sent. Waiting for MT5 confirmation.",
-        "success"
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   STOP AI BOT
-========================================================= */
-
-const stopAiBot =
-  document.getElementById(
-    "stopAiBot"
-  );
-
-
-if (stopAiBot) {
-
-  stopAiBot.addEventListener(
-    "click",
-    async () => {
-
-      if (!demoAccount) {
-
-        setMessage(
-          "aiMessage",
-          "No trading account connected.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const result =
-        await sendTradingCommand(
-          "STOP_BOT",
-          {}
-        );
-
-
-      if (result.error) {
-
-        setMessage(
-          "aiMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      await supabaseClient
-        .from("trading_accounts")
-        .update({
-          bot_enabled: false
-        })
-        .eq(
-          "id",
-          demoAccount.id
-        );
-
-
-      const status =
-        document.getElementById(
-          "aiBotStatus"
-        );
-
-      if (status)
-        status.textContent =
-          "STOPPING";
-
-
-      const engine =
-        document.getElementById(
-          "engineStatus"
-        );
-
-      if (engine)
-        engine.textContent =
-          "WAITING FOR MT5";
-
-
-      setMessage(
-        "aiMessage",
-        "STOP command sent to MT5.",
-        "success"
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   EMERGENCY CLOSE
-========================================================= */
-
-const emergencyClose =
-  document.getElementById(
-    "emergencyClose"
-  );
-
-
-if (emergencyClose) {
-
-  emergencyClose.addEventListener(
-    "click",
-    async () => {
-
-      if (!demoAccount) {
-
-        setMessage(
-          "aiMessage",
-          "No trading account connected.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const confirmed =
-        window.confirm(
-          "EMERGENCY CLOSE: Close ALL MT5 positions for this account?"
-        );
-
-
-      if (!confirmed)
-        return;
-
-
-      const result =
-        await sendTradingCommand(
-          "CLOSE_ALL",
-          {
-            reason:
-              "USER_EMERGENCY_CLOSE"
-          }
-        );
-
-
-      if (result.error) {
-
-        setMessage(
-          "aiMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      setMessage(
-        "aiMessage",
-        "Emergency close command sent to MT5.",
-        "success"
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-const autoTradingSwitch =
-  document.getElementById(
-    "autoTradingSwitch"
-  );
-
-
-if (autoTradingSwitch) {
-
-  autoTradingSwitch.addEventListener(
-    "click",
-    function() {
-
-      this.classList.toggle(
-        "on"
-      );
-
-    }
-  );
-
-}
-
-
-const notificationSwitch =
-  document.getElementById(
-    "notificationSwitch"
-  );
-
-
-if (notificationSwitch) {
-
-  notificationSwitch.addEventListener(
-    "click",
-    function() {
-
-      this.classList.toggle(
-        "on"
-      );
-
-    }
-  );
-
-}
-
-
-const saveSettings =
-  document.getElementById(
-    "saveSettings"
-  );
-
-
-if (saveSettings) {
-
-  saveSettings.addEventListener(
-    "click",
-    () => {
-
-      setMessage(
-        "settingsMessage",
-        "Platform settings saved for this session.",
+        "tradingMessage",
+        "Trading settings saved successfully.",
         "success"
       );
 
@@ -6560,276 +3264,108 @@ if (saveSettings) {
 
 async function logout() {
 
-  await supabaseClient.auth.signOut();
+  const confirmed =
+    window.confirm(
+      "Are you sure you want to sign out?"
+    );
+
+
+  if (!confirmed)
+    return;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .auth
+      .signOut();
+
+
+  if (error) {
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+    return;
+
+  }
+
 
   window.location.replace(
-    "auth.html"
-  );
-
-}
-
-
-const logoutButton =
-  document.getElementById(
-    "logoutButton"
-  );
-
-
-if (logoutButton) {
-
-  logoutButton.addEventListener(
-    "click",
-    logout
-  );
-
-}
-
-
-const securityLogout =
-  document.getElementById(
-    "securityLogout"
-  );
-
-
-if (securityLogout) {
-
-  securityLogout.addEventListener(
-    "click",
-    logout
+    "/auth.html"
   );
 
 }
 
 
 /* =========================================================
-   DEPOSIT
+   BUTTON EVENTS
 ========================================================= */
 
-const depositSubmit =
-  document.getElementById(
-    "depositSubmit"
-  );
+function setupButtons() {
+
+  document
+    .getElementById(
+      "startAiBot"
+    )
+    ?.addEventListener(
+      "click",
+      startBot
+    );
 
 
-if (depositSubmit) {
-
-  depositSubmit.addEventListener(
-    "click",
-    async () => {
-
-      const amount =
-        Number(
-          document.getElementById(
-            "depositAmount"
-          )?.value || 0
-        );
+  document
+    .getElementById(
+      "startAiBotDashboard"
+    )
+    ?.addEventListener(
+      "click",
+      startBot
+    );
 
 
-      if (amount < 50) {
-
-        setMessage(
-          "depositMessage",
-          "Minimum deposit is $50.",
-          "error"
-        );
-
-        return;
-
-      }
+  document
+    .getElementById(
+      "stopAiBot"
+    )
+    ?.addEventListener(
+      "click",
+      stopBot
+    );
 
 
-      const currency =
-        document.getElementById(
-          "depositCurrency"
-        )?.value ||
-        "USDT";
+  document
+    .getElementById(
+      "stopAiBotDashboard"
+    )
+    ?.addEventListener(
+      "click",
+      stopBot
+    );
 
 
-      const result =
-        await supabaseClient
-          .from("transactions")
-          .insert({
-
-            user_id:
-              currentUser.id,
-
-            type:
-              "deposit",
-
-            amount:
-              amount,
-
-            currency:
-              currency,
-
-            status:
-              "pending",
-
-            tx_hash:
-              null
-
-          });
-
-
-      if (result.error) {
-
-        setMessage(
-          "depositMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      setMessage(
-        "depositMessage",
-        "Deposit request created. Waiting for verified payment confirmation.",
-        "success"
-      );
-
-
-      await loadTransactions();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   WITHDRAW
-========================================================= */
-
-const withdrawSubmit =
-  document.getElementById(
-    "withdrawSubmit"
-  );
-
-
-if (withdrawSubmit) {
-
-  withdrawSubmit.
+  document
+    .getElementById(
+      "emergencyClose"
+    )
+    ?.
     addEventListener(
-    "click",
-    async () => {
-
-      const amount =
-        Number(
-          document.getElementById(
-            "withdrawAmount"
-          )?.value || 0
-        );
+      "click",
+      emergencyCloseAll
+    );
 
 
-      const address =
-        document.getElementById(
-          "withdrawAddress"
-        )?.value.trim() ||
-        "";
-
-
-      if (!address) {
-
-        setMessage(
-          "withdrawMessage",
-          "Enter a destination wallet address.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      if (amount <= 0) {
-
-        setMessage(
-          "withdrawMessage",
-          "Enter a valid withdrawal amount.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      if (amount > walletBalance) {
-
-        setMessage(
-          "withdrawMessage",
-          "Insufficient available balance.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const currency =
-        document.getElementById(
-          "withdrawCurrency"
-        )?.value ||
-        "USDT";
-
-
-      const result =
-        await supabaseClient
-          .from("transactions")
-          .insert({
-
-            user_id:
-              currentUser.id,
-
-            type:
-              "withdrawal",
-
-            amount:
-              amount,
-
-            currency:
-              currency,
-
-            status:
-              "pending",
-
-            tx_hash:
-              null,
-
-            wallet_address:
-              address
-
-          });
-
-
-      if (result.error) {
-
-        setMessage(
-          "withdrawMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      setMessage(
-        "withdrawMessage",
-        "Withdrawal request submitted for review.",
-        "success"
-      );
-
-
-      await loadTransactions();
-
-    }
-  );
+  document
+    .getElementById(
+      "logoutButton"
+    )
+    ?.addEventListener(
+      "click",
+      logout
+    );
 
 }
 
@@ -6849,7 +3385,7 @@ async function start() {
     if (!currentUser) {
 
       window.location.replace(
-        "auth.html"
+        "/auth.html"
       );
 
       return;
@@ -6867,6 +3403,7 @@ async function start() {
         "userEmail"
       );
 
+
     if (userEmail)
       userEmail.textContent =
         email;
@@ -6876,6 +3413,7 @@ async function start() {
       document.getElementById(
         "settingsEmail"
       );
+
 
     if (settingsEmail)
       settingsEmail.textContent =
@@ -6887,6 +3425,7 @@ async function start() {
         "avatar"
       );
 
+
     if (avatar) {
 
       avatar.textContent =
@@ -6897,17 +3436,10 @@ async function start() {
     }
 
 
-    await loadWallet(
-      currentUser.id
-    );
+    renderSymbols();
 
 
-    await loadDemoAccount(
-      currentUser.id
-    );
-
-
-    await loadAccounts();
+    await loadTradingAccount();
 
 
     await loadBotSettings();
@@ -6922,43 +3454,31 @@ async function start() {
     await loadTrades();
 
 
-    await loadTransactions();
-
-
-    renderSymbolGrids();
-
-
-    updateRiskUI();
-
-
-    setupWithdrawCalculation();
-
-
-    const withdrawBalance =
-      document.getElementById(
-        "withdrawBalance"
-      );
-
-    if (withdrawBalance)
-      withdrawBalance.textContent =
-        money(walletBalance);
-
-
     /*
-      Refresh live information.
-      The dashboard will NOT claim MT5 is
-      connected unless the bridge heartbeat
-      is recent.
+      Refresh live MT5 data.
     */
 
     setInterval(
       async () => {
 
-        await loadMT5Status();
+        try {
 
-        await loadPositions();
+          await loadTradingAccount();
 
-        await loadTrades();
+          await loadMT5Status();
+
+          await loadPositions();
+
+          await loadTrades();
+
+        } catch(error) {
+
+          console.error(
+            "Dashboard refresh error:",
+            error
+          );
+
+        }
 
       },
       5000
@@ -6983,925 +3503,15 @@ async function start() {
 
 setupNavigation();
 
+setupRiskControls();
+
+setupSaveSettings();
+
+setupButtons();
+
 start();
-/* =========================================================
-   LOGOUT
-========================================================= */
 
-const securityLogout =
-  document.getElementById("securityLogout");
-
-if (securityLogout) {
-  securityLogout.addEventListener("click", async () => {
-    securityLogout.disabled = true;
-    securityLogout.textContent = "SIGNING OUT...";
-
-    try {
-      const { error } =
-        await supabaseClient.auth.signOut();
-
-      if (error) {
-        throw error;
-      }
-
-      window.location.href = "/auth.html";
-
-    } catch (error) {
-      console.error("Logout error:", error);
-
-      securityLogout.disabled = false;
-      securityLogout.textContent =
-        "SIGN OUT OF THIS ACCOUNT";
-
-      const message =
-        document.getElementById("settingsMessage");
-
-      if (message) {
-        message.textContent =
-          "Unable to sign out. Please try again.";
-      }
-    }
-  });
-}
-
-  function renderSymbolGrid() {
-  const grid =
-    document.getElementById("aiSymbolGrid");
-
-  if (!grid) return;
-
-  grid.innerHTML = "";
-
-  AVAILABLE_SYMBOLS.forEach((symbol) => {
-
-    const button =
-      document.createElement("button");
-
-    button.type = "button";
-    button.className = "symbol-option";
-
-    if (selectedSymbols.includes(symbol.value)) {
-      button.classList.add("selected");
-    }
-
-    button.innerHTML = `
-      <strong>${symbol.label}</strong>
-      <span>${symbol.description}</span>
-    `;
-
-    button.addEventListener("click", () => {
-
-      if (selectedSymbols.includes(symbol.value)) {
-
-        selectedSymbols =
-          selectedSymbols.filter(
-            item => item !== symbol.value
-          );
-
-      } else {
-
-        selectedSymbols.push(symbol.value);
-
-      }
-
-      renderSymbolGrid();
-    });
-
-    grid.appendChild(button);
-  });
-}
-
-renderSymbolGrid();
-function renderSymbolGrid() {
-  const grid = document.getElementById("aiSymbolGrid");
-
-  if (!grid) return;
-
-  grid.innerHTML = "";
-
-  AVAILABLE_SYMBOLS.forEach((symbol) => {
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.className = "symbol-option";
-
-    if (selectedSymbols.includes(symbol.value)) {
-      button.classList.add("selected");
-    }
-
-    button.innerHTML = `
-      <strong>${symbol.label}</strong>
-      <small>${symbol.description}</small>
-    `;
-
-    button.addEventListener("click", () => {
-      if (selectedSymbols.includes(symbol.value)) {
-        selectedSymbols = selectedSymbols.filter(
-          (item) => item !== symbol.value
-        );
-      } else {
-        selectedSymbols.push(symbol.value);
-      }
-
-      renderSymbolGrid();
-    });
-
-    grid.appendChild(button);
-  });
-}
-
-renderSymbolGrid();
-  const aiRiskMode =
-  document.getElementById("aiRiskMode");
-
-const aiRiskInput =
-  document.getElementById("aiRiskInput");
-
-const standardRiskCard =
-  document.getElementById("standardRiskCard");
-
-const aggressiveRiskCard =
-  document.getElementById("aggressiveRiskCard");
-
-const riskProfileStatus =
-  document.getElementById("riskProfileStatus");
-
-function updateRiskMode() {
-  if (!aiRiskMode || !aiRiskInput) return;
-
-  riskMode = aiRiskMode.value;
-
-  if (riskMode === "aggressive") {
-    riskPercent = 3.5;
-    aiRiskInput.value = "3.5";
-
-    if (riskProfileStatus)
-      riskProfileStatus.textContent = "AGGRESSIVE";
-
-    standardRiskCard?.classList.remove("active");
-    aggressiveRiskCard?.classList.add("active");
-
-  } else {
-    riskPercent = 2;
-    aiRiskInput.value = "2";
-
-    if (riskProfileStatus)
-      riskProfileStatus.textContent = "STANDARD";
-
-    aggressiveRiskCard?.classList.remove("active");
-    standardRiskCard?.classList.add("active");
-  }
-}
-
-aiRiskMode?.addEventListener(
-  "change",
-  updateRiskMode
-);
-
-aiRiskInput?.addEventListener(
-  "change",
-  () => {
-    let value = Number(aiRiskInput.value);
-
-    if (value < 2) value = 2;
-    if (value > 3.5) value = 3.5;
-
-    riskPercent = value;
-    aiRiskInput.value = value;
-
-    if (value === 3.5) {
-      riskMode = "aggressive";
-      aiRiskMode.value = "aggressive";
-    } else {
-      riskMode = "standard";
-      aiRiskMode.value = "standard";
-    }
-
-    updateRiskMode();
-  }
-);
-
-standardRiskCard?.addEventListener(
-  "click",
-  () => {
-    aiRiskMode.value = "standard";
-    updateRiskMode();
-  }
-);
-
-aggressiveRiskCard?.addEventListener(
-  "click",
-  () => {
-    aiRiskMode.value = "aggressive";
-    updateRiskMode();
-  }
-);
-
-updateRiskMode();
-/* =========================================================
-   SETTINGS — TRADING CONFIGURATION
-========================================================= */
-
-const SETTINGS_SYMBOLS = [
-  {
-    value: "XAUUSD",
-    label: "XAUUSD",
-    description: "Gold"
-  },
-  {
-    value: "EURUSD",
-    label: "EURUSD",
-    description: "Euro / USD"
-  },
-  {
-    value: "GBPUSD",
-    label: "GBPUSD",
-    description: "Pound / USD"
-  },
-  {
-    value: "USDJPY",
-    label: "USDJPY",
-    description: "USD / Yen"
-  },
-  {
-    value: "AUDUSD",
-    label: "AUDUSD",
-    description: "Australian Dollar"
-  },
-  {
-    value: "USDCAD",
-    label: "USDCAD",
-    description: "USD / Canadian Dollar"
-  },
-  {
-    value: "USDCHF",
-    label: "USDCHF",
-    description: "USD / Swiss Franc"
-  },
-  {
-    value: "NZDUSD",
-    label: "NZDUSD",
-    description: "New Zealand Dollar"
-  },
-  {
-    value: "EURGBP",
-    label: "EURGBP",
-    description: "Euro / Pound"
-  },
-  {
-    value: "EURJPY",
-    label: "EURJPY",
-    description: "Euro / Yen"
-  },
-  {
-    value: "GBPJPY",
-    label: "GBPJPY",
-    description: "Pound / Yen"
-  },
-  {
-    value: "BTCUSD",
-    label: "BTCUSD",
-    description: "Bitcoin"
-  },
-  {
-    value: "ETHUSD",
-    label: "ETHUSD",
-    description: "Ethereum"
-  }
-];
-
-
-/* =========================================================
-   RENDER SYMBOLS
-========================================================= */
-
-function renderSettingsSymbols() {
-
-  const grid =
-    document.getElementById(
-      "settingsSymbolGrid"
-    );
-
-  if (!grid) return;
-
-  grid.innerHTML = "";
-
-  SETTINGS_SYMBOLS.forEach(
-    (symbol) => {
-
-      const checked =
-        selectedSymbols.includes(
-          symbol.value
-        );
-
-      const item =
-        document.createElement(
-          "label"
-        );
-
-      item.className =
-        "symbol-option";
-
-      item.innerHTML = `
-        <input
-          type="checkbox"
-          value="${symbol.value}"
-          ${checked ? "checked" : ""}
-        >
-
-        <span>
-          <strong>${symbol.label}</strong>
-          <small>${symbol.description}</small>
-        </span>
-      `;
-
-      const checkbox =
-        item.querySelector(
-          "input"
-        );
-
-      checkbox.addEventListener(
-        "change",
-        () => {
-
-          selectedSymbols =
-            Array.from(
-              grid.querySelectorAll(
-                "input:checked"
-              )
-            ).map(
-              input => input.value
-            );
-
-        }
-      );
-
-      grid.appendChild(item);
-
-    }
-  );
-}
-
-
-/* =========================================================
-   RISK MODE
-========================================================= */
-
-const settingsRiskMode =
-  document.getElementById(
-    "settingsRiskMode"
-  );
-
-const settingsRiskPercent =
-  document.getElementById(
-    "settingsRiskPercent"
-  );
-
-const settingsRiskStatus =
-  document.getElementById(
-    "settingsRiskStatus"
-  );
-
-
-function updateSettingsRiskMode() {
-
-  if (!settingsRiskMode ||
-      !settingsRiskPercent) {
-    return;
-  }
-
-  const mode =
-    settingsRiskMode.value;
-
-  if (mode === "aggressive") {
-
-    settingsRiskPercent.value =
-      "3.5";
-
-    riskMode =
-      "aggressive";
-
-    riskPercent =
-      3.5;
-
-    if (settingsRiskStatus) {
-
-      settingsRiskStatus.textContent =
-        "AGGRESSIVE — 3.5%";
-
-    }
-
-  } else {
-
-    settingsRiskPercent.value =
-      "2";
-
-    riskMode =
-      "standard";
-
-    riskPercent =
-      2;
-
-    if (settingsRiskStatus) {
-
-      settingsRiskStatus.textContent =
-        "STANDARD — 2%";
-
-    }
-
-  }
-
-}
-
-
-if (settingsRiskMode) {
-
-  settingsRiskMode.addEventListener(
-    "change",
-    updateSettingsRiskMode
-  );
-
-}
-
-
-if (settingsRiskPercent) {
-
-  settingsRiskPercent.addEventListener(
-    "change",
-    () => {
-
-      riskPercent =
-        Number(
-          settingsRiskPercent.value
-        );
-
-      if (
-        riskPercent >= 3.5
-      ) {
-
-        riskMode =
-          "aggressive";
-
-        if (settingsRiskMode) {
-          settingsRiskMode.value =
-            "aggressive";
-        }
-
-        if (settingsRiskStatus) {
-          settingsRiskStatus.textContent =
-            "AGGRESSIVE — 3.5%";
-        }
-
-      } else {
-
-        riskMode =
-          "standard";
-
-        if (settingsRiskMode) {
-          settingsRiskMode.value =
-            "standard";
-        }
-
-        if (settingsRiskStatus) {
-          settingsRiskStatus.textContent =
-            STANDARD — ${riskPercent}%;
-        }
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   SAVE TRADING SETTINGS
-========================================================= */
-
-const saveTradingSettings =
-  document.getElementById(
-    "saveTradingSettings"
-  );
-
-
-if (saveTradingSettings) {
-
-  saveTradingSettings.addEventListener(
-    "click",
-    async () => {
-
-      riskMode =
-        settingsRiskMode
-          ? settingsRiskMode.value
-          : "standard";
-
-      riskPercent =
-        settingsRiskPercent
-          ? Number(
-              settingsRiskPercent.value
-            )
-          : 2;
-
-
-      const timeframe =
-        document.getElementById(
-          "settingsTimeframe"
-        )?.value || "1m";
-
-
-      const strategy =
-        document.getElementById(
-          "settingsStrategy"
-        )?.value || "AI Scalping";
-
-
-      const automaticLot =
-        document.getElementById(
-          "settingsAutomaticLot"
-        )?.value === "true";
-
-
-      const automaticSL =
-        document.getElementById(
-          "settingsAutomaticSL"
-        )?.value === "true";
-
-
-      const automaticTP =
-        document.getElementById(
-          "settingsAutomaticTP"
-        )?.value === "true";
-
-
-      const payload = {
-
-        risk_mode:
-          riskMode,
-
-        risk_percent:
-          riskPercent,
-
-        timeframe,
-
-        strategy,
-
-        allowed_symbols:
-          selectedSymbols,
-
-        automatic_lot_size:
-          automaticLot,
-
-        automatic_sl:
-          automaticSL,
-
-        automatic_tp:
-          automaticTP
-
-      };
-
-
-      console.log(
-        "AI MONSTER U SETTINGS:",
-        payload
-      );
-
-
-      try {
-
-        const result =
-          await sendTradingCommand(
-            "UPDATE_SETTINGS",
-            payload
-          );
-
-
-        if (result?.error) {
-
-          setMessage(
-            "tradingSettingsMessage",
-            result.error.message ||
-              "Could not save trading settings.",
-            "error"
-          );
-
-          return;
-
-        }
-
-
-        /*
-        Save locally so settings
-        remain available after refresh.
-        */
-
-        localStorage.setItem(
-          "aiMonsterTradingSettings",
-          JSON.stringify(payload)
-        );
-
-
-        setMessage(
-          "tradingSettingsMessage",
-          Trading settings saved — ${riskMode.toUpperCase()} ${riskPercent}% risk. ${selectedSymbols.length} symbol(s) selected.,
-          "success"
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Settings save error:",
-          error
-        );
-
-        setMessage(
-          "tradingSettingsMessage",
-          "Trading settings could not be saved.",
-          "error"
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   LOAD SAVED SETTINGS
-========================================================= */
-
-function loadSavedTradingSettings() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(
-        "aiMonsterTradingSettings"
-      );
-
-    if (!saved) {
-
-      renderSettingsSymbols();
-      updateSettingsRiskMode();
-
-      return;
-
-    }
-
-
-    const settings =
-      JSON.parse(saved);
-
-
-    if (settings.risk_mode) {
-
-      riskMode =
-        settings.risk_mode;
-
-      if (settingsRiskMode) {
-
-        settingsRiskMode.value =
-          settings.risk_mode;
-
-      }
-
-    }
-
-
-    if (
-      Number.isFinite(
-        Number(settings.risk_percent)
-      )
-    ) {
-
-      riskPercent =
-        Number(
-          settings.risk_percent
-        );
-
-      if (settingsRiskPercent) {
-
-        settingsRiskPercent.value =
-          String(
-            settings.risk_percent
-          );
-
-      }
-
-    }
-
-
-    if (
-      Array.isArray(
-        settings.
-        allowed_symbols
-      )
-    ) {
-
-      selectedSymbols =
-        settings.allowed_symbols;
-
-    }
-
-
-    const timeframe =
-      document.getElementById(
-        "settingsTimeframe"
-      );
-
-    if (
-      timeframe &&
-      settings.timeframe
-    ) {
-
-      timeframe.value =
-        settings.timeframe;
-
-    }
-
-
-    const strategy =
-      document.getElementById(
-        "settingsStrategy"
-      );
-
-    if (
-      strategy &&
-      settings.strategy
-    ) {
-
-      strategy.value =
-        settings.strategy;
-
-    }
-
-
-    const lot =
-      document.getElementById(
-        "settingsAutomaticLot"
-      );
-
-    if (
-      lot &&
-      settings.automatic_lot_size !== undefined
-    ) {
-
-      lot.value =
-        String(
-          settings.automatic_lot_size
-        );
-
-    }
-
-
-    const sl =
-      document.getElementById(
-        "settingsAutomaticSL"
-      );
-
-    if (
-      sl &&
-      settings.automatic_sl !== undefined
-    ) {
-
-      sl.value =
-        String(
-          settings.automatic_sl
-        );
-
-    }
-
-
-    const tp =
-      document.getElementById(
-        "settingsAutomaticTP"
-      );
-
-    if (
-      tp &&
-      settings.automatic_tp !== undefined
-    ) {
-
-      tp.value =
-        String(
-          settings.automatic_tp
-        );
-
-    }
-
-
-  } catch (error) {
-
-    console.error(
-      "Could not load saved settings:",
-      error
-    );
-
-  }
-
-
-  renderSettingsSymbols();
-
-  updateSettingsRiskMode();
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logoutFromSettings() {
-
-  const confirmed =
-    window.confirm(
-      "Are you sure you want to sign out?"
-    );
-
-  if (!confirmed) {
-    return;
-  }
-
-
-  try {
-
-    const {
-      error
-    } =
-      await supabaseClient.auth.signOut();
-
-
-    if (error) {
-
-      console.error(
-        "Logout error:",
-        error
-      );
-
-      setMessage(
-        "logoutMessage",
-        "Unable to sign out. Please try again.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    localStorage.removeItem(
-      "aiMonsterTradingSettings"
-    );
-
-
-    window.location.replace(
-      "auth.html"
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Logout error:",
-      error
-    );
-
-    setMessage(
-      "logoutMessage",
-      "Unable to sign out.",
-      "error"
-    );
-
-  }
-
-}
-
-
-const settingsLogout =
-  document.getElementById(
-    "settingsLogout"
-  );
-
-
-if (settingsLogout) {
-
-  settingsLogout.addEventListener(
-    "click",
-    logoutFromSettings
-  );
-
-}
-
-
-/* =========================================================
-   INITIALIZE SETTINGS
-========================================================= */
-
-loadSavedTradingSettings();
-</script> 
+</script>
 
 </body>
 </html>
