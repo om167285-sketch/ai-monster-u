@@ -241,7 +241,6 @@ function createcommandId(prefix = "AMU") {
   const heartbeatTime = new Date(heartbeat).getTime();
 
   if (!Number.isFinite(heartbeatTime)) {
-    return false;
   }
 
   const age = Date.now() - heartbeatTime;
