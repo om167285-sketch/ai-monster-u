@@ -247,21 +247,16 @@ function isHeartbeatAlive() {
     return false;
   }
 
-  const heartbeatTime = new Date(
-    heartbeat
-  ).getTime();
+  const heartbeatTime = new Date(heartbeat).getTime();
 
   if (!Number.isFinite(heartbeatTime)) {
     return false;
   }
 
-  // MT5 EA must have sent a heartbeat
-  // within the last 30 seconds.
   const age = Date.now() - heartbeatTime;
 
-  return age >= 0 && age <= 30000;
+  return age >= 0 && age <= 15000;
 }
-
 function resetMT5command(reason = null) {
   mt5command = {
     id: null,
