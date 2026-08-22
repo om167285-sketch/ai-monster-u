@@ -53,7 +53,6 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
-function isHeartbeatAlive() {
   const lastHeartbeat = mt5Bridge?.lastHeartbeat;
 
   if (!lastHeartbeat) {
