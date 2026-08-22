@@ -238,7 +238,24 @@ function createcommandId(prefix = "AMU") {
     Math.random() * 1000000
   )}`;
 }
+function isHeartbeatAlive() {
+  const heartbeat = mt5Bridge?.lastHeartbeat;
 
+  if (!heartbeat) {
+    return false;
+  }
+
+  const heartbeatTime = new Date(heartbeat).getTime();
+
+  if (!Number.isFinite(heartbeatTime)) {
+    return false;
+  }
+
+  // MT5 EA must have sent a heartbeat within the last 30 seconds.
+  const age = Date.now() - heartbeatTime;
+
+  return age >= 0 && age <= 30000;
+}
 function isheartbeatAlive() {
   if (!mt5Bridge.lastheartbeat) {
     return false;
