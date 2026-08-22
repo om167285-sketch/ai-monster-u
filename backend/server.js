@@ -53,10 +53,18 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
-function normalizeMODE(MODE) {
-  const value = String(MODE || "DEMO").toUpperCase();
+function normalizeMode(mode) {
+  const value = String(mode ?? "").trim().toUpperCase();
 
-  return value === "LIVE" ? "LIVE" : "DEMO";
+  if (value === "LIVE") {
+    return "LIVE";
+  }
+
+  if (value === "DEMO") {
+    return "DEMO";
+  }
+
+  return "DEMO";
 }
 const BOT_CONFIG = {
   SYMBOL    : "BTCUSDm",
