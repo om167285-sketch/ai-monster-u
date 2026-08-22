@@ -53,12 +53,23 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
- const age =
-    Date.now() - heartbeatTime;
+function isHeartbeatAlive() {
+  const heartbeat = mt5Bridge?.lastHeartbeat;
+
+  if (!heartbeat) {
+    return false;
+  }
+
+  const heartbeatTime = new Date(heartbeat).getTime();
+
+  if (!Number.isFinite(heartbeatTime)) {
+    return false;
+  }
+
+  const age = Date.now() - heartbeatTime;
 
   return age >= 0 && age <= 15000;
 }
-
 const BOT_CONFIG = {
   SYMBOL    : "BTCUSDm",
   timeframe: "1m",
@@ -240,7 +251,7 @@ function createcommandId(prefix = "AMU") {
   )}`;
 }
 
-function isHeartbeatAlive() {
+
   const heartbeat = mt5Bridge?.lastHeartbeat;
 
   if (!heartbeat) {
@@ -255,7 +266,7 @@ function isHeartbeatAlive() {
 
   const age = Date.now() - heartbeatTime;
 
-  return age >= 0 && age <= 15000;
+  return age >= 0 && age <= 30000;
 }
 function resetMT5command(reason = null) {
   mt5command = {
