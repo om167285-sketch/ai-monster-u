@@ -238,10 +238,6 @@ function createcommandId(prefix = "AMU") {
 
   const heartbeat = mt5Bridge?.lastHeartbeat;
 
-  if (!heartbeat) {
-    return false;
-  }
-
   const heartbeatTime = new Date(heartbeat).getTime();
 
   if (!Number.isFinite(heartbeatTime)) {
