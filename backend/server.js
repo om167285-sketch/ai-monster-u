@@ -53,20 +53,7 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
-  const lastHeartbeat = mt5Bridge?.lastHeartbeat;
-
-  if (!lastHeartbeat) {
-    return false;
-  }
-
-  const heartbeatTime =
-    new Date(lastHeartbeat).getTime();
-
-  if (!Number.isFinite(heartbeatTime)) {
-    return false;
-  }
-
-  const age =
+ const age =
     Date.now() - heartbeatTime;
 
   return age >= 0 && age <= 15000;
