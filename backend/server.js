@@ -66,7 +66,6 @@ function normalizeMode(mode) {
 
   return "DEMO";
 }
-}
 
 function isHeartbeatAlive() {
 
