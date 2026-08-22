@@ -53,20 +53,6 @@ try {
 /* =========================================================
    GLOBAL CONFIG
 ========================================================= */
-function normalizeMode(mode) {
-  const value = String(mode ?? "").trim().toUpperCase();
-
-  if (value === "LIVE") {
-    return "LIVE";
-  }
-
-  if (value === "DEMO") {
-    return "DEMO";
-  }
-
-  return "DEMO";
-}
-
 function isHeartbeatAlive() {
   const lastHeartbeat = mt5Bridge?.lastHeartbeat;
 
@@ -74,13 +60,15 @@ function isHeartbeatAlive() {
     return false;
   }
 
-  const heartbeatTime = new Date(lastHeartbeat).getTime();
+  const heartbeatTime =
+    new Date(lastHeartbeat).getTime();
 
   if (!Number.isFinite(heartbeatTime)) {
     return false;
   }
 
-  const age = Date.now() - heartbeatTime;
+  const age =
+    Date.now() - heartbeatTime;
 
   return age >= 0 && age <= 15000;
 }
